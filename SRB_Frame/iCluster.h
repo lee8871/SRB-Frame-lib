@@ -2,13 +2,18 @@
 #include "lee.h"
 #include "SRB-share-const.h"
 #include "SRB-base-cluster-share.h"
-#include "BaseNode.h"
+
 
 namespace srb {
-	class iSrbMaster {
-	protected:
-		iBus* srb_bus;
-	public :
+	class iCluster {
+		private:
+		uint8 datas[30];
+		public:
+		uint8 datas_sendBuffer[30];
+		access
+
+	
+		
 
 	};
 

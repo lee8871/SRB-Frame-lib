@@ -2,7 +2,7 @@
 #define _lee_type_and_common_define_h
 
 
-//λ��������
+//
 #define set |=
 #define clr &=~
 #define SET set
@@ -12,7 +12,6 @@
 #define nbit(i) (0)
 #define NBIT(i) (0)
 //
-//λ���붨��
 #define bit0 bit(0)
 #define bit1 bit(1)
 #define bit2 bit(2)

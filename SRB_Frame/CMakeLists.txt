@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project (srb_frame)
+project (proj_SRB_frame)
 
 option(MSCV_X86 "Is build for win32?" OFF)
 option(MSCV_X64 "Is build for win64?" OFF)
@@ -27,7 +27,7 @@ ENDIF(WIN32)
 include_directories(../readonly/)
 include_directories(./)
 aux_source_directory(. DIR_SRCS)
-add_executable (SRB_Frame ${DIR_SRCS})
+add_executable (SRB_Frame_tester ${DIR_SRCS})
 
 
 # TODO: 如有需要，请添加测试并安装目标。

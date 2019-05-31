@@ -31,7 +31,7 @@ namespace srb {
 		void closeUsb();
 		int openUsbByName(const char* name);
 		void testSend(uint8 *senddatas, uint8 *recvdatas);	
-		bool addAccess(UsbAccess * access_pa)  override;
+		bool addAccess(Access * access_pa)  override;
 		int doAccess() override;
 		int getAccessQueueLen()override {
 			return (int)(point_in - point_out);

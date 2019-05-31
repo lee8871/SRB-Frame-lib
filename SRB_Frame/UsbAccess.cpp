@@ -54,7 +54,7 @@ namespace srb {
 		else if (len == 2) {//check error
 			switch (usb_recv_pkg->err) {
 			case USB_ERR_BROADCAST:
-				if (getAddr() == SC_BROADCAST) {
+				if (node->getAddr() == SC_BROADCAST) {
 					status = eAccessStatus::RecvedDone;return true;
 				}
 				else {
@@ -78,13 +78,6 @@ namespace srb {
 
 
 
-
-	uint8 UsbAccess::getAddr() {
-		return node->getAddr();
-	}
-	uint8 UsbAccess::getSno() {
-		return usb_send_pkg->sno;
-	}
 
 	eAccessStatus UsbAccess::getStatus()	{
 		return status;

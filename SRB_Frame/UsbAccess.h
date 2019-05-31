@@ -7,11 +7,10 @@ namespace srb {
 	class BaseNode;
 
 
-/*
-	NoInit  ->	NoSend ->	SendWaitRecv		+-> RecvedDone
-				|			|					+->	BusTimeOut
-				SendFail	SoftwareTimeout		+->	RecvedBadPkg
-*/
+
+//	NoInit  +->	NoSend	    +->	SendWaitRecv		+-> RecvedDone
+//			+->	SendFail    +-> SoftwareTimeout		+->	BusTimeOut
+//													+->	RecvedBadPkg
 	enum class eAccessStatus {
 		NoInit,
 		NoSend, 
@@ -23,22 +22,28 @@ namespace srb {
 		SoftwareTimeout,
 	};
 	class BaseNode;
-	class UsbAccess {
+	class Access {
 	protected:
-		BaseNode* node =null;
 		eAccessStatus status = eAccessStatus::NoInit;
+		
+	public :
+		BaseNode* node = null;
+		virtual sSrbPkg* getSendPkg() = 0;
+		virtual sSrbPkg* getRecvPkg() = 0;
+
+	};
+
+
+	class UsbAccess: public Access {
+	protected:
 		sUsbToSrbPkg* usb_send_pkg = null;
 		sUsbToSrbPkg* usb_recv_pkg = null;
 	public:
-		sSrbPkg* getSendPkg();
-		sSrbPkg* getRecvPkg();
 		bool getUsbSendPkg(sUsbToSrbPkg** pkg, int* len);
 		bool setUsbRecvPkg(sUsbToSrbPkg* pkg, int len);
 		bool timeoutAccess();
-		uint8 getAddr();
-		uint8 getSno();
-
-		void recvBadPkg();
+		sSrbPkg* getSendPkg();
+		sSrbPkg* getRecvPkg();
 
 		eAccessStatus getStatus();
 

@@ -98,8 +98,8 @@ namespace srb {
 	bool UsbToSrb::isOpen(){
 		return (mainDH != null);
 	}
-	bool UsbToSrb::addAccess(UsbAccess * access_pa){
-		accesses[point_in] = access_pa;
+	bool UsbToSrb::addAccess(Access * access_pa){
+		accesses[point_in] = (UsbAccess*)access_pa;
 		point_in++;
 		if (point_in == point_out){
 			point_in--;
@@ -128,15 +128,18 @@ namespace srb {
 				}
 			}
 			else {//需要接收的情况
-				if (accessRecv()){
-					active_counter--;
-				}
 				while (accesses[point_out]->isStatusFinish()) {
+					BaseNode* node = accesses[point_out]->node;
+					node->sendDone(accesses[point_out]);
+
 					accesses[point_out] == null;
 					point_out++;
 					if (point_out == point_in) {
 						return done;
 					}
+				}
+				if (accessRecv()){
+					active_counter--;
 				}
 			}
 		}
@@ -172,6 +175,4 @@ namespace srb {
 		accesses[point]->setUsbRecvPkg(pkg, rcvd_len);
 		return false;
 	}
-
-
 }

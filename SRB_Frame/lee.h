@@ -65,7 +65,5 @@ typedef union
 #define min(a,b)  ((a)<(b)?(a):(b))
 
 #define UNDEF_LENGTH 1
-#define __out 
-#define __in
 
 #endif// _lee_type_and_common_define_h

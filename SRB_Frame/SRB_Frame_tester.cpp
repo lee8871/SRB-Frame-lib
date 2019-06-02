@@ -1,6 +1,4 @@
-﻿// SRB_Frame.cpp: 定义应用程序的入口点。
-//
-#include "SRB_Frame_tester.h"
+﻿#include "SRB_Frame_tester.h"
 #include "UsbToSrb.h"
 #include <time.h>
 
@@ -12,8 +10,8 @@
 #undef __MAPPING_DECLEAR__
 
 using namespace std;
+using namespace srb::usb_bus;
 using namespace srb;
-BaseNode bn;
 string timeToString(time_t tim)
 {
 	char str[64];
@@ -87,10 +85,6 @@ const int TEST_PKG_NUM = 10000;
 int main(int argc, char *argv[]) {
 	setPriority();
 
-	BaseNode node;
-	node.addr = 10;
-	node.setMapping(Du_Motor::mapping1, 1);
-	node.bus = &bus;
 
 
 	int16 speed = 0;
@@ -100,8 +94,10 @@ int main(int argc, char *argv[]) {
 	cout << "Test send begin at " << timeToString(begin_time) << endl;
 	cout << TEST_PKG_NUM << " accessing is doing. " << endl;
 
+	BaseNode node(10);
+	node.setMapping(Du_Motor::mapping1, 1);
+	node.bus = &bus;
 
-	UsbAccess *access;
 	beginCheck();
 	long long int totle_send_time_us = 0;
 	double last;
@@ -128,8 +124,5 @@ int main(int argc, char *argv[]) {
 	cout << "Test send end at " << timeToString(end_time) << endl;
 	cout << "It cost " << end_time - begin_time << "(s) at all." << endl;
 	cout << "accessing time avariage is " << totle_send_time_us / (TEST_PKG_NUM) << "(us)." << endl;
-#ifdef WINDOW_86
-	system("PAUSE");
-#endif
 	return 0;
 }

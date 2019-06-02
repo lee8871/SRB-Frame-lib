@@ -1,11 +1,14 @@
 #include "BaseNode.h"
 namespace srb {
-	BaseNode::BaseNode(){
+	BaseNode::BaseNode(uint8 address){
+		this->addr = address;
+		clu[0] = new iCluster(this);
+		clu[0]->loadReadPkg(bus->newAccess(this));
+		bus->doAccess();
 
 
 	}
 	BaseNode::~BaseNode(){
-
 	}
 	uint8 BaseNode::getAddr(){
 		return addr;
@@ -32,20 +35,31 @@ namespace srb {
 		if ((port < 0) || (port > 3)) {
 			throw "port should be int in [0,3]";
 		}
-		UsbAccess* a = new UsbAccess(this);
-		sSrbPkg * pkg = a->getSendPkg();
+		iAccess* a = bus->newAccess(this);
 		int i;
 		for (i = 0;i < mapping[port]->down_len;i++) {
-			pkg->data[i] = rs_data[mapping[port]->table[i]];
+			a->send_pkg->data[i] = rs_data[mapping[port]->table[i]];
 		}
-		pkg->bfc.length = i;
-		pkg->bfc.port = port;
+		a->send_pkg->bfc.length = i;
+		a->send_pkg->bfc.port = port;
 		bus->addAccess(a);
 	}
-	void BaseNode::sendDone(Access * a)
-	{
-		delete a;
-	}
 
-	//uint8 BaseNode::
+
+	void BaseNode::sendDone(iAccess * acs)	{		
+		switch (acs->send_pkg->bfc.port)
+		{
+		case SC_PORT_D0:
+		case SC_PORT_D1:
+		case SC_PORT_D2:
+		case SC_PORT_D3:
+			delete acs;break;
+		case SC_PORT_CFG:
+			clu[acs->recv_pkg->data[0]]->readDone(acs);
+			delete acs;break;
+		default:
+			delete acs;break;
+		}
+		
+	}
 }

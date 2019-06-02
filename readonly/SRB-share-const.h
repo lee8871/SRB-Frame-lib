@@ -5,6 +5,8 @@ server and master and may C# function use it
 #ifndef __SRB_SHARE_CONST_H_
 #define __SRB_SHARE_CONST_H_
 #include "lee.h"
+
+namespace srb{
 enum eAddr{
 //	SC_DEFAULT_ADDR=  0x00,
 	SC_RDM_ADDR_BASE = 100,
@@ -26,8 +28,10 @@ enum eError{
 };
 
 
-#define MAX_PKG_DATA_LEN 31
-#define MAX_PKG_LEN (MAX_PKG_DATA_LEN + 2)
+const uint8 MAX_CLUSTER_NUMBER = 100;
+const uint8 MAX_PKG_DATA_LEN = 31;
+const uint8 MAX_PKG_LEN = (MAX_PKG_DATA_LEN + 2);
+const uint8 MAX_CLUSTER_LEN = (MAX_PKG_DATA_LEN-1);
 union sBfc{
 	uint8 byte;
 	struct	{
@@ -41,8 +45,9 @@ union sBfc{
 		uint8 error:1;
 	};
 };
-#define bfcGetLen(bfc) (bfc&((1<<5)-1))
-#define bfcGetPort(bfc) (b>>5)
+inline uint8 bfcGetLen(uint8 bfc){
+	return (bfc&((1<<5)-1));
+}
 
 struct sSrbPkg{
 	sBfc bfc;
@@ -74,6 +79,7 @@ union sUsbToSrbPkg{
 enum eUsbError{	
 	USB_ERR_BROADCAST =0xff,
 	USB_ERR_BUS_TIMEOUT =0xfe,
+};
 };
 #endif /* __SRB_SHARE_CONST_H_ */
 

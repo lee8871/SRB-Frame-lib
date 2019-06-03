@@ -2,13 +2,9 @@
 namespace srb {
 	BaseNode::BaseNode(uint8 address){
 		this->addr = address;
-		clu[0] = new iCluster(this);
-		clu[0]->loadReadPkg(bus->newAccess(this));
-		bus->doAccess();
-
-
 	}
 	BaseNode::~BaseNode(){
+
 	}
 	uint8 BaseNode::getAddr(){
 		return addr;

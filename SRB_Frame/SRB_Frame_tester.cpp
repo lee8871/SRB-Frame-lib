@@ -85,8 +85,6 @@ const int TEST_PKG_NUM = 10000;
 int main(int argc, char *argv[]) {
 	setPriority();
 
-
-
 	int16 speed = 0;
 	int temp;
 	cout << "try Open Port:" << bus.openUsbByName("USB-TEST-BED") << endl;

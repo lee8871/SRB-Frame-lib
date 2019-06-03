@@ -5,15 +5,15 @@
 #include "iBus.h"
 
 namespace srb {
-	class iSrbMaster {
+	class SrbMaster {
 	protected:
-		iBus* srb_bus;
+		iBus* bus = null;
 		BaseNode* nodes[256] = {null};
 	public:
 		BaseNode* getNode(uint8 addr);
 		BaseNode* getNode(const char* name);
 		void scanNodes();
-
+		SrbMaster(iBus* b);
 
 	
 		

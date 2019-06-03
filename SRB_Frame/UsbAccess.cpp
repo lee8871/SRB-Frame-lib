@@ -5,7 +5,6 @@ namespace srb {
 		UsbAccess::UsbAccess(BaseNode* n) {
 			node = n;
 			status = eAccessStatus::NoInit;
-
 			usb_send_pkg = new sUsbToSrbPkg;
 			if (usb_send_pkg != null) {
 				status = eAccessStatus::NoSend;

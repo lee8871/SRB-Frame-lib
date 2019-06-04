@@ -4,21 +4,30 @@
 #include "iAccess.h"
 #include "iBus.h"
 #include "iCluster.h"
+#include "Master.h"
+
+
+
+
 namespace srb {
 	class iAccess;
 	class iBus;
 	class iCluster;
+	class Master;
+	extern class BaseCluster;
 	class BaseNode{
 	private:
 	
 	protected:
 		sMapping* mapping[4] = {null};
-		iCluster* clu[MAX_CLUSTER_NUMBER];
+		iCluster* clu[MAX_CLUSTER_NUMBER] = { null };
+		Master* master = null;
+		BaseCluster * baseCLU = null;
 
 	public:
 		uint8 addr;
 		uint8 rs_data[128] = {0};
-		BaseNode(uint8 address);
+		BaseNode(uint8 a, Master* m);
 		~BaseNode();
 		uint8 getAddr();
 		void sendDone(iAccess* a);
@@ -26,7 +35,7 @@ namespace srb {
 		bool BaseNode::setMapping(const uint8* map, int map_num);
 		bool BaseNode::sendAccess(int port);
 
-		iBus* bus;
-		iBus* getBus() { return bus; }
+		
+		inline iBus* get_bus();
 	};
 }

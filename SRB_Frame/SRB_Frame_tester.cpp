@@ -1,5 +1,8 @@
 ﻿#include "SRB_Frame_tester.h"
 #include "UsbToSrb.h"
+#include "Master.h"
+
+
 #include <time.h>
 
 #include <string>
@@ -78,28 +81,29 @@ __suseconds_t check(const char *dscrp, int report_mini_value = 0)
 }
 #endif
 
-UsbToSrb bus;
+UsbToSrb* Main_bus;
 const int TEST_PKG_NUM = 10000;
-
+Master* Main_master;
 
 int main(int argc, char *argv[]) {
 	setPriority();
-
 	int16 speed = 0;
-	int temp;
-	cout << "try Open Port:" << bus.openUsbByName("USB-TEST-BED") << endl;
+	Main_bus = new UsbToSrb();
+	Main_master = new Master(Main_bus);
+
+
+
+	cout << "try Open Port:" << Main_bus->openUsbByName("USB-TEST-BED") << endl;
 	time_t begin_time;	time(&begin_time);
 	cout << "Test send begin at " << timeToString(begin_time) << endl;
 	cout << TEST_PKG_NUM << " accessing is doing. " << endl;
 
-	BaseNode node(10);
-	node.setMapping(Du_Motor::mapping1, 1);
-	node.bus = &bus;
+	BaseNode* node = Main_master->getNode(10);
+	node->setMapping(Du_Motor::mapping1, 1);
 
 	beginCheck();
 	long long int totle_send_time_us = 0;
-	double last;
-	Du_Motor::sDataRs* motor_rs = (Du_Motor::sDataRs*)(node.rs_data);
+	Du_Motor::sDataRs* motor_rs = (Du_Motor::sDataRs*)(node->rs_data);
 	for (int i = 0;i < TEST_PKG_NUM;i++) {
 		motor_rs->ma.brake = no;
 		motor_rs->ma.speed++;
@@ -113,14 +117,17 @@ int main(int argc, char *argv[]) {
 			motor_rs->mb.speed = 0;
 		}
 
-		node.sendAccess(1);
+		node->sendAccess(1);
 		check("calculate:", 300);
-		bus.doAccess();
+		Main_bus->doAccess();
 		totle_send_time_us += check("send time >300 :", 300);
 	}
 	time_t end_time;	time(&end_time);
 	cout << "Test send end at " << timeToString(end_time) << endl;
 	cout << "It cost " << end_time - begin_time << "(s) at all." << endl;
 	cout << "accessing time avariage is " << totle_send_time_us / (TEST_PKG_NUM) << "(us)." << endl;
+	delete Main_bus ;
+	delete Main_master ;	
+	
 	return 0;
 }

@@ -24,10 +24,13 @@ namespace srb {
 	class iAccess {
 	protected:
 		eAccessStatus status = eAccessStatus::NoInit;
+		sSrbPkg* _send_pkg = null;
+		sSrbPkg* _recv_pkg = null;
 	public:
 		BaseNode* node = null;
-		sSrbPkg* send_pkg = null;
-		sSrbPkg* recv_pkg = null;
+
+		inline sSrbPkg* send_pkg() { return _send_pkg; }
+		inline sSrbPkg* recv_pkg() { return _recv_pkg; }
 		inline eAccessStatus getStatus() { return status; }
 		inline bool isStatusFinish() { return (status >= eAccessStatus::RecvedDone); };
 	};

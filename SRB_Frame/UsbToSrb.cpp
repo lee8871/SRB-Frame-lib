@@ -18,7 +18,6 @@ namespace srb {
 		int UsbToSrb::openUsbByName(const char* name) {
 			libusb_device **devs;
 			char string[256];
-			int rev;
 			int usb_device_num;
 			closeUsb();
 
@@ -60,14 +59,6 @@ namespace srb {
 				return -1;
 			}
 		}
-		void UsbToSrb::testSend(uint8 *senddatas, uint8 *recvdatas) {
-			if (mainDH != null) {
-				int sended_len;
-				libusb_bulk_transfer(mainDH, (2), senddatas, 7, &sended_len, 1000);
-				libusb_bulk_transfer(mainDH, (1 | 0x80), recvdatas, 64, &sended_len, 1000);
-
-			}
-		}
 		int UsbToSrb::initUsbSrb(libusb_device * initDEV, libusb_device_handle * initDH) {
 			mainDH = initDH;
 			mainDEV = initDEV;
@@ -99,16 +90,21 @@ namespace srb {
 		bool UsbToSrb::isOpen() {
 			return (mainDH != null);
 		}
-		bool UsbToSrb::addAccess(iAccess * access_pa) {
-			accesses[point_in] = (UsbAccess*)access_pa;
-			point_in++;
-			if (point_in == point_out) {
-				point_in--;
-				return false;
+		iAccess*  UsbToSrb::newAccess(BaseNode* sender_node) {
+			access_lock.lock();
+			if (((point_in + 1) & 0xff) == point_out) {
+				access_lock.unlock();return null;
 			}
-			else {
-				return true;
+			UsbAccess *acs = new UsbAccess(sender_node);
+			if (acs == null) {
+				access_lock.unlock();return null;
 			}
+			if (acs->getStatus() == eAccessStatus::NoInit) {
+				access_lock.unlock();delete acs;return null;
+			}
+			accesses[point_in] = acs;
+			point_in++;				
+			access_lock.unlock();return acs;
 		}
 		int UsbToSrb::doAccess() {
 			int active_counter = 0;//记录正在交给硬件处理的包的数量,硬件带有双缓冲,可以进行访问的同时接收下一个访问,
@@ -116,6 +112,7 @@ namespace srb {
 			if (isOpen() == false) {
 				return -1;
 			}
+			access_lock.lock();
 			point_send = point_out;
 			while (1) {
 				if ((point_send != point_in) && (active_counter < 2)) {
@@ -132,11 +129,12 @@ namespace srb {
 					while (accesses[point_out]->isStatusFinish()) {
 						BaseNode* node = accesses[point_out]->node;
 						node->sendDone(accesses[point_out]);
-
-						accesses[point_out] == null;
+						delete accesses[point_out];
+						accesses[point_out] = null;
 						point_out++;
 						if (point_out == point_in) {
-							return done;
+
+							access_lock.unlock();return done;
 						}
 					}
 					if (accessRecv()) {
@@ -144,10 +142,9 @@ namespace srb {
 					}
 				}
 			}
-			return fail;
+
+			access_lock.unlock();return fail;
 		}
-
-
 
 
 

@@ -1,11 +1,31 @@
 #include "BaseNode.h"
+#include "BaseCluster.h"
 namespace srb {
-	BaseNode::BaseNode(uint8 address){
+	BaseNode::BaseNode(uint8 address, Master* master){
 		this->addr = address;
-	}
-	BaseNode::~BaseNode(){
+		this->master = master;
 
+		baseCLU = new BaseCluster(this);
+		clu[0] = baseCLU;
+		baseCLU->loadReadPkg(get_bus()->newAccess(this));
+		get_bus()->doAccess();
 	}
+
+	BaseNode::~BaseNode(){
+		for (int i = 0;i < 4;i++) {
+			if (mapping[i] != null) {
+				delete (mapping[i]);
+				mapping[i] = null;
+			}
+		}
+		for (int i = 0;i < MAX_CLUSTER_NUMBER;i++) {
+			if (clu[i] != null) {
+				delete (clu[i]);
+				clu[i] = null;
+			}
+		}
+	}
+
 	uint8 BaseNode::getAddr(){
 		return addr;
 	}
@@ -31,31 +51,31 @@ namespace srb {
 		if ((port < 0) || (port > 3)) {
 			throw "port should be int in [0,3]";
 		}
-		iAccess* a = bus->newAccess(this);
+		iAccess* a = get_bus()->newAccess(this);
 		int i;
 		for (i = 0;i < mapping[port]->down_len;i++) {
-			a->send_pkg->data[i] = rs_data[mapping[port]->table[i]];
+			a->send_pkg()->data[i] = rs_data[mapping[port]->table[i]];
 		}
-		a->send_pkg->bfc.length = i;
-		a->send_pkg->bfc.port = port;
-		bus->addAccess(a);
+		a->send_pkg()->bfc.length = i;
+		a->send_pkg()->bfc.port = port;
+		return true;
 	}
 
-
 	void BaseNode::sendDone(iAccess * acs)	{		
-		switch (acs->send_pkg->bfc.port)
+		switch (acs->send_pkg()->bfc.port)
 		{
 		case SC_PORT_D0:
 		case SC_PORT_D1:
 		case SC_PORT_D2:
 		case SC_PORT_D3:
-			delete acs;break;
+			break;
 		case SC_PORT_CFG:
-			clu[acs->recv_pkg->data[0]]->readDone(acs);
-			delete acs;break;
+			clu[acs->send_pkg()->data[0]]->readDone(acs);
+			break;
 		default:
-			delete acs;break;
+			break;
 		}
-		
 	}
+
+	iBus* BaseNode::get_bus() { return master->get_bus(); }
 }

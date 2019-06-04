@@ -11,8 +11,8 @@ namespace srb {
 	class iAccess;
 	class iCluster {
 	protected:
-		BaseNode* node;
-		uint8 cluster_id;
+		BaseNode* node = null;
+		uint8 cluster_id = 0;
 		uint8 buffer[30];
 	public:
 		iCluster(BaseNode* n);
@@ -20,7 +20,6 @@ namespace srb {
 		void readDone(iAccess* a);
 		void write(iAccess* a);
 		void writeDone(iAccess* a);
-
 	};
 
 

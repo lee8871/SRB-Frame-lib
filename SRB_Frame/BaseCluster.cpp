@@ -1,13 +1,14 @@
-//#include "SrbMaster.h"
-//#include "BaseCluster.h"
-//
-//namespace srb {
-//	csBase * BaseCluster::setData()
-//	{
-//		return (csBase * )send_buffer;
-//	}
-//	const csBase * BaseCluster::getData()
-//	{
-//		return (const csBase *)readonly_buffer;
-//	}
-//}
+#include "BaseCluster.h"
+
+namespace srb {
+
+	const csBase * BaseCluster::get_data()
+	{
+		return (const csBase *)buffer;
+	}
+	BaseCluster::BaseCluster(BaseNode* node) 
+		:iCluster(node)
+	{
+
+	}
+}

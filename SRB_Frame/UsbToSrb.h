@@ -3,6 +3,7 @@
 #include "lee.h"
 #include "libusb.h"
 #include "UsbAccess.h"
+#include <mutex> 
 
 namespace srb {
 	namespace usb_bus {
@@ -22,9 +23,9 @@ namespace srb {
 			bool accessSend(uint8 point);
 			bool accessRecv();
 
-
 			//----------------------------private method-------------------------------------------
 			int initUsbSrb(libusb_device * initDEV, libusb_device_handle * initDH);
+			std::mutex access_lock;
 
 		public:
 			bool isOpen();
@@ -36,13 +37,11 @@ namespace srb {
 
 
 			///overrite acceess port
-			bool addAccess(iAccess * access_pa)  override;
+			iAccess*  newAccess(BaseNode* sender_node)  override;
 			int doAccess() override;
-			int getAccessQueueLen()override {
+
+			inline int getAccessQueueLen()override {
 				return (int)(point_in - point_out);
-			}
-			iAccess* newAccess(BaseNode * node)	override {
-				return (iAccess*)(new UsbAccess(node));
 			}
 
 

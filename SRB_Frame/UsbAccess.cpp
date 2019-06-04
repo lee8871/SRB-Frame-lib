@@ -8,7 +8,7 @@ namespace srb {
 			usb_send_pkg = new sUsbToSrbPkg;
 			if (usb_send_pkg != null) {
 				status = eAccessStatus::NoSend;
-				send_pkg = &(usb_send_pkg->pkg);
+				_send_pkg = &(usb_send_pkg->pkg);
 			}
 
 		}
@@ -34,7 +34,7 @@ namespace srb {
 
 			if (len >= 3) {//check receive done
 				if ((len == usb_recv_pkg->pkg.bfc.length + 3) && (usb_recv_pkg->err < 0x10)) {
-					recv_pkg = &(usb_recv_pkg->pkg);
+					_recv_pkg = &(usb_recv_pkg->pkg);
 					status = eAccessStatus::RecvedDone;return true;
 				}
 			}
@@ -60,6 +60,7 @@ namespace srb {
 				return false;
 			}
 			status = eAccessStatus::BusTimeOut;
+			return true;
 		}
 
 

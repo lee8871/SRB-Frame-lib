@@ -1,9 +1,5 @@
 #pragma once
-#include "lee.h"
-#include "SRB-share-const.h"
-#include "SRB-base-cluster-share.h"
-#include "iBus.h"
-#include "BaseNode.h"
+#include "srb_heads.h"
 
 namespace srb {
 	class iBus;
@@ -18,10 +14,7 @@ namespace srb {
 		void scanNodes();
 		Master(iBus* b);
 		~Master();
-
-		inline iBus* get_bus() { return _bus;}
-	
-		
+		iBus* readonly Bus = _bus;
 
 	};
 

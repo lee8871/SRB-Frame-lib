@@ -1,6 +1,4 @@
 #pragma once
-
-
 #include "srb_heads.h"
 namespace srb {
 	class BaseNode;
@@ -23,15 +21,16 @@ namespace srb {
 
 	class iAccess {
 	protected:
-		eAccessStatus status = eAccessStatus::NoInit;
+		eAccessStatus _status = eAccessStatus::NoInit;
 		sSrbPkg* _send_pkg = null;
 		sSrbPkg* _recv_pkg = null;
 	public:
 		BaseNode* node = null;
 
-		inline sSrbPkg* send_pkg() { return _send_pkg; }
-		inline sSrbPkg* recv_pkg() { return _recv_pkg; }
-		inline eAccessStatus getStatus() { return status; }
-		inline bool isStatusFinish() { return (status >= eAccessStatus::RecvedDone); };
+		sSrbPkg* readonly Send_pkg = _send_pkg;
+		sSrbPkg* readonly Recv_pkg = _recv_pkg;
+		eAccessStatus readonly Status = _status;
+
+		inline bool isStatusFinish() { return (_status >= eAccessStatus::RecvedDone); };
 	};
 }

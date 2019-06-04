@@ -5,8 +5,9 @@
 namespace srb {
 	class BaseCluster: public iCluster {
 	public:
-		const csBase * get_data();
 		BaseCluster(BaseNode* node);
+		~BaseCluster();
+		const csBase * get_data();
 
 	};
 };

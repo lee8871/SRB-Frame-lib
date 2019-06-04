@@ -1,6 +1,5 @@
 #pragma once
 #include "srb_heads.h"
-
 namespace srb {
 	class BaseNode{
 	private:
@@ -20,8 +19,7 @@ namespace srb {
 		//void sendFail(Access* a);
 		bool BaseNode::setMapping(const uint8* map, int map_num);
 		bool BaseNode::sendAccess(int port);
-
-		
-		inline iBus* get_bus();
+		iBus* readonly Bus;
 	};
+	
 }

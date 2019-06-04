@@ -6,14 +6,14 @@ namespace srb {
 		node = n;
 	}
 	void iCluster::loadReadPkg(iAccess* acs){
-		acs->send_pkg()->data[0] = cluster_id;
-		acs->send_pkg()->bfc.length = 1;
-		acs->send_pkg()->bfc.port = SC_PORT_CFG;
+		acs->Send_pkg->data[0] = cluster_id;
+		acs->Send_pkg->bfc.length = 1;
+		acs->Send_pkg->bfc.port = SC_PORT_CFG;
 	}
 	void iCluster::readDone(iAccess * acs){
-		if (acs->getStatus() == eAccessStatus::RecvedDone) {
-			for (int i = 0; i < acs->recv_pkg()->bfc.length;i++){
-				buffer[i] = acs->recv_pkg()->data[i];
+		if (acs->Status == eAccessStatus::RecvedDone) {
+			for (int i = 0; i < acs->Recv_pkg->bfc.length;i++){
+				_buffer[i] = acs->Recv_pkg->data[i];
 			}
 		}
 	}

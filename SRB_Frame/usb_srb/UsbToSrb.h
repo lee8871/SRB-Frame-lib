@@ -6,8 +6,7 @@
 
 namespace srb {
 	namespace usb_bus {
-		class UsbToSrb : public iBus
-		{
+		class UsbToSrb : public iBus		{
 		private:
 			libusb_context* mainCTX = null;
 			libusb_device * mainDEV = null;
@@ -33,7 +32,6 @@ namespace srb {
 			int openUsbByName(const char* name);
 			void testSend(uint8 *senddatas, uint8 *recvdatas);
 
-
 			///overrite acceess port
 			iAccess*  newAccess(BaseNode* sender_node)  override;
 			int doAccess() override;
@@ -46,5 +44,5 @@ namespace srb {
 		};
 	}
 }
-//
+//ÔÆµÍÑà¹ıÇá ºÆºÆ×ß¼²·ç
 //»Æ»èÇãÖèÓê ¾øÒ¹ÏÖË«ĞÇ

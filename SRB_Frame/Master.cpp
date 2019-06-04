@@ -1,4 +1,5 @@
 #include "Master.h"
+#include "BaseNode.h"
 
 namespace srb {
 	BaseNode * Master::getNode(uint8 addr){

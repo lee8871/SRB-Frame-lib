@@ -4,14 +4,15 @@
 #include "iBus.h"
 #include "Master.h"
 namespace srb {
-	BaseNode::BaseNode(uint8 address, Master* master){
+	BaseNode::BaseNode(uint8 address, Master* master)
+		:Bus(master->Bus)
+	{
 		this->addr = address;
 		this->master = master;
-
 		baseCLU = new BaseCluster(this);
 		clu[0] = baseCLU;
-		baseCLU->loadReadPkg(get_bus()->newAccess(this));
-		get_bus()->doAccess();
+		baseCLU->loadReadPkg(Bus->newAccess(this));
+		Bus->doAccess();
 	}
 
 	BaseNode::~BaseNode(){
@@ -54,18 +55,18 @@ namespace srb {
 		if ((port < 0) || (port > 3)) {
 			throw "port should be int in [0,3]";
 		}
-		iAccess* a = get_bus()->newAccess(this);
+		iAccess* acs = Bus->newAccess(this);
 		int i;
 		for (i = 0;i < mapping[port]->down_len;i++) {
-			a->send_pkg()->data[i] = rs_data[mapping[port]->table[i]];
+			acs->Send_pkg->data[i] = rs_data[mapping[port]->table[i]];
 		}
-		a->send_pkg()->bfc.length = i;
-		a->send_pkg()->bfc.port = port;
+		acs->Send_pkg->bfc.length = i;
+		acs->Send_pkg->bfc.port = port;
 		return true;
 	}
 
 	void BaseNode::sendDone(iAccess * acs)	{		
-		switch (acs->send_pkg()->bfc.port)
+		switch (acs->Send_pkg->bfc.port)
 		{
 		case SC_PORT_D0:
 		case SC_PORT_D1:
@@ -73,12 +74,10 @@ namespace srb {
 		case SC_PORT_D3:
 			break;
 		case SC_PORT_CFG:
-			clu[acs->send_pkg()->data[0]]->readDone(acs);
+			clu[acs->Send_pkg->data[0]]->readDone(acs);
 			break;
 		default:
 			break;
 		}
 	}
-
-	iBus* BaseNode::get_bus() { return master->get_bus(); }
 }

@@ -1,6 +1,7 @@
 ﻿#include "SRB_Frame_tester.h"
 #include "UsbToSrb.h"
 #include "Master.h"
+#include "BaseNode.h"
 
 
 #include <time.h>

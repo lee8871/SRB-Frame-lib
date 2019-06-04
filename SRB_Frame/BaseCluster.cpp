@@ -1,5 +1,4 @@
 #include "BaseCluster.h"
-
 namespace srb {
 
 	const csBase * BaseCluster::get_data()

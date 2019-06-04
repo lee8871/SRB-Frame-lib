@@ -26,8 +26,12 @@ ENDIF(WIN32)
 
 include_directories(../readonly/)
 include_directories(./)
+include_directories(./usb_srb)
+
 aux_source_directory(. DIR_SRCS)
-add_executable (SRB_Frame_tester ${DIR_SRCS})
+aux_source_directory(./usb_srb DIR_USB)
+
+add_executable (SRB_Frame_tester ${DIR_SRCS} ${DIR_USB})
 
 
 # TODO: 如有需要，请添加测试并安装目标。

@@ -1,5 +1,8 @@
 #include "BaseNode.h"
 #include "BaseCluster.h"
+#include "iAccess.h"
+#include "iBus.h"
+#include "Master.h"
 namespace srb {
 	BaseNode::BaseNode(uint8 address, Master* master){
 		this->addr = address;

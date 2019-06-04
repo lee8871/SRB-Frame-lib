@@ -1,14 +1,8 @@
 #pragma once
-#include "lee.h"
-#include "SRB-share-const.h"
-#include "SRB-base-cluster-share.h"
-#include "BaseNode.h"
-#include "iAccess.h"
+#include "srb_heads.h"
 
 
 namespace srb {
-	class BaseNode;
-	class iAccess;
 	class iCluster {
 	protected:
 		BaseNode* node = null;

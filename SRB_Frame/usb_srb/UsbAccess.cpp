@@ -1,4 +1,5 @@
 #include "UsbAccess.h"
+#include "BaseNode.h"
 
 namespace srb {
 	namespace usb_bus {

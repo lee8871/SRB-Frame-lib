@@ -1,20 +1,7 @@
 #pragma once
-#include "lee.h"
-#include "SRB-share-const.h"
-#include "iAccess.h"
-#include "iBus.h"
-#include "iCluster.h"
-#include "Master.h"
-
-
-
+#include "srb_heads.h"
 
 namespace srb {
-	class iAccess;
-	class iBus;
-	class iCluster;
-	class Master;
-	extern class BaseCluster;
 	class BaseNode{
 	private:
 	
@@ -23,7 +10,6 @@ namespace srb {
 		iCluster* clu[MAX_CLUSTER_NUMBER] = { null };
 		Master* master = null;
 		BaseCluster * baseCLU = null;
-
 	public:
 		uint8 addr;
 		uint8 rs_data[128] = {0};

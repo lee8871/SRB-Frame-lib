@@ -1,4 +1,5 @@
 #include "iCluster.h"
+#include "iAccess.h"
 
 namespace srb {
 	iCluster::iCluster(BaseNode* n)	{

@@ -1,8 +1,7 @@
 #pragma once
+#include "srb_usb_bus_heads.h"
 #include "iBus.h"
-#include "lee.h"
 #include "libusb.h"
-#include "UsbAccess.h"
 #include <mutex> 
 
 namespace srb {
@@ -15,7 +14,6 @@ namespace srb {
 			libusb_device_handle *mainDH = null;
 
 			//------------------------------about access--------------------------------------------
-
 			UsbAccess* accesses[256] = { null };
 			uint8 point_in = 0;
 			uint8 point_send = 0;
@@ -48,3 +46,5 @@ namespace srb {
 		};
 	}
 }
+//
+//ª∆ªË«„÷Ë”Í æ¯“πœ÷À´–«

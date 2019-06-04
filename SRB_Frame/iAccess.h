@@ -1,7 +1,7 @@
 #pragma once
-#include "lee.h"
-#include "SRB-share-const.h"
-#include "BaseNode.h"
+
+
+#include "srb_heads.h"
 namespace srb {
 	class BaseNode;
 /***********************************************************************

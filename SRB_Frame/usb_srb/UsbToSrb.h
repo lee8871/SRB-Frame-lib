@@ -17,8 +17,8 @@ namespace srb {
 			uint8 point_in = 0;
 			uint8 point_send = 0;
 			uint8 point_out = 0;
-			bool accessSend(uint8 point);
-			bool accessRecv();
+			int accessSend(uint8 point);
+			int accessRecv();
 
 			//----------------------------private method-------------------------------------------
 			int initUsbSrb(libusb_device * initDEV, libusb_device_handle * initDH);

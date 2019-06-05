@@ -23,8 +23,15 @@
 
 #define yes 1
 #define no 0
-#define fail 1
-#define done 0
+
+enum eCommonRev {
+	done = 0,
+	fail = 1,
+	par_error = 2,
+	no_memory = 3,
+	node_exsist = 100,
+	node_no_exsist = 101,
+};
 
 
 #define null nullptr
@@ -65,5 +72,5 @@ typedef union
 #define min(a,b)  ((a)<(b)?(a):(b))
 
 #define UNDEF_LENGTH 1
-#define readonly const & const 
+#define readonly const & 
 #endif// _lee_type_and_common_define_h

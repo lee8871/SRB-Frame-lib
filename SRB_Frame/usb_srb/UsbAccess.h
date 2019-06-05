@@ -8,9 +8,9 @@ namespace srb {
 			sUsbToSrbPkg* usb_send_pkg = null;
 			sUsbToSrbPkg* usb_recv_pkg = null;
 		public:
-			bool getUsbSendPkg(sUsbToSrbPkg** pkg, int* len);
-			bool setUsbRecvPkg(sUsbToSrbPkg* pkg, int len);
-			bool timeoutAccess();
+			int getUsbSendPkg(sUsbToSrbPkg** pkg, int* len);
+			int setUsbRecvPkg(sUsbToSrbPkg* pkg, int len);
+			int timeoutAccess();
 			eAccessStatus getStatus();
 			UsbAccess(BaseNode*);
 			~UsbAccess();

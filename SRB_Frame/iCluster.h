@@ -2,15 +2,13 @@
 #include "srb_heads.h"
 namespace srb {
 	class iCluster {
-	private:
-		uint8 _buffer[30];
 	protected:
+		uint8 _data_u8[30] = { 0 };
 		BaseNode* node = null;
 		uint8 cluster_id = 0;
 	public:
-		uint8* readonly buffer = _buffer;
-		uint8 _write_temp[30];
-
+		const uint8* readonly const data_u8;
+		uint8 buffer_u8[30];
 
 		iCluster(BaseNode* n);
 		void loadReadPkg(iAccess* a);

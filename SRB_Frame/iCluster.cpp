@@ -2,7 +2,9 @@
 #include "iAccess.h"
 
 namespace srb {
-	iCluster::iCluster(BaseNode* n)	{
+	iCluster::iCluster(BaseNode* n):
+		data_u8((const uint8*)_data_u8)
+	{
 		node = n;
 	}
 	void iCluster::loadReadPkg(iAccess* acs){
@@ -13,7 +15,7 @@ namespace srb {
 	void iCluster::readDone(iAccess * acs){
 		if (acs->Status == eAccessStatus::RecvedDone) {
 			for (int i = 0; i < acs->Recv_pkg->bfc.length;i++){
-				_buffer[i] = acs->Recv_pkg->data[i];
+				_data_u8[i] = acs->Recv_pkg->data[i];
 			}
 		}
 	}

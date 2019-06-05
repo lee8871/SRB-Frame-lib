@@ -1,11 +1,11 @@
 #include "BaseCluster.h"
 namespace srb {
-	const csBase * BaseCluster::get_data()
+
+	BaseCluster::BaseCluster(BaseNode* node, uint8 addr) 
+		:iCluster(node)
 	{
-		return (const csBase *)buffer;
+		((csBase*)data_u8)->addr = addr;
 	}
-	BaseCluster::BaseCluster(BaseNode* node) 
-		:iCluster(node)	{	}
 	BaseCluster::~BaseCluster(){	}
 
 

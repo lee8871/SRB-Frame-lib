@@ -13,20 +13,20 @@ namespace srb {
 			}
 
 		}
-		bool UsbAccess::getUsbSendPkg(sUsbToSrbPkg** pkg, int* len) {
+		int UsbAccess::getUsbSendPkg(sUsbToSrbPkg** pkg, int* len) {
 			if (_status != eAccessStatus::NoSend) {
-				return false;
+				return fail;
 			}
 			(*len) = 3 + usb_send_pkg->pkg.bfc.length;
-			usb_send_pkg->addr = node->getAddr();
+			usb_send_pkg->addr = node->Addr;
 			*pkg = usb_send_pkg;
 			_status = eAccessStatus::SendWaitRecv;
-			return true;
+			return done;
 		}
-		bool UsbAccess::setUsbRecvPkg(sUsbToSrbPkg * pkg, int len) {
+		int UsbAccess::setUsbRecvPkg(sUsbToSrbPkg * pkg, int len) {
 			//check my status
 			if (_status != eAccessStatus::SendWaitRecv) {
-				return false;
+				return fail;
 			}
 			if (usb_recv_pkg != null) {
 				delete usb_recv_pkg;
@@ -36,32 +36,31 @@ namespace srb {
 			if (len >= 3) {//check receive done
 				if ((len == usb_recv_pkg->pkg.bfc.length + 3) && (usb_recv_pkg->err < 0x10)) {
 					_recv_pkg = &(usb_recv_pkg->pkg);
-					_status = eAccessStatus::RecvedDone;return true;
+					_status = eAccessStatus::RecvedDone;return done;
 				}
 			}
 			else if (len == 2) {//check error
 				switch (usb_recv_pkg->err) {
 				case USB_ERR_BROADCAST:
-					if (node->getAddr() == SC_BROADCAST) {
-						_status = eAccessStatus::RecvedDone;return true;
+					if (node->Addr == SC_BROADCAST) {
+						_status = eAccessStatus::RecvedDone;return done;
 					}
-					else {
-						_status = eAccessStatus::RecvedBadPkg;return true;
-					}
+					break;
 				case USB_ERR_BUS_TIMEOUT:
-					_status = eAccessStatus::BusTimeOut;return true;
+					_status = eAccessStatus::BusTimeOut;return done;
+					break;
 				default:
 					break;
 				}
 			}
-			_status = eAccessStatus::RecvedBadPkg;return true;
+			_status = eAccessStatus::RecvedBadPkg;return done;
 		}
-		bool UsbAccess::timeoutAccess() {
+		int UsbAccess::timeoutAccess() {
 			if (_status != eAccessStatus::SendWaitRecv) {
-				return false;
+				return fail;
 			}
 			_status = eAccessStatus::BusTimeOut;
-			return true;
+			return done;
 		}
 
 

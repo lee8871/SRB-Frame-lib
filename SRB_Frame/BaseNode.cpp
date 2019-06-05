@@ -4,14 +4,16 @@
 #include "iBus.h"
 #include "Master.h"
 namespace srb {
-	BaseNode::BaseNode(uint8 address, Master* master)
-		:Bus(master->Bus)
+	BaseNode::BaseNode(uint8 address, Master* master):
+		Bus(master->Bus), 
+		baseCLU(new BaseCluster(this, address)),
+		Addr(baseCLU->Data->addr),
+		Node_name((const char*)(baseCLU->Data->name))
 	{
-		this->addr = address;
 		this->master = master;
-		baseCLU = new BaseCluster(this);
 		clu[0] = baseCLU;
-		baseCLU->loadReadPkg(Bus->newAccess(this));
+		iAccess* acs = Bus->newAccess(this);
+		baseCLU->loadReadPkg(acs);
 		Bus->doAccess();
 	}
 
@@ -29,31 +31,26 @@ namespace srb {
 			}
 		}
 	}
-
-	uint8 BaseNode::getAddr(){
-		return addr;
-	}
-	bool BaseNode::setMapping(const uint8* map, int port){
+	int BaseNode::setMapping(const uint8* map, int port){
 		if ((port < 0) || (port > 3)) {
-			throw "port should be int in [0,3]";
+			return par_error;
 		}
 		sMapping* map_to_set = (sMapping*)map;
 		int len = map_to_set->up_len + map_to_set->down_len + 2;
 		uint8* map_copy = new uint8[len];
 		if(map_copy==null){
-			throw "New Map has No memory";
+			return no_memory;
 		}
 		for (int i = 0; i < len;i++){
 			map_copy[i] = map[i];
 		}
 		mapping[port] = (sMapping*)map_copy;
-		return true;
-
+		return done;
 	}
 
-	bool BaseNode::sendAccess(int port) {
+	int BaseNode::sendAccess(int port) {
 		if ((port < 0) || (port > 3)) {
-			throw "port should be int in [0,3]";
+			return par_error;
 		}
 		iAccess* acs = Bus->newAccess(this);
 		int i;
@@ -62,22 +59,33 @@ namespace srb {
 		}
 		acs->Send_pkg->bfc.length = i;
 		acs->Send_pkg->bfc.port = port;
-		return true;
+		return done;
 	}
 
-	void BaseNode::sendDone(iAccess * acs)	{		
-		switch (acs->Send_pkg->bfc.port)
-		{
-		case SC_PORT_D0:
-		case SC_PORT_D1:
-		case SC_PORT_D2:
-		case SC_PORT_D3:
-			break;
-		case SC_PORT_CFG:
-			clu[acs->Send_pkg->data[0]]->readDone(acs);
-			break;
-		default:
-			break;
+	void BaseNode::sendDone(iAccess * acs)	{	
+		if (acs->Status == eAccessStatus::RecvedDone) {
+			_is_node_exsist = true;
+			if (acs->Recv_pkg->bfc.error == yes) {
+				throw  "receive error package";
+			}
+			switch (acs->Send_pkg->bfc.port) {
+			case SC_PORT_D0:
+			case SC_PORT_D1:
+			case SC_PORT_D2:
+			case SC_PORT_D3:
+				break;
+			case SC_PORT_CFG:
+				clu[acs->Send_pkg->data[0]]->readDone(acs);
+				break;
+			default:
+				break;
+			}
+		}
+		else if (acs->Status == eAccessStatus::BusTimeOut) {
+			_is_node_exsist = false;
+		}
+		else {
+			throw "receive bad package";
 		}
 	}
 }

@@ -83,7 +83,7 @@ __suseconds_t check(const char *dscrp, int report_mini_value = 0)
 #endif
 
 UsbToSrb* Main_bus;
-const int TEST_PKG_NUM = 10000;
+const int TEST_PKG_NUM = 100;
 Master* Main_master;
 
 int main(int argc, char *argv[]) {
@@ -99,6 +99,7 @@ int main(int argc, char *argv[]) {
 	cout << "Test send begin at " << timeToString(begin_time) << endl;
 	cout << TEST_PKG_NUM << " accessing is doing. " << endl;
 
+	Main_master->scanNodes();
 	BaseNode* node = Main_master->getNode(10);
 	node->setMapping(Du_Motor::mapping1, 1);
 

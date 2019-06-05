@@ -94,7 +94,7 @@ namespace srb {
 			return (mainDH != null);
 		}
 		iAccess*  UsbToSrb::newAccess(BaseNode* sender_node) {
-			access_lock.lock();
+			//access_lock.lock();
 			if (((point_in + 1) & 0xff) == point_out) {
 				access_lock.unlock();return null;
 			}
@@ -107,7 +107,8 @@ namespace srb {
 			}
 			accesses[point_in] = acs;
 			point_in++;				
-			access_lock.unlock();return acs;
+			//access_lock.unlock();
+			return acs;
 		}
 		int UsbToSrb::doAccess() {
 			int active_counter = 0;//记录正在交给硬件处理的包的数量,硬件带有双缓冲,可以进行访问的同时接收下一个访问,
@@ -120,7 +121,7 @@ namespace srb {
 			while (1) {
 				if ((point_send != point_in) && (active_counter < 2)) {
 					//需要发送的情况
-					if (true == accessSend(point_send)) {
+					if (done == accessSend(point_send)) {
 						active_counter++;
 						point_send++;
 					}
@@ -151,7 +152,7 @@ namespace srb {
 
 
 
-		bool UsbToSrb::accessSend(uint8 point) {
+		int UsbToSrb::accessSend(uint8 point) {
 			UsbAccess *a = accesses[point];
 			sUsbToSrbPkg* pkg;
 			int length;
@@ -159,22 +160,22 @@ namespace srb {
 			a->getUsbSendPkg(&pkg, &length);
 			pkg->sno = point;
 			if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10)) {
-				return false;
+				return fail;
 			}
-			return true;
+			return done;
 		}
-		bool UsbToSrb::accessRecv() {
+		int UsbToSrb::accessRecv() {
 			sUsbToSrbPkg* pkg = new sUsbToSrbPkg();
 			int rcvd_len;
 			if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10)) {
-				return false;
+				return fail;
 			}
 			uint8 point = pkg->sno;
 			if (accesses[point] == null) {
 				throw "recv a package to nonexistent node.";
 			}
 			accesses[point]->setUsbRecvPkg(pkg, rcvd_len);
-			return false;
+			return done;
 		}
 	}
 }

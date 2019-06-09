@@ -2,13 +2,12 @@
 #include "iAccess.h"
 
 namespace srb {
-	iCluster::iCluster(BaseNode* n):
-		data_u8((const uint8*)_data_u8)
-	{
-		node = n;
+
+	iCluster::iCluster(BaseNode* n)	{
+		_node = n;
 	}
 	void iCluster::loadReadPkg(iAccess* acs){
-		acs->Send_pkg->data[0] = cluster_id;
+		acs->Send_pkg->data[0] = _cluster_id;
 		acs->Send_pkg->bfc.length = 1;
 		acs->Send_pkg->bfc.port = SC_PORT_CFG;
 	}
@@ -19,5 +18,7 @@ namespace srb {
 			}
 		}
 	}
-
+	const uint8 * iCluster::Data_u8() {
+		return _data_u8;
+	}
 }

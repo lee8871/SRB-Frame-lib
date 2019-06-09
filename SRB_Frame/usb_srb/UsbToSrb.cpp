@@ -1,8 +1,7 @@
 #include "string.h"
 
 #include "UsbToSrb.h"
-#include "BaseNode.h"
-#include "USBAccess.h"
+#include "UsbAccess.h"
 using namespace std;
 namespace srb {
 	namespace usb_bus {
@@ -93,19 +92,19 @@ namespace srb {
 		bool UsbToSrb::isOpen() {
 			return (mainDH != null);
 		}
-		iAccess*  UsbToSrb::newAccess(BaseNode* sender_node) {
+		iAccess*  UsbToSrb::newAccess(iAccesser* owner) {
 			//access_lock.lock();
 			if (((point_in + 1) & 0xff) == point_out) {
 				access_lock.unlock();return null;
 			}
-			UsbAccess *acs = new UsbAccess(sender_node);
+			UsbAccess *acs = new UsbAccess(owner);
 			if (acs == null) {
 				access_lock.unlock();return null;
 			}
 			if (acs->getStatus() == eAccessStatus::NoInit) {
 				access_lock.unlock();delete acs;return null;
 			}
-			accesses[point_in] = acs;
+			acs_queue[point_in] = acs;
 			point_in++;				
 			//access_lock.unlock();
 			return acs;
@@ -130,11 +129,11 @@ namespace srb {
 					}
 				}
 				else {//需要接收的情况
-					while (accesses[point_out]->isStatusFinish()) {
-						BaseNode* node = accesses[point_out]->node;
-						node->sendDone(accesses[point_out]);
-						delete accesses[point_out];
-						accesses[point_out] = null;
+					while (acs_queue[point_out]->isStatusFinish()) {
+						iAccesser* node = acs_queue[point_out]->owner;
+						node->accessDone(acs_queue[point_out]);
+						delete acs_queue[point_out];
+						acs_queue[point_out] = null;
 						point_out++;
 						if (point_out == point_in) {
 
@@ -150,10 +149,14 @@ namespace srb {
 			access_lock.unlock();return fail;
 		}
 
+		int UsbToSrb::getAccessQueueLen(){
+			return (int)(point_in - point_out);
+		}
+
 
 
 		int UsbToSrb::accessSend(uint8 point) {
-			UsbAccess *a = accesses[point];
+			UsbAccess *a = acs_queue[point];
 			sUsbToSrbPkg* pkg;
 			int length;
 			int sent_len;
@@ -171,10 +174,10 @@ namespace srb {
 				return fail;
 			}
 			uint8 point = pkg->sno;
-			if (accesses[point] == null) {
+			if (acs_queue[point] == null) {
 				throw "recv a package to nonexistent node.";
 			}
-			accesses[point]->setUsbRecvPkg(pkg, rcvd_len);
+			acs_queue[point]->setUsbRecvPkg(pkg, rcvd_len);
 			return done;
 		}
 	}

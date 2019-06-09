@@ -12,7 +12,7 @@ namespace srb {
 			int setUsbRecvPkg(sUsbToSrbPkg* pkg, int len);
 			int timeoutAccess();
 			eAccessStatus getStatus();
-			UsbAccess(BaseNode*);
+			UsbAccess(iAccesser*);
 			~UsbAccess();
 		};
 	}

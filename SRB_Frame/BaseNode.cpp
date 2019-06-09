@@ -1,20 +1,17 @@
 #include "BaseNode.h"
 #include "BaseCluster.h"
-#include "iAccess.h"
 #include "iBus.h"
 #include "Master.h"
+
 namespace srb {
-	BaseNode::BaseNode(uint8 address, Master* master):
-		Bus(master->Bus), 
-		baseCLU(new BaseCluster(this, address)),
-		Addr(baseCLU->Data->addr),
-		Node_name((const char*)(baseCLU->Data->name))
-	{
+
+	BaseNode::BaseNode(uint8 address, Master* master){
+		baseCLU = new BaseCluster(this, address),
 		this->master = master;
 		clu[0] = baseCLU;
-		iAccess* acs = Bus->newAccess(this);
+		iAccess* acs = Bus()->newAccess(this);
 		baseCLU->loadReadPkg(acs);
-		Bus->doAccess();
+		Bus()->doAccess();
 	}
 
 	BaseNode::~BaseNode(){
@@ -52,7 +49,7 @@ namespace srb {
 		if ((port < 0) || (port > 3)) {
 			return par_error;
 		}
-		iAccess* acs = Bus->newAccess(this);
+		iAccess* acs = Bus()->newAccess(this);
 		int i;
 		for (i = 0;i < mapping[port]->down_len;i++) {
 			acs->Send_pkg->data[i] = rs_data[mapping[port]->table[i]];
@@ -62,9 +59,10 @@ namespace srb {
 		return done;
 	}
 
-	void BaseNode::sendDone(iAccess * acs)	{	
+
+	void BaseNode::accessDone(iAccess * acs)	{	
 		if (acs->Status == eAccessStatus::RecvedDone) {
-			_is_node_exsist = true;
+			_exsist = true;
 			if (acs->Recv_pkg->bfc.error == yes) {
 				throw  "receive error package";
 			}
@@ -82,10 +80,21 @@ namespace srb {
 			}
 		}
 		else if (acs->Status == eAccessStatus::BusTimeOut) {
-			_is_node_exsist = false;
+			_exsist = false;
 		}
 		else {
 			throw "receive bad package";
 		}
+	}	
+	
+	iBus * BaseNode::Bus() {
+		return this->master->Bus();
 	}
+	uint8 BaseNode::Addr() {
+		return this->baseCLU->Data()->addr;
+	}
+	const char * BaseNode::Node_name() {
+		return (const char *)this->baseCLU->Data()->name;
+	}
+
 }

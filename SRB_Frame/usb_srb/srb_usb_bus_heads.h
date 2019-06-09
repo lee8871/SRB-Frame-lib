@@ -4,6 +4,7 @@
 #include "SRB-base-cluster-share.h"
 namespace srb {
 	class iAccess;
+	class iAccesses;
 	class iBus;
 	namespace usb_bus {
 		class UsbAccess;

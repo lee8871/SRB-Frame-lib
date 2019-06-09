@@ -1,8 +1,22 @@
 #include "Master.h"
 #include "BaseNode.h"
+#include "Broadcaster.h"
 #include <string>
 
 namespace srb {
+
+	Master::Master(iBus* b) {
+		_bus = b;
+		commonBC = new Broadcaster(this);
+	}
+
+	Master::~Master() {
+		for (int addr = 0;addr < MAX_NODE_NUM;addr++) {
+			removeNode(addr);
+		}
+		delete commonBC;
+	}
+
 	int Master::addNode(uint8 addr){
 		if (nodes[addr] == null) {
 			nodes[addr] = new BaseNode(addr,this);
@@ -32,8 +46,10 @@ namespace srb {
 	}
 	BaseNode * Master::getNode(const char * name)	{
 		for (int i = 0;i < MAX_NODE_NUM; i++) {
-			if (0 == strcmp(nodes[i] ->Node_name, name)) {
-				return nodes[i];
+			if (nodes[i] != null) {
+				if (0 == strcmp(nodes[i]->Node_name(), name)) {
+					return nodes[i];
+				}
 			}
 		}
 		return null;
@@ -49,14 +65,11 @@ namespace srb {
 		}
 	}
 
-	Master::Master(iBus* b)	{
-		_bus = b;
-	}
 
-	Master::~Master(){
-		for (int addr = 0;addr < MAX_NODE_NUM;addr++){
-			removeNode(addr);
-		}
+
+
+	iBus * Master::Bus()	{
+		return _bus;
 	}
 
 

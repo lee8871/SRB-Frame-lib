@@ -2,9 +2,11 @@
 #include "UsbToSrb.h"
 #include "Master.h"
 #include "BaseNode.h"
+#include "BaseCluster.h"
+#include "Broadcaster.h"
 
 
-#include <time.h>
+#include <time.h>     
 
 #include <string>
 #define __MASTER__
@@ -24,6 +26,7 @@ string timeToString(time_t tim)
 }
 void beginCheck();
 #ifdef WINDOW_86
+#include <windows.h>
 LARGE_INTEGER bgn_time;
 LARGE_INTEGER end_time;
 LARGE_INTEGER cpu_freq;
@@ -100,7 +103,7 @@ int main(int argc, char *argv[]) {
 	cout << TEST_PKG_NUM << " accessing is doing. " << endl;
 
 	Main_master->scanNodes();
-	BaseNode* node = Main_master->getNode(10);
+	BaseNode* node = Main_master->getNode("key ctrl 2");
 	node->setMapping(Du_Motor::mapping1, 1);
 
 	beginCheck();
@@ -124,6 +127,17 @@ int main(int argc, char *argv[]) {
 		Main_bus->doAccess();
 		totle_send_time_us += check("send time >300 :", 300);
 	}
+	for (int i = 0;i < 20;i++) {
+		Main_master->commonBC->setLedAddress(BCC_SHOW_HIGH_ADDR);
+		Sleep(100);
+		Main_master->commonBC->setLedAddress(BCC_SHOW_LOW_ADDR);
+		Sleep(100);
+		Main_master->commonBC->setLedAddress(BCC_SHOW_CLOSE);
+		Sleep(100);
+
+	}
+
+
 	time_t end_time;	time(&end_time);
 	cout << "Test send end at " << timeToString(end_time) << endl;
 	cout << "It cost " << end_time - begin_time << "(s) at all." << endl;

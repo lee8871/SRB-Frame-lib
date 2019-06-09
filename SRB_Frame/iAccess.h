@@ -1,5 +1,6 @@
 #pragma once
 #include "srb_heads.h"
+#include "srb_heads.h"
 namespace srb {
 	class BaseNode;
 /***********************************************************************
@@ -18,6 +19,7 @@ namespace srb {
 		SoftwareTimeout,
 	};
 	class BaseNode;
+	class iAccesser;
 
 	class iAccess {
 	protected:
@@ -25,12 +27,20 @@ namespace srb {
 		sSrbPkg* _send_pkg = null;
 		sSrbPkg* _recv_pkg = null;
 	public:
-		BaseNode* node = null;
+		sSrbPkg* const& Send_pkg = _send_pkg;
+		sSrbPkg* const& Recv_pkg = _recv_pkg;
+		eAccessStatus const& Status = _status;
 
-		sSrbPkg* readonly Send_pkg = _send_pkg;
-		sSrbPkg* readonly Recv_pkg = _recv_pkg;
-		eAccessStatus readonly Status = _status;
+	public:
 
+		iAccesser* owner = null;
 		inline bool isStatusFinish() { return (_status >= eAccessStatus::RecvedDone); };
+
+	};
+	//TODO: 让节点的Mapping或者cluster等实际的接收者成为iAccesser
+	class iAccesser {
+		public:
+		virtual uint8 Addr() = 0;
+		virtual void accessDone(iAccess* a) = 0;		
 	};
 }

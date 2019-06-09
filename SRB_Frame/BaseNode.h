@@ -1,7 +1,8 @@
 #pragma once
 #include "srb_heads.h"
+#include "iAccess.h"
 namespace srb {
-	class BaseNode{
+	class BaseNode:public iAccesser {
 	private:
 	
 	protected:
@@ -9,18 +10,22 @@ namespace srb {
 		iCluster* clu[MAX_CLUSTER_NUMBER] = { null };
 		Master* master = null;
 		BaseCluster * baseCLU = null;
-		bool _is_node_exsist = false;
+		bool _exsist = false;
+	public:
+		bool const& Exsist = _exsist;
+		BaseCluster * const& BaseCLU = baseCLU;
 	public:
 		uint8 rs_data[128] = {0};
 		BaseNode(uint8 a, Master* m);
 		~BaseNode();
-		void sendDone(iAccess* a);
 		//void sendFail(Access* a);
-		int BaseNode::setMapping(const uint8* map, int map_num);
-		int BaseNode::sendAccess(int port);
-		iBus* readonly Bus;
-		uint8 readonly Addr;
-		bool readonly Exsist = _is_node_exsist;
-		const char* readonly Node_name;
+		int setMapping(const uint8* map, int map_num);
+		int sendAccess(int port);
+		iBus*  Bus();
+		const char* Node_name();
+
+
+		uint8 Addr() override;
+		void accessDone(iAccess*) override;
 	};	
 }

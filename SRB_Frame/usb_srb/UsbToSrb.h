@@ -13,7 +13,7 @@ namespace srb {
 			libusb_device_handle *mainDH = null;
 
 			//------------------------------about access--------------------------------------------
-			UsbAccess* accesses[256] = { null };
+			UsbAccess* acs_queue[256] = { null };
 			uint8 point_in = 0;
 			uint8 point_send = 0;
 			uint8 point_out = 0;
@@ -32,15 +32,9 @@ namespace srb {
 			int openUsbByName(const char* name);
 			void testSend(uint8 *senddatas, uint8 *recvdatas);
 
-			///overrite acceess port
-			iAccess*  newAccess(BaseNode* sender_node)  override;
+			iAccess*  newAccess(iAccesser* sender_node)  override;
 			int doAccess() override;
-
-			inline int getAccessQueueLen()override {
-				return (int)(point_in - point_out);
-			}
-
-
+			int getAccessQueueLen()override;
 		};
 	}
 }

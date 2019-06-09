@@ -1,10 +1,9 @@
 #include "UsbAccess.h"
-#include "BaseNode.h"
 
 namespace srb {
 	namespace usb_bus {
-		UsbAccess::UsbAccess(BaseNode* n) {
-			node = n;
+		UsbAccess::UsbAccess(iAccesser* n) {
+			owner = n;
 			_status = eAccessStatus::NoInit;
 			usb_send_pkg = new sUsbToSrbPkg;
 			if (usb_send_pkg != null) {
@@ -18,7 +17,7 @@ namespace srb {
 				return fail;
 			}
 			(*len) = 3 + usb_send_pkg->pkg.bfc.length;
-			usb_send_pkg->addr = node->Addr;
+			usb_send_pkg->addr = owner->Addr();
 			*pkg = usb_send_pkg;
 			_status = eAccessStatus::SendWaitRecv;
 			return done;
@@ -42,7 +41,7 @@ namespace srb {
 			else if (len == 2) {//check error
 				switch (usb_recv_pkg->err) {
 				case USB_ERR_BROADCAST:
-					if (node->Addr == SC_BROADCAST) {
+					if (owner->Addr() == SC_BROADCAST) {
 						_status = eAccessStatus::RecvedDone;return done;
 					}
 					break;

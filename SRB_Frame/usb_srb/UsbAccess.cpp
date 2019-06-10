@@ -7,13 +7,13 @@ namespace srb {
 			_status = eAccessStatus::NoInit;
 			usb_send_pkg = new sUsbToSrbPkg;
 			if (usb_send_pkg != null) {
-				_status = eAccessStatus::NoSend;
+				_status = eAccessStatus::WaitSend;
 				_send_pkg = &(usb_send_pkg->pkg);
 			}
 
 		}
 		int UsbAccess::getUsbSendPkg(sUsbToSrbPkg** pkg, int* len) {
-			if (_status != eAccessStatus::NoSend) {
+			if (_status != eAccessStatus::WaitSend) {
 				return fail;
 			}
 			(*len) = 3 + usb_send_pkg->pkg.bfc.length;

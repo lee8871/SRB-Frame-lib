@@ -36,4 +36,3 @@ aux_source_directory(./common_cluster DIR_COMMON_CLUSTER)
 add_executable (SRB_Frame_tester ${DIR_SRCS} ${DIR_USB} ${DIR_COMMON_CLUSTER} )
 
 
-# TODO: 如有需要，请添加测试并安装目标。

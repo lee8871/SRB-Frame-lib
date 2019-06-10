@@ -5,10 +5,10 @@
 #include "BaseCluster.h"
 #include "Broadcaster.h"
 
-
 #include <time.h>     
-
 #include <string>
+#include <iostream>     
+
 #define __MASTER__
 #define __MAPPING_DECLEAR__
 #include "SRB-app-dumotor-share.h"
@@ -136,7 +136,6 @@ int main(int argc, char *argv[]) {
 		Sleep(100);
 
 	}
-
 
 	time_t end_time;	time(&end_time);
 	cout << "Test send end at " << timeToString(end_time) << endl;

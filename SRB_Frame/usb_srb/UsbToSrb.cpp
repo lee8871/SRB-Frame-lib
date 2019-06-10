@@ -118,14 +118,19 @@ namespace srb {
 			access_lock.lock();
 			point_send = point_out;
 			while (1) {
-				if ((point_send != point_in) && (active_counter < 2)) {
-					//需要发送的情况
-					if (done == accessSend(point_send)) {
-						active_counter++;
-						point_send++;
+				if ((point_send != point_in) && (active_counter < 2)) {	//需要发送的情况
+					if (acs_queue[point_send]->Status == eAccessStatus::WaitSend) {//是需要发送的包
+						if (done == accessSend(point_send)) {
+							active_counter++;
+							point_send++;
+						}
+						else {
+							error_counter++;
+						}
 					}
 					else {
-						error_counter++;
+						point_send++;
+						//TODO: 如果包的类型奇怪则发布一个错误。
 					}
 				}
 				else {//需要接收的情况
@@ -165,6 +170,7 @@ namespace srb {
 			if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10)) {
 				return fail;
 			}
+			a->recordSendTime();
 			return done;
 		}
 		int UsbToSrb::accessRecv() {

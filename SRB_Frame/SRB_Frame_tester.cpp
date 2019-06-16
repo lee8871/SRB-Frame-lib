@@ -5,7 +5,7 @@
 #include "BaseCluster.h"
 #include "Broadcaster.h"
 
-#include <time.h>     
+#include <time.h>  
 #include <string>
 #include <iostream>     
 
@@ -101,6 +101,8 @@ int main(int argc, char *argv[]) {
 	time_t begin_time;	time(&begin_time);
 	cout << "Test send begin at " << timeToString(begin_time) << endl;
 	cout << TEST_PKG_NUM << " accessing is doing. " << endl;
+
+
 
 	Main_master->scanNodes();
 	BaseNode* node = Main_master->getNode("key ctrl 2");

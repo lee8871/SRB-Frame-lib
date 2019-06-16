@@ -3,6 +3,7 @@
 #include "iBus.h"
 #include "libusb.h"
 #include <mutex> 
+#include <fstream>
 
 namespace srb {
 	namespace usb_bus {
@@ -23,6 +24,7 @@ namespace srb {
 			//----------------------------private method-------------------------------------------
 			int initUsbSrb(libusb_device * initDEV, libusb_device_handle * initDH);
 			std::mutex access_lock;
+			std::ofstream  recordSTM;
 
 		public:
 			bool isOpen();
@@ -35,6 +37,11 @@ namespace srb {
 			iAccess*  newAccess(iAccesser* sender_node)  override;
 			int doAccess() override;
 			int getAccessQueueLen()override;
+
+
+
+
+
 		};
 	}
 }

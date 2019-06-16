@@ -12,5 +12,6 @@ namespace srb {
 
 	class iCluster;
 	class BaseCluster;
+	class InfoCluster;
 
 };

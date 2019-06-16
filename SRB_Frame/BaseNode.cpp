@@ -1,17 +1,24 @@
 #include "BaseNode.h"
 #include "BaseCluster.h"
+#include "infoCluster.h"
 #include "iBus.h"
 #include "Master.h"
 
 namespace srb {
 
+	//TODO: how to throw error
 	BaseNode::BaseNode(uint8 address, Master* master){
-		baseCLU = new BaseCluster(this, address),
 		this->master = master;
-		clu[0] = baseCLU;
+		clu[0] = baseCLU = new BaseCluster(this, address);
+		clu[1] = infoCLU = new InfoCluster(this);
 		iAccess* acs = Bus()->newAccess(this);
 		baseCLU->loadReadPkg(acs);
 		Bus()->doAccess();
+		if (Exsist) {
+			iAccess* acs = Bus()->newAccess(this);
+			infoCLU->loadReadPkg(acs);
+			Bus()->doAccess();
+		}
 	}
 
 	BaseNode::~BaseNode(){
@@ -90,9 +97,11 @@ namespace srb {
 	iBus * BaseNode::Bus() {
 		return this->master->Bus();
 	}
+
 	uint8 BaseNode::Addr() {
 		return this->baseCLU->Data()->addr;
 	}
+
 	const char * BaseNode::Node_name() {
 		return (const char *)this->baseCLU->Data()->name;
 	}

@@ -9,11 +9,13 @@ namespace srb {
 		sMapping* mapping[4] = {null};
 		iCluster* clu[MAX_CLUSTER_NUMBER] = { null };
 		Master* master = null;
-		BaseCluster * baseCLU = null;
+		BaseCluster* baseCLU;
+		InfoCluster* infoCLU;
 		bool _exsist = false;
 	public:
 		bool const& Exsist = _exsist;
 		BaseCluster * const& BaseCLU = baseCLU;
+		InfoCluster * const& InfoCLU = infoCLU;
 	public:
 		uint8 rs_data[128] = {0};
 		BaseNode(uint8 a, Master* m);

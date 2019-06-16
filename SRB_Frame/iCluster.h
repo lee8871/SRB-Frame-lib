@@ -1,7 +1,8 @@
 #pragma once
 #include "srb_heads.h"
+#include "iAccess.h"
 namespace srb {
-	class iCluster {
+	class iCluster{
 	protected:
 		uint8 _data_u8[30] = { 0 };
 		BaseNode* _node = null;
@@ -21,6 +22,7 @@ namespace srb {
 		void write(iAccess* a);
 		void writeDone(iAccess* a);
 
+		virtual int toJson(char * str, int length) = 0;
 	};
 
 

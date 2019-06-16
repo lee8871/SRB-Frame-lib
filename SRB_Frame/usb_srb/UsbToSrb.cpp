@@ -2,6 +2,8 @@
 
 #include "UsbToSrb.h"
 #include "UsbAccess.h"
+#include <fstream>
+#include <time.h>  
 using namespace std;
 namespace srb {
 	namespace usb_bus {
@@ -12,14 +14,16 @@ namespace srb {
 			{
 				throw "libusb can not init!";
 			}
+			recordSTM.open("record.json", ios::out | ios::trunc);
 		}
 		UsbToSrb::~UsbToSrb() {
 			closeUsb();
 			libusb_exit(mainCTX);
+			recordSTM.close();
 		}
 		int UsbToSrb::openUsbByName(const char* name) {
 			libusb_device **devs;
-			char string[256];
+			char str[256];
 			int usb_device_num;
 			closeUsb();
 
@@ -40,13 +44,13 @@ namespace srb {
 				if (LIBUSB_SUCCESS != libusb_open(devs[i], &tempDH)) {
 					continue;
 				}
-				libusb_get_string_descriptor_ascii(tempDH, dev_desc.iProduct, (unsigned char*)string, sizeof(string));
-				if (0 != strcmp(string, "SRB-USB")) {
+				libusb_get_string_descriptor_ascii(tempDH, dev_desc.iProduct, (unsigned char*)str, sizeof(str));
+				if (0 != strcmp(str, "SRB-USB")) {
 					libusb_close(tempDH);
 					continue;
 				}
-				libusb_get_string_descriptor_ascii(tempDH, dev_desc.iSerialNumber, (unsigned char*)string, sizeof(string));
-				if (0 != strcmp(string, name)) {
+				libusb_get_string_descriptor_ascii(tempDH, dev_desc.iSerialNumber, (unsigned char*)str, sizeof(str));
+				if (0 != strcmp(str, name)) {
 					libusb_close(tempDH);
 					continue;
 				}
@@ -137,6 +141,7 @@ namespace srb {
 					while (acs_queue[point_out]->isStatusFinish()) {
 						iAccesser* node = acs_queue[point_out]->owner;
 						node->accessDone(acs_queue[point_out]);
+						acs_queue[point_out]->sendJson(recordSTM);
 						delete acs_queue[point_out];
 						acs_queue[point_out] = null;
 						point_out++;
@@ -177,11 +182,14 @@ namespace srb {
 			sUsbToSrbPkg* pkg = new sUsbToSrbPkg();
 			int rcvd_len;
 			if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10)) {
+				delete pkg;
 				return fail;
 			}
 			uint8 point = pkg->sno;
 			if (acs_queue[point] == null) {
-				throw "recv a package to nonexistent node.";
+				//throw "recv a package to nonexistent node.";
+				delete pkg;
+				return fail;
 			}
 			acs_queue[point]->setUsbRecvPkg(pkg, rcvd_len);
 			return done;

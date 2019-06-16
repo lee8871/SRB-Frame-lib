@@ -18,6 +18,16 @@ namespace srb {
 	csBase * BaseCluster::Buffer()	{
 		return (csBase*)buffer_u8;
 	}
+
+	int BaseCluster::toJson(char * str, int length) {
+		int i;
+		return 0;
+
+	}
+
+
+
+	//TODO:这个函数的用法有些奇怪,是个静态函数,考虑怎么重新
 	int BaseCluster::addressLedSet(iAccess* acs, uint8 cmd)	{
 		switch (cmd) {
 		case BCC_SHOW_HIGH_ADDR:

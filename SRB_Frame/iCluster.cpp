@@ -1,5 +1,6 @@
 #include "iCluster.h"
 #include "iAccess.h"
+#include "BaseNode.h"
 
 namespace srb {
 
@@ -21,4 +22,6 @@ namespace srb {
 	const uint8 * iCluster::Data_u8() {
 		return _data_u8;
 	}
+
+
 }

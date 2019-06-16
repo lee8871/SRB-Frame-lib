@@ -1,6 +1,7 @@
 #pragma once
 #include "srb_heads.h"
-#include <time.h>     
+#include <time.h>  
+#include <iostream>
 namespace srb {
 	class BaseNode;
 /***********************************************************************
@@ -28,13 +29,13 @@ namespace srb {
 		eAccessStatus _status = eAccessStatus::NoInit;
 		sSrbPkg* _send_pkg = null;
 		sSrbPkg* _recv_pkg = null;
-		time_t _send_time;
+		timespec _send_time;
 
 	public:
 		sSrbPkg* const& Send_pkg = _send_pkg;
 		sSrbPkg* const& Recv_pkg = _recv_pkg;
 		eAccessStatus const& Status = _status;
-		time_t const& Send_time = _send_time;
+		timespec const& Send_time = _send_time;
 
 	public:
 
@@ -48,13 +49,15 @@ namespace srb {
 			return (_status >= eAccessStatus::RecvedDone);
 		};
 		inline void recordSendTime(void) {
-			time(&_send_time);
+			int rev = timespec_get(&_send_time,0);
+			if (rev == 0) {
+				rev = -1;
+			}
 		}
-		int sendJson(ostream record);
-		
-
+		int sendJson(std::ostream&  record);
 	};
-	//TODO: 让节点的Mapping或者cluster等实际的接收者成为iAccesser
+	//不需要让节点的Mapping或者cluster等实际的接收者成为iAccesser
+	//因为节点需要更新存在情况
 	class iAccesser {
 		public:
 		virtual uint8 Addr() = 0;

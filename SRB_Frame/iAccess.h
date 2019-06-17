@@ -23,6 +23,7 @@ namespace srb {
 	class BaseNode;
 	class iAccesser;
 	class ostream;
+	class iJsonWriter;
 
 	class iAccess {
 	protected:
@@ -54,7 +55,7 @@ namespace srb {
 				rev = -1;
 			}
 		}
-		int sendJson(std::ostream&  record);
+		int sendJson(iJsonWriter & record);
 	};
 	//不需要让节点的Mapping或者cluster等实际的接收者成为iAccesser
 	//因为节点需要更新存在情况

@@ -1,7 +1,7 @@
 #include "iCluster.h"
 #include "iAccess.h"
 #include "BaseNode.h"
-
+#include "iJsonWriter.h"
 namespace srb {
 
 	iCluster::iCluster(BaseNode* n)	{
@@ -23,5 +23,13 @@ namespace srb {
 		return _data_u8;
 	}
 
+	int iCluster::toJson(iJsonWriter & json_printer) {
+		json_printer.beginObj("unknow_clu");
+		json_printer.writeNum("Id", Cluster_id);
+		json_printer.writeEndLine();
+		json_printer.writeNumArray("datas", _data_u8, 30);
+		json_printer.endObj();
+		return done;
+	}
 
 }

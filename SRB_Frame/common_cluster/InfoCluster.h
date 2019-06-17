@@ -11,6 +11,6 @@ namespace srb {
 		~InfoCluster();
 		const csInfo* Data();
 		csInfo* Buffer();
-		virtual int toJson(char * str, int length)override;
+		virtual int toJson(iJsonWriter & json_printer)override;
 	};
 };

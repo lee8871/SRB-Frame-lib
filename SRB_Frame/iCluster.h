@@ -22,7 +22,7 @@ namespace srb {
 		void write(iAccess* a);
 		void writeDone(iAccess* a);
 
-		virtual int toJson(char * str, int length) = 0;
+		virtual int toJson(iJsonWriter & json_printer);
 	};
 
 

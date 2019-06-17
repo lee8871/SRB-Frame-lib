@@ -6,6 +6,7 @@
 #include <fstream>
 
 namespace srb {
+	class StreamJsonWriter;
 	namespace usb_bus {
 		class UsbToSrb : public iBus		{
 		private:
@@ -25,6 +26,8 @@ namespace srb {
 			int initUsbSrb(libusb_device * initDEV, libusb_device_handle * initDH);
 			std::mutex access_lock;
 			std::ofstream  recordSTM;
+
+			StreamJsonWriter* recordSJW = null;
 
 		public:
 			bool isOpen();

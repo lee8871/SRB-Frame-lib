@@ -12,6 +12,6 @@ namespace srb {
 		const csBase* Data();
 		csBase* Buffer();
 		int static addressLedSet(iAccess* acs, uint8 cmd);
-		virtual int toJson(char * str, int length)override;
+		virtual int toJson(iJsonWriter & json_printer)override;
 	};
 };

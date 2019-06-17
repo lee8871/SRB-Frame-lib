@@ -85,27 +85,26 @@ __suseconds_t check(const char *dscrp, int report_mini_value = 0)
 }
 #endif
 
-UsbToSrb* Main_bus;
-const int TEST_PKG_NUM = 100;
-Master* Main_master;
+UsbToSrb* mainbusUB;
+const int TEST_PKG_NUM = 100000;
+Master* mainSRBM;
 
 int main(int argc, char *argv[]) {
 	setPriority();
 	int16 speed = 0;
-	Main_bus = new UsbToSrb();
-	Main_master = new Master(Main_bus);
+	mainbusUB = new UsbToSrb();
+	mainSRBM = new Master(mainbusUB);
 
 
-
-	cout << "try Open Port:" << Main_bus->openUsbByName("USB-TEST-BED") << endl;
+	cout << "try Open Port:" << mainbusUB->openUsbByName("USB-TEST-BED") << endl;
 	time_t begin_time;	time(&begin_time);
 	cout << "Test send begin at " << timeToString(begin_time) << endl;
 	cout << TEST_PKG_NUM << " accessing is doing. " << endl;
 
 
 
-	Main_master->scanNodes();
-	BaseNode* node = Main_master->getNode("key ctrl 2");
+	mainSRBM->scanNodes();
+	BaseNode* node = mainSRBM->getNode("key ctrl 2");
 	node->setMapping(Du_Motor::mapping1, 1);
 
 	beginCheck();
@@ -126,15 +125,15 @@ int main(int argc, char *argv[]) {
 
 		node->sendAccess(1);
 		check("calculate:", 300);
-		Main_bus->doAccess();
+		mainbusUB->doAccess();
 		totle_send_time_us += check("send time >300 :", 300);
 	}
-	for (int i = 0;i < 20;i++) {
-		Main_master->commonBC->setLedAddress(BCC_SHOW_HIGH_ADDR);
+	for (int i = 0;i < 5;i++) {
+		mainSRBM->commonBC->setLedAddress(BCC_SHOW_HIGH_ADDR);
 		Sleep(100);
-		Main_master->commonBC->setLedAddress(BCC_SHOW_LOW_ADDR);
+		mainSRBM->commonBC->setLedAddress(BCC_SHOW_LOW_ADDR);
 		Sleep(100);
-		Main_master->commonBC->setLedAddress(BCC_SHOW_CLOSE);
+		mainSRBM->commonBC->setLedAddress(BCC_SHOW_CLOSE);
 		Sleep(100);
 
 	}
@@ -143,8 +142,8 @@ int main(int argc, char *argv[]) {
 	cout << "Test send end at " << timeToString(end_time) << endl;
 	cout << "It cost " << end_time - begin_time << "(s) at all." << endl;
 	cout << "accessing time avariage is " << totle_send_time_us / (TEST_PKG_NUM) << "(us)." << endl;
-	delete Main_bus ;
-	delete Main_master ;	
+	delete mainbusUB ;
+	delete mainSRBM ;	
 	
 	return 0;
 }

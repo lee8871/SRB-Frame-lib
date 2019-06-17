@@ -1,5 +1,6 @@
 #include "InfoCluster.h"
 #include "iAccess.h"
+#include "iJsonWriter.h"
 namespace srb {
 	//TODO:整理全部的初始化簇ID
 	InfoCluster::InfoCluster(BaseNode* node, uint8 cid)
@@ -18,10 +19,18 @@ namespace srb {
 		return (csInfo*)buffer_u8;
 	}
 
-	int InfoCluster::toJson(char * str, int length) {
-		int i;
-		return 0;
 
+	int InfoCluster::toJson(iJsonWriter & json_printer) {
+		json_printer.beginObj("Info_clu");
+		json_printer.writeNum("Id", Cluster_id);
+		json_printer.writeEndLine();
+		json_printer.writeStr("node_type", (const char*)Data()->node_type);
+		json_printer.writeEndLine();
+		json_printer.writeNumArray("node_version_BCD", Data()->node_version_BCD, 2);
+		json_printer.writeNumArray("srb_version_BCD", Data()->srb_version_BCD, 2);
+		json_printer.writeNum("time_stamp", Data()->time_stamp);
+		json_printer.endObj();
+		return done;
 	}
 
 }

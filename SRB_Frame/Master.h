@@ -5,8 +5,9 @@ namespace srb {
 	class iBus;
 
 	class Master {
-	protected:
+	public:
 		static const int MAX_NODE_NUM = 200;
+	protected:
 		iBus* _bus = null;
 		BaseNode* nodes[MAX_NODE_NUM] = { null };
 	public:

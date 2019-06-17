@@ -13,5 +13,7 @@ namespace srb {
 	class iCluster;
 	class BaseCluster;
 	class InfoCluster;
+	class ErrorCluster;
+	class iJsonWriter;
 
 };

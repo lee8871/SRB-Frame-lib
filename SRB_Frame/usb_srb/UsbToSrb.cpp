@@ -1,9 +1,17 @@
 #include "string.h"
+#include <fstream>
+#include <time.h>  
+
+#include "StreamJsonWriter.h"
 
 #include "UsbToSrb.h"
 #include "UsbAccess.h"
-#include <fstream>
-#include <time.h>  
+
+
+
+
+
+
 using namespace std;
 namespace srb {
 	namespace usb_bus {
@@ -15,11 +23,13 @@ namespace srb {
 				throw "libusb can not init!";
 			}
 			recordSTM.open("record.json", ios::out | ios::trunc);
+			recordSJW =  new StreamJsonWriter(&recordSTM);
 		}
 		UsbToSrb::~UsbToSrb() {
 			closeUsb();
 			libusb_exit(mainCTX);
 			recordSTM.close();
+			delete recordSJW;
 		}
 		int UsbToSrb::openUsbByName(const char* name) {
 			libusb_device **devs;
@@ -141,7 +151,7 @@ namespace srb {
 					while (acs_queue[point_out]->isStatusFinish()) {
 						iAccesser* node = acs_queue[point_out]->owner;
 						node->accessDone(acs_queue[point_out]);
-						acs_queue[point_out]->sendJson(recordSTM);
+						acs_queue[point_out]->sendJson(*recordSJW);
 						delete acs_queue[point_out];
 						acs_queue[point_out] = null;
 						point_out++;

@@ -1,5 +1,6 @@
 #include "BaseCluster.h"
 #include "iAccess.h"
+#include "iJsonWriter.h"
 namespace srb {
 
 	BaseCluster::BaseCluster(BaseNode* node, uint8 addr, uint8 cid)
@@ -18,13 +19,16 @@ namespace srb {
 	csBase * BaseCluster::Buffer()	{
 		return (csBase*)buffer_u8;
 	}
-
-	int BaseCluster::toJson(char * str, int length) {
-		int i;
-		return 0;
-
+	int BaseCluster::toJson(iJsonWriter & json_printer) {
+		json_printer.beginObj("Base_clu");
+		json_printer.writeNum("Id", Cluster_id);
+		json_printer.writeEndLine();
+		json_printer.writeNum("addr", Data()->addr);
+		json_printer.writeStr("name", (const char *)(Data()->name));
+		json_printer.writeNum("error_behavior", Data()->error_behavior);
+		json_printer.endObj();
+		return done;
 	}
-
 
 
 	//TODO:这个函数的用法有些奇怪,是个静态函数,考虑怎么重新
@@ -42,4 +46,7 @@ namespace srb {
 			return par_error;
 		}
 	}
+
+
+
 }

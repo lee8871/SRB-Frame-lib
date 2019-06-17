@@ -1,8 +1,12 @@
 #include "BaseNode.h"
+#include "BaseNode.h"
 #include "BaseCluster.h"
 #include "infoCluster.h"
+#include "ErrorCluster.h"
 #include "iBus.h"
 #include "Master.h"
+
+#include "iJsonWriter.h"
 
 namespace srb {
 
@@ -11,12 +15,15 @@ namespace srb {
 		this->master = master;
 		clu[0] = baseCLU = new BaseCluster(this, address);
 		clu[1] = infoCLU = new InfoCluster(this);
+		clu[2] = errorCLU = new ErrorCluster(this);
 		iAccess* acs = Bus()->newAccess(this);
 		baseCLU->loadReadPkg(acs);
 		Bus()->doAccess();
 		if (Exsist) {
-			iAccess* acs = Bus()->newAccess(this);
+			acs = Bus()->newAccess(this);
 			infoCLU->loadReadPkg(acs);
+			acs = Bus()->newAccess(this);
+			errorCLU->loadReadPkg(acs);
 			Bus()->doAccess();
 		}
 	}
@@ -92,7 +99,20 @@ namespace srb {
 		else {
 			throw "receive bad package";
 		}
-	}	
+	}
+	int BaseNode::toJsonAll(iJsonWriter & json_printer)	{
+
+		json_printer.beginObj("untyped_node");
+		for (int i = 0;i < MAX_CLUSTER_NUMBER;i++) {
+			if (clu[i] != null) {
+				clu[i]->toJson(json_printer);
+				json_printer.writeEndLine();
+			}
+		}
+		json_printer.endObj();
+		return done;
+	}
+
 	
 	iBus * BaseNode::Bus() {
 		return this->master->Bus();

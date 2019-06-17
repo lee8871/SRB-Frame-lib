@@ -7,7 +7,7 @@ namespace srb {
 	class BaseCluster: public iCluster {
 	public:
 		static const uint8 DEFAULT_CID = 0;
-		BaseCluster(BaseNode* node, uint8 addr, uint8 cid = DEFAULT_CID);
+		BaseCluster(Node* node, uint8 addr, uint8 cid = DEFAULT_CID);
 		~BaseCluster();
 		const csBase* Data();
 		csBase* Buffer();

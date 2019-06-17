@@ -3,7 +3,7 @@
 #include "iJsonWriter.h"
 namespace srb {
 
-	ErrorCluster::ErrorCluster(BaseNode* node, uint8 cid)
+	ErrorCluster::ErrorCluster(Node* node, uint8 cid)
 		:iCluster(node)
 	{
 		_cluster_id = cid;

@@ -1,6 +1,6 @@
 ﻿#include "UsbToSrb.h"
 #include "Master.h"
-#include "BaseNode.h"
+#include "Node.h"
 #include "BaseCluster.h"
 #include "Broadcaster.h"
 #include "StreamJsonWriter.h"

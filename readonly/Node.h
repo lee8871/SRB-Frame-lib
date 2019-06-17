@@ -2,7 +2,7 @@
 #include "srb_heads.h"
 #include "iAccess.h"
 namespace srb {
-	class BaseNode:public iAccesser {
+	class Node:public iAccesser {
 	private:
 	
 	protected:
@@ -20,8 +20,8 @@ namespace srb {
 		ErrorCluster * const& ErrorCLU = errorCLU;
 	public:
 		uint8 rs_data[128] = {0};
-		BaseNode(uint8 a, Master* m);
-		~BaseNode();
+		Node(uint8 a, Master* m);
+		~Node();
 		//void sendFail(Access* a);
 		int setMapping(const uint8* map, int map_num);
 		int sendAccess(int port);

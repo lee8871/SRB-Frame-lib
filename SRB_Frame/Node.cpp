@@ -1,5 +1,5 @@
-#include "BaseNode.h"
-#include "BaseNode.h"
+#include "Node.h"
+#include "Node.h"
 #include "BaseCluster.h"
 #include "infoCluster.h"
 #include "ErrorCluster.h"
@@ -11,7 +11,7 @@
 namespace srb {
 
 	//TODO: how to throw error
-	BaseNode::BaseNode(uint8 address, Master* master){
+	Node::Node(uint8 address, Master* master){
 		this->master = master;
 		clu[0] = baseCLU = new BaseCluster(this, address);
 		clu[1] = infoCLU = new InfoCluster(this);
@@ -28,7 +28,7 @@ namespace srb {
 		}
 	}
 
-	BaseNode::~BaseNode(){
+	Node::~Node(){
 		for (int i = 0;i < 4;i++) {
 			if (mapping[i] != null) {
 				delete (mapping[i]);
@@ -42,7 +42,7 @@ namespace srb {
 			}
 		}
 	}
-	int BaseNode::setMapping(const uint8* map, int port){
+	int Node::setMapping(const uint8* map, int port){
 		if ((port < 0) || (port > 3)) {
 			return par_error;
 		}
@@ -59,7 +59,7 @@ namespace srb {
 		return done;
 	}
 
-	int BaseNode::sendAccess(int port) {
+	int Node::sendAccess(int port) {
 		if ((port < 0) || (port > 3)) {
 			return par_error;
 		}
@@ -74,7 +74,7 @@ namespace srb {
 	}
 
 
-	void BaseNode::accessDone(iAccess * acs)	{	
+	void Node::accessDone(iAccess * acs)	{	
 		if (acs->Status == eAccessStatus::RecvedDone) {
 			_exsist = true;
 			if (acs->Recv_pkg->bfc.error == yes) {
@@ -100,7 +100,7 @@ namespace srb {
 			throw "receive bad package";
 		}
 	}
-	int BaseNode::toJsonAll(iJsonWriter & json_printer)	{
+	int Node::toJsonAll(iJsonWriter & json_printer)	{
 
 		json_printer.beginObj("untyped_node");
 		for (int i = 0;i < MAX_CLUSTER_NUMBER;i++) {
@@ -114,15 +114,15 @@ namespace srb {
 	}
 
 	
-	iBus * BaseNode::Bus() {
+	iBus * Node::Bus() {
 		return this->master->Bus();
 	}
 
-	uint8 BaseNode::Addr() {
+	uint8 Node::Addr() {
 		return this->baseCLU->Data()->addr;
 	}
 
-	const char * BaseNode::Node_name() {
+	const char * Node::Node_name() {
 		return (const char *)this->baseCLU->Data()->name;
 	}
 

@@ -1,7 +1,7 @@
 ﻿#include "SRB_Frame_tester.h"
 #include "UsbToSrb.h"
 #include "Master.h"
-#include "BaseNode.h"
+#include "Node.h"
 #include "BaseCluster.h"
 #include "Broadcaster.h"
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 
 
 	mainSRBM->scanNodes();
-	BaseNode* node = mainSRBM->getNode("key ctrl 2");
+	Node* node = mainSRBM->getNode("key ctrl 2");
 	node->setMapping(Du_Motor::mapping1, 1);
 
 	beginCheck();

@@ -3,7 +3,7 @@
 #include "iJsonWriter.h"
 namespace srb {
 	//TODO:整理全部的初始化簇ID
-	InfoCluster::InfoCluster(BaseNode* node, uint8 cid)
+	InfoCluster::InfoCluster(Node* node, uint8 cid)
 		:iCluster(node)
 	{
 		_cluster_id = cid;

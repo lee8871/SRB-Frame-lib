@@ -3,7 +3,7 @@
 #include <time.h>  
 #include <iostream>
 namespace srb {
-	class BaseNode;
+	class Node;
 /***********************************************************************
 	NoInit  +->	NoSend	    +->	SendWaitRecv		+-> RecvedDone
 			+->	SendFail    +-> SoftwareTimeout		+->	BusTimeOut
@@ -20,7 +20,7 @@ namespace srb {
 		SendFail,
 		SoftwareTimeout,
 	};
-	class BaseNode;
+	class Node;
 	class iAccesser;
 	class ostream;
 	class iJsonWriter;

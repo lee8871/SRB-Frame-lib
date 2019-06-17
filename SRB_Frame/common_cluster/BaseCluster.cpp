@@ -3,7 +3,7 @@
 #include "iJsonWriter.h"
 namespace srb {
 
-	BaseCluster::BaseCluster(BaseNode* node, uint8 addr, uint8 cid)
+	BaseCluster::BaseCluster(Node* node, uint8 addr, uint8 cid)
 		:iCluster(node)
 	{
 		_cluster_id = DEFAULT_CID;

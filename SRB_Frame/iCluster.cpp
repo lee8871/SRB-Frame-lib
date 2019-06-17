@@ -1,11 +1,11 @@
 #include "iCluster.h"
 #include "iAccess.h"
-#include "BaseNode.h"
+#include "Node.h"
 #include "iJsonWriter.h"
 namespace srb {
 
-	iCluster::iCluster(BaseNode* n)	{
-		_node = n;
+	iCluster::iCluster(Node* n)	{
+		_parent_node = n;
 	}
 	void iCluster::loadReadPkg(iAccess* acs){
 		acs->Send_pkg->data[0] = _cluster_id;

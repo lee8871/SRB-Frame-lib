@@ -1,5 +1,5 @@
 #include "Master.h"
-#include "BaseNode.h"
+#include "Node.h"
 #include "Broadcaster.h"
 #include <string>
 
@@ -19,7 +19,7 @@ namespace srb {
 
 	int Master::addNode(uint8 addr){
 		if (nodes[addr] == null) {
-			nodes[addr] = new BaseNode(addr,this);
+			nodes[addr] = new Node(addr,this);
 			if (nodes[addr] == null) {
 				return no_memory;
 			}
@@ -41,10 +41,10 @@ namespace srb {
 			return done;
 		}
 	}
-	BaseNode * Master::getNode(uint8 addr){
+	Node * Master::getNode(uint8 addr){
 		return nodes[addr];
 	}
-	BaseNode * Master::getNode(const char * name)	{
+	Node * Master::getNode(const char * name)	{
 		for (int i = 0;i < MAX_NODE_NUM; i++) {
 			if (nodes[i] != null) {
 				if (0 == strcmp(nodes[i]->Node_name(), name)) {

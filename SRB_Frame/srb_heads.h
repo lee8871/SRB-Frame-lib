@@ -3,7 +3,7 @@
 #include "SRB-share-const.h"
 #include "SRB-base-cluster-share.h"
 namespace srb {
-	class BaseNode;
+	class Node;
 	class Broadcaster;
 	class iAccess;
 

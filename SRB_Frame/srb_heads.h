@@ -1,7 +1,6 @@
 #pragma once
 #include "lee.h"
 #include "SRB-share-const.h"
-#include "SRB-base-cluster-share.h"
 namespace srb {
 	class Node;
 	class Broadcaster;
@@ -11,9 +10,6 @@ namespace srb {
 	class Master;
 
 	class iCluster;
-	class BaseCluster;
-	class InfoCluster;
-	class ErrorCluster;
 	class iJsonWriter;
 
 };

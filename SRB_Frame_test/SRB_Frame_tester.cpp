@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 
 	beginCheck();
 	long long int totle_send_time_us = 0;
-	Du_Motor::sDataRs* motor_rs = (Du_Motor::sDataRs*)(node->rs_data);
+	Du_Motor::sDataRs* motor_rs = (Du_Motor::sDataRs*)(node->data_rs);
 	for (int i = 0;i < TEST_PKG_NUM;i++) {
 		motor_rs->ma.brake = no;
 		motor_rs->ma.speed++;

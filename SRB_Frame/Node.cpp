@@ -2,32 +2,60 @@
 #include "BaseCluster.h"
 #include "infoCluster.h"
 #include "ErrorCluster.h"
+#include "MappingCluster.h"
 #include "iBus.h"
 #include "Master.h"
-
 #include "iJsonWriter.h"
+
+#include "iExpandNode.h"
+#include "./Nodes/dumotor/DumotorNode.h"
 
 namespace srb {
 
 	//TODO: how to throw error
 	Node::Node(uint8 address, Master* master){
 		this->master = master;
-		clu[0] = baseCLU = new BaseCluster(this, address);
-		clu[1] = infoCLU = new InfoCluster(this);
-		clu[2] = errorCLU = new ErrorCluster(this);
+		clusters[0] = baseCLU = new BaseCluster(this, address);
 		iAccess* acs = Bus()->newAccess(this);
 		baseCLU->loadReadPkg(acs);
 		Bus()->doAccess();
 		if (Exsist) {
-			acs = Bus()->newAccess(this);
-			infoCLU->loadReadPkg(acs);
-			acs = Bus()->newAccess(this);
-			errorCLU->loadReadPkg(acs);
-			Bus()->doAccess();
+			initCluster();
 		}
 	}
 
+
+	int Node::initCluster() {
+		clusters[1] = infoCLU = new InfoCluster(this);
+		clusters[2] = errorCLU = new ErrorCluster(this);
+		clusters[3] = mappingCLU = new MappingCluster(this, 3);
+
+		iAccess* acs;
+		acs = Bus()->newAccess(this);
+		infoCLU->loadReadPkg(acs);
+		acs = Bus()->newAccess(this);
+		errorCLU->loadReadPkg(acs);
+		acs = Bus()->newAccess(this);
+		mappingCLU->loadReadPkg(acs);
+		Bus()->doAccess();
+
+		if (strcmp((char*)(infoCLU->Data()->node_type), "Du_Motor") ==0){
+			_expand_node = new DumotorNode(this);
+		}
+		return done;
+	}
+
+
 	Node::~Node(){
+		if (_expand_node != null) {
+			if (strcmp((char*)(infoCLU->Data()->node_type), "Du_Motor") == 0) {
+				 delete (DumotorNode*)_expand_node;
+			}
+			else {
+				delete _expand_node;
+			}
+			_expand_node = null;
+		}
 		for (int i = 0;i < 4;i++) {
 			if (mapping[i] != null) {
 				delete (mapping[i]);
@@ -35,9 +63,9 @@ namespace srb {
 			}
 		}
 		for (int i = 0;i < MAX_CLUSTER_NUMBER;i++) {
-			if (clu[i] != null) {
-				delete (clu[i]);
-				clu[i] = null;
+			if (clusters[i] != null) {
+				delete (clusters[i]);
+				clusters[i] = null;
 			}
 		}
 	}
@@ -65,7 +93,7 @@ namespace srb {
 		iAccess* acs = Bus()->newAccess(this);
 		int i;
 		for (i = 0;i < mapping[port]->down_len;i++) {
-			acs->Send_pkg->data[i] = rs_data[mapping[port]->table[i]];
+			acs->Send_pkg->data[i] = data_rs[mapping[port]->table[i]];
 		}
 		acs->Send_pkg->bfc.length = i;
 		acs->Send_pkg->bfc.port = port;
@@ -86,7 +114,7 @@ namespace srb {
 			case SC_PORT_D3:
 				break;
 			case SC_PORT_CFG:
-				clu[acs->Send_pkg->data[0]]->readDone(acs);
+				clusters[acs->Send_pkg->data[0]]->readDone(acs);
 				break;
 			default:
 				break;
@@ -100,11 +128,10 @@ namespace srb {
 		}
 	}
 	int Node::toJsonAll(iJsonWriter & json_printer)	{
-
 		json_printer.beginObj("untyped_node");
 		for (int i = 0;i < MAX_CLUSTER_NUMBER;i++) {
-			if (clu[i] != null) {
-				clu[i]->toJson(json_printer);
+			if (clusters[i] != null) {
+				clusters[i]->toJson(json_printer);
 				json_printer.writeEndLine();
 			}
 		}
@@ -113,6 +140,7 @@ namespace srb {
 	}
 
 	
+
 	iBus * Node::Bus() {
 		return this->master->Bus();
 	}

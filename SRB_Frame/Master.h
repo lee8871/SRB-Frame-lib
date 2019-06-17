@@ -13,6 +13,7 @@ namespace srb {
 	public:
 		Broadcaster* commonBC;
 		Node* getNode(uint8 addr);
+
 		Node* getNode(const char* name);
 		void scanNodes();
 		

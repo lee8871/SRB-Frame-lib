@@ -11,8 +11,6 @@ namespace srb {
 	}
 	BaseCluster::~BaseCluster(){	}
 
-
-
 	const csBase * BaseCluster::Data(){
 		return ((const csBase* )(Data_u8()));
 	}

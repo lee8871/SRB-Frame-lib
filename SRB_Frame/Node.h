@@ -18,19 +18,21 @@ namespace srb {
 		BaseCluster * const& BaseCLU = baseCLU;
 		InfoCluster * const& InfoCLU = infoCLU;
 		ErrorCluster * const& ErrorCLU = errorCLU;
+		iBus*  Bus();
+		const char* Node_name();
+		uint8 Addr() override;
+
 	public:
 		uint8 rs_data[128] = {0};
 		Node(uint8 a, Master* m);
 		~Node();
-		//void sendFail(Access* a);
+
 		int setMapping(const uint8* map, int map_num);
 		int sendAccess(int port);
-		iBus*  Bus();
-		const char* Node_name();
-
-
-		uint8 Addr() override;
 		void accessDone(iAccess*) override;
+
+
+
 		int toJsonAll(iJsonWriter & json_printer);
 	};	
 }

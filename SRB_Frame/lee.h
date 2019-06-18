@@ -67,9 +67,5 @@ typedef union
 	uint8 u8[2];
 }u16to8;
 
-
-#define max(a,b)  ((a)>(b)?(a):(b))
-#define min(a,b)  ((a)<(b)?(a):(b))
-
 #define UNDEF_LENGTH 1
 #endif// _lee_type_and_common_define_h

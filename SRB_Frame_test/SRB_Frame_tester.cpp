@@ -49,11 +49,13 @@ int check(const char *dscrp, int report_mini_value = 0)
 }
 #endif
 #if UNIX
+#include <sched.h>
+#include <unistd.h>
+#define __Sleep(ms) usleep(ms*1000)
+
 struct timeval bgn_time;
 struct timeval end_time;
 
-#include <sched.h>
-#include <unistd.h>
 void setPriority() {
 	struct sched_param param;
 	int maxpri;
@@ -130,11 +132,11 @@ int main(int argc, char *argv[]) {
 	}
 	for (int i = 0;i < 5;i++) {
 		mainSRBM->commonBC->setLedAddress(BCC_SHOW_HIGH_ADDR);
-		Sleep(100);
+		__Sleep(100);
 		mainSRBM->commonBC->setLedAddress(BCC_SHOW_LOW_ADDR);
-		Sleep(100);
+		__Sleep(100);
 		mainSRBM->commonBC->setLedAddress(BCC_SHOW_CLOSE);
-		Sleep(100);
+		__Sleep(100);
 
 	}
 

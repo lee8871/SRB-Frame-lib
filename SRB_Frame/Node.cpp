@@ -1,6 +1,6 @@
 #include "Node.h"
 #include "BaseCluster.h"
-#include "infoCluster.h"
+#include "InfoCluster.h"
 #include "ErrorCluster.h"
 #include "MappingCluster.h"
 #include "iBus.h"
@@ -9,6 +9,7 @@
 
 #include "iExpandNode.h"
 #include "./Nodes/dumotor/DumotorNode.h"
+#include <string.h>
 
 namespace srb {
 

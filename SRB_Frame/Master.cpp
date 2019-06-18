@@ -1,7 +1,7 @@
 #include "Master.h"
 #include "Node.h"
 #include "Broadcaster.h"
-#include <string>
+#include <string.h>
 
 namespace srb {
 

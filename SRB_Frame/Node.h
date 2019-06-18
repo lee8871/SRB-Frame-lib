@@ -6,6 +6,7 @@ namespace srb {
 	class InfoCluster;
 	class ErrorCluster;
 	class MappingCluster;
+	class iExpandNode;
 	class Node:public iAccesser {
 	private:
 		friend class iExpandNode;
@@ -18,7 +19,6 @@ namespace srb {
 		ErrorCluster* errorCLU = null;
 		MappingCluster* mappingCLU = null;
 		bool _exsist = false;
-
 
 		int initCluster();
 		iExpandNode* _expand_node = null;

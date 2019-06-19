@@ -22,14 +22,17 @@ namespace srb {
 #endif
 
 #if UNIX
+#include <sys/time.h> 
 #include <sched.h>
 #include <unistd.h>
+
 	void PerformanceTimer::initTimes() {
 	}
-	__int64 PerformanceTimer::getTimesUs() {
+	long long int PerformanceTimer::getTimesUs() {
 		struct timeval time;
-		while (0 != gettimeofday(&time, null));
-		return time;
+		while ( 0 != gettimeofday(&time, null) );
+		long long int rev = time.tv_usec+time.tv_sec*1000*1000;
+		return rev;
 	}
 #endif
 
@@ -51,7 +54,7 @@ int PerformanceTimer::beginCheck(){
 }
 
 int PerformanceTimer::endCheck(){
-	__int64 end = getTimesUs();
+	long long int  end = getTimesUs();
 	_is_checking = false;
 	_last_time_cost = (end - check_buf);
 	return done;

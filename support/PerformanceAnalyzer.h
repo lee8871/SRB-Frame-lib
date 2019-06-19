@@ -6,8 +6,8 @@ namespace srb {
 	private:
 		int cpu_freq = -1;	
 		void initTimes();
-		__int64 getTimesUs();
-		__int64 check_buf;
+		long long int getTimesUs();
+		long long int  check_buf;
 		bool _is_checking;
 		int _last_time_cost;
 	public:

@@ -10,6 +10,7 @@
 
 #include "DumotorNode.h"
 #include "MappingCluster.h"
+#include <string.h>
 
 namespace srb {
 	Du_Motor::sDataRs * DumotorNode::Data()

@@ -9,11 +9,10 @@
 #include <string>
 #include <iostream>     
 
-#define __MASTER__
-#define __MAPPING_DECLEAR__
-#include "SRB-app-dumotor-share.h"
-#undef __MASTER__
-#undef __MAPPING_DECLEAR__
+#include "PerformanceAnalyzer.h"
+
+
+#include "./Nodes/dumotor/DumotorNode.h"
 
 using namespace std;
 using namespace srb::usb_bus;
@@ -24,112 +23,118 @@ string timeToString(time_t tim)
 	strftime(str, sizeof(str), "%Y-%m-%d %H:%M:%S", localtime(&tim));
 	return str;
 }
-void beginCheck();
 #ifdef WINDOW_86
 #include <windows.h>
-LARGE_INTEGER bgn_time;
-LARGE_INTEGER end_time;
-LARGE_INTEGER cpu_freq;
+
+#define __Sleep(ms) Sleep(ms)
 void setPriority() {
 	return;
 }
-void beginCheck()
-{
-	QueryPerformanceFrequency(&cpu_freq);
-	QueryPerformanceCounter(&bgn_time);
-}
-int check(const char *dscrp, int report_mini_value = 0)
-{
-	QueryPerformanceCounter(&end_time);
-	int diff = (end_time.QuadPart - bgn_time.QuadPart)*1000000.0 / (cpu_freq.QuadPart);
-	cout << dscrp << diff << endl;
-	QueryPerformanceCounter(&bgn_time);
-	return diff;
 
-}
 #endif
 #if UNIX
 #include <sched.h>
 #include <unistd.h>
 #define __Sleep(ms) usleep(ms*1000)
-
-struct timeval bgn_time;
-struct timeval end_time;
-
 void setPriority() {
 	struct sched_param param;
 	int maxpri;
 	maxpri = sched_get_priority_max(SCHED_FIFO);
 	param.sched_priority = maxpri;
 	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
-		cout << "priority set fail" << endl;
+		cout << "Set priority fail" << endl;
 	}
 	else {
-		cout << "priority set done" << endl;
+		cout << "Set priority done" << endl;
 	}
-}
-void beginCheck()
-{
-	while (0 != gettimeofday(&bgn_time, null));
-}
-__suseconds_t check(const char *dscrp, int report_mini_value = 0)
-{
-	while (0 != gettimeofday(&end_time, null));
-	__suseconds_t diff = end_time.tv_usec - bgn_time.tv_usec;
-	if (diff < 0) {
-		diff += 1000000;
-	}
-	if (diff > report_mini_value) {
-		cout << dscrp << diff << endl;
-	}
-	while (0 != gettimeofday(&bgn_time, null));
-	return diff;
 }
 #endif
 
 UsbToSrb* mainbusUB;
-const int TEST_PKG_NUM = 100000;
+const int TEST_PKG_NUM = 10000;
 Master* mainSRBM;
+PerformanceTimer access_PT;
+
+bool ctrlhandler(DWORD fdwctrltype);
+
+
 
 int main(int argc, char *argv[]) {
+	if (!(SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrlhandler, true))){
+		return 0;
+	}	
 	setPriority();
-	int16 speed = 0;
 	mainbusUB = new UsbToSrb();
 	mainSRBM = new Master(mainbusUB);
+	char usb_port_name[] = "USB-TEST-BED";
+	char test_node_name[] = "key ctrl";
+	char test_node2_name[] = "key ctrl 2";
+	int rev;
+	rev = mainbusUB->openUsbByName(usb_port_name);
+	if (rev != done) {
+		cout << "Try open port: [" << usb_port_name << "] fail!"<<endl;
+		goto main_error_exit;
+	}
+	cout << "Open port: [" << usb_port_name << "]" << endl << endl;
 
-
-	cout << "try Open Port:" << mainbusUB->openUsbByName("USB-TEST-BED") << endl;
 	time_t begin_time;	time(&begin_time);
 	cout << "Test send begin at " << timeToString(begin_time) << endl;
+
 	cout << TEST_PKG_NUM << " accessing is doing. " << endl;
-
-
-
 	mainSRBM->scanNodes();
-	Node* node = mainSRBM->getNode("key ctrl 2");
-	node->setMapping(Du_Motor::mapping1, 1);
-
-	beginCheck();
-	long long int totle_send_time_us = 0;
-	Du_Motor::sDataRs* motor_rs = (Du_Motor::sDataRs*)(node->data_rs);
-	for (int i = 0;i < TEST_PKG_NUM;i++) {
-		motor_rs->ma.brake = no;
-		motor_rs->ma.speed++;
-		if (motor_rs->ma.speed >= 1000) {
-			motor_rs->ma.speed = 0;
-		}
-
-		motor_rs->mb.brake = no;
-		motor_rs->mb.speed--;
-		if (motor_rs->mb.speed <= -1000) {
-			motor_rs->mb.speed = 0;
-		}
-
-		node->sendAccess(1);
-		check("calculate:", 300);
-		mainbusUB->doAccess();
-		totle_send_time_us += check("send time >300 :", 300);
+	Node * node = mainSRBM->getNode(test_node_name);
+	Node * node2 = mainSRBM->getNode(test_node2_name);
+	if(node ==null){
+		cout << "get node fail, no node is named " << '"'<< test_node_name << '"' << endl;
+		goto main_error_exit;
 	}
+	if (node == null) {
+		cout << "get node2 fail, no node is named " << '"' << test_node2_name << '"' << endl;
+		goto main_error_exit;
+	}
+	DumotorNode * key_ctrl_DUMOTOR = DumotorNode::expand(node);
+	DumotorNode * key_ctrl_2_DUMOTOR = DumotorNode::expand(node2);
+
+	if (key_ctrl_DUMOTOR == null) {
+		cout << "Node expand error, Node type is " << '"' << node->Node_type() << '"' << endl;
+		goto main_error_exit;
+	}
+	if (key_ctrl_2_DUMOTOR == null) {
+		cout << "Node2 expand error, Node type is " << '"' << node->Node_type() << '"' << endl;
+		goto main_error_exit;
+	}
+	long long int totle_send_time_us = 0;
+	for (int i = 0;i < TEST_PKG_NUM;i++) {
+		key_ctrl_DUMOTOR->Data()->ma.brake = no;
+		key_ctrl_DUMOTOR->Data()->ma.speed++;
+		if (key_ctrl_DUMOTOR->Data()->ma.speed >= 1000) {
+			key_ctrl_DUMOTOR->Data()->ma.speed = -1000;
+		}
+		key_ctrl_DUMOTOR->Data()->mb.brake = no;
+		key_ctrl_DUMOTOR->Data()->mb.speed--;
+		if (key_ctrl_DUMOTOR->Data()->mb.speed <= -1000) {
+			key_ctrl_DUMOTOR->Data()->mb.speed = 1000;
+		}
+
+		key_ctrl_2_DUMOTOR->Data()->ma.brake = no;
+		key_ctrl_2_DUMOTOR->Data()->ma.speed++;
+		if (key_ctrl_2_DUMOTOR->Data()->ma.speed >= 1000) {
+			key_ctrl_2_DUMOTOR->Data()->ma.speed = -1000;
+		}
+		key_ctrl_2_DUMOTOR->Data()->mb.brake = no;
+		key_ctrl_2_DUMOTOR->Data()->mb.speed--;
+		if (key_ctrl_2_DUMOTOR->Data()->mb.speed <= -1000) {
+			key_ctrl_2_DUMOTOR->Data()->mb.speed = 1000;
+		}
+
+		for (access_PT.beginCheck();access_PT.Is_checking;access_PT.endCheck()) {
+			node->sendAccess(0);
+			node2->sendAccess(0);
+			mainbusUB->doAccess();
+		}
+		totle_send_time_us += access_PT.Last_time_cost;
+	}
+
 	for (int i = 0;i < 5;i++) {
 		mainSRBM->commonBC->setLedAddress(BCC_SHOW_HIGH_ADDR);
 		__Sleep(100);
@@ -137,15 +142,44 @@ int main(int argc, char *argv[]) {
 		__Sleep(100);
 		mainSRBM->commonBC->setLedAddress(BCC_SHOW_CLOSE);
 		__Sleep(100);
-
 	}
 
 	time_t end_time;	time(&end_time);
 	cout << "Test send end at " << timeToString(end_time) << endl;
 	cout << "It cost " << end_time - begin_time << "(s) at all." << endl;
-	cout << "accessing time avariage is " << totle_send_time_us / (TEST_PKG_NUM) << "(us)." << endl;
+	cout << "accessing time avariage is " << totle_send_time_us / (TEST_PKG_NUM) << "(us)." << endl;	
+	
+	
+	main_error_exit:
 	delete mainbusUB ;
 	delete mainSRBM ;	
-	
+	system("pause");
 	return 0;
+}
+
+
+bool ctrlhandler(DWORD fdwctrltype)
+{
+	switch (fdwctrltype)	{
+	case CTRL_C_EVENT:
+		cout<<"ctrl-c event\n\n";
+		break;
+	case CTRL_CLOSE_EVENT:
+		cout << "ctrl-close event\n\n";
+		break;
+	case CTRL_BREAK_EVENT:
+		cout << "ctrl-break event\n\n";
+		break;
+	case CTRL_LOGOFF_EVENT:
+		cout << "ctrl-logoff event\n\n";
+		break;
+	case CTRL_SHUTDOWN_EVENT:
+		cout << "ctrl-shutdown event\n\n";
+		break;
+	default:
+		break;
+	}
+	delete mainbusUB;
+	delete mainSRBM;
+	return false;
 }

@@ -40,7 +40,7 @@ namespace srb {
 		mappingCLU->loadReadPkg(acs);
 		Bus()->doAccess();
 
-		if (strcmp((char*)(infoCLU->Data()->node_type), "Du_Motor") ==0){
+		if (strcmp((char*)(infoCLU->Data()->node_type), DumotorNode::Node_type) ==0){
 			_expand_node = new DumotorNode(this);
 		}
 		return done;
@@ -49,7 +49,7 @@ namespace srb {
 
 	Node::~Node(){
 		if (_expand_node != null) {
-			if (strcmp((char*)(infoCLU->Data()->node_type), "Du_Motor") == 0) {
+			if (strcmp(Node_type(), DumotorNode::Node_type) == 0) {
 				 delete (DumotorNode*)_expand_node;
 			}
 			else {
@@ -152,6 +152,11 @@ namespace srb {
 
 	const char * Node::Node_name() {
 		return (const char *)this->baseCLU->Data()->name;
+	}
+
+	const char * Node::Node_type()
+	{
+		return (const char *)this->infoCLU->Data()->node_type;
 	}
 
 }

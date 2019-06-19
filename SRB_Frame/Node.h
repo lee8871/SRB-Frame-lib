@@ -32,6 +32,7 @@ namespace srb {
 		MappingCluster * const& MappingCLU = mappingCLU;
 		iBus*  Bus();
 		const char* Node_name();
+		const char* Node_type();
 		uint8 Addr() override;
 		iExpandNode* const& Expand_node = _expand_node;
 

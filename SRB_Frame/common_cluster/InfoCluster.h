@@ -8,7 +8,7 @@ namespace srb {
 	class InfoCluster: public iCluster {
 	public:
 		static const uint8 DEFAULT_CID = 1;
-		InfoCluster(Node* node, uint8 cid = DEFAULT_CID);
+		InfoCluster(Node* node);
 		~InfoCluster();
 		const csInfo* Data();
 		csInfo* Buffer();

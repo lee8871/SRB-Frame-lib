@@ -3,7 +3,7 @@
 #include "iJsonWriter.h"
 namespace srb {
 
-	BaseCluster::BaseCluster(Node* node, uint8 addr, uint8 cid)
+	BaseCluster::BaseCluster(Node* node, uint8 addr)
 		:iCluster(node)
 	{
 		_cluster_id = DEFAULT_CID;
@@ -29,7 +29,6 @@ namespace srb {
 	}
 
 
-	//TODO:这个函数的用法有些奇怪,是个静态函数,考虑怎么重新
 	int BaseCluster::addressLedSet(iAccess* acs, uint8 cmd)	{
 		switch (cmd) {
 		case BCC_SHOW_HIGH_ADDR:

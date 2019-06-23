@@ -7,8 +7,7 @@
 namespace srb {
 	class MappingCluster: public iCluster {
 	public:
-		static const uint8 DEFAULT_CID = 3;
-		MappingCluster(Node* node, uint8 cid = DEFAULT_CID);
+		MappingCluster(Node* node, uint8 cid);
 		~MappingCluster();
 		const csMapping* Data();
 		csMapping* Buffer();

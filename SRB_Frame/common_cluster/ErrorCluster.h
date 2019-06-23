@@ -8,7 +8,7 @@ namespace srb {
 	class ErrorCluster: public iCluster {
 	public:
 		static const uint8 DEFAULT_CID = 2;
-		ErrorCluster(Node* node, uint8 cid = DEFAULT_CID);
+		ErrorCluster(Node* node);
 		~ErrorCluster();
 		const csError* Data();
 		csError* Buffer();

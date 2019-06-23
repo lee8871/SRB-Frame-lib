@@ -1,6 +1,6 @@
 #include "iAccess.h"
 #include "iJsonWriter.h"
-
+#include <chrono>
 
 namespace srb {
 	static inline int srbPkgToJson(const sSrbPkg* pkg, const char* name, iJsonWriter &recordJW) {
@@ -18,7 +18,7 @@ namespace srb {
 
 	int iAccess::sendJson(iJsonWriter & recordJW) {
 		recordJW.beginObj("");
-		recordJW.writeNum("Ts", _send_time.tv_nsec);
+		recordJW.writeLongLongNum("Ts", _send_time);
 		recordJW.writeNum("Addr", owner->Addr());
 		recordJW.writeNum("Status", (int)Status);
 		recordJW.writeEndLine();
@@ -27,5 +27,11 @@ namespace srb {
 		srbPkgToJson(Recv_pkg, "Recv", recordJW);
 		recordJW.endObj();
 		return done;
+	}		
+	void iAccess::recordSendTime(void){
+		std::chrono::microseconds us = std::chrono::duration_cast<std::chrono::microseconds>(
+			std::chrono::system_clock::now().time_since_epoch()
+			);
+		_send_time = us.count();
 	}
 };

@@ -8,11 +8,11 @@ namespace srb {
 	class BaseCluster: public iCluster {
 	public:
 		static const uint8 DEFAULT_CID = 0;
-		BaseCluster(Node* node, uint8 addr, uint8 cid = DEFAULT_CID);
+		BaseCluster(Node* node, uint8 addr);
 		~BaseCluster();
 		const csBase* Data();
 		csBase* Buffer();
-		int static addressLedSet(iAccess* acs, uint8 cmd);
+		int addressLedSet(iAccess* acs, uint8 cmd);
 		virtual int toJson(iJsonWriter & json_printer)override;
 	};
 };

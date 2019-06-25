@@ -3,7 +3,6 @@
 
 namespace srb {
 	class iBus;
-
 	class Master {
 	public:
 		static const int MAX_NODE_NUM = 200;

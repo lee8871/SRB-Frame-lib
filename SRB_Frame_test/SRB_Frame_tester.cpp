@@ -1,5 +1,4 @@
-﻿#include "SRB_Frame_tester.h"
-#include "UsbToSrb.h"
+﻿#include "UsbToSrb.h"
 #include "Master.h"
 #include "Node.h"
 #include "BaseCluster.h"
@@ -10,8 +9,6 @@
 #include <iostream>     
 
 #include "PerformanceAnalyzer.h"
-
-
 #include "./Nodes/dumotor/DumotorNode.h"
 
 using namespace std;

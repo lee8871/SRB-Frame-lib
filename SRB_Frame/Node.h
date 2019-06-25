@@ -43,9 +43,6 @@ namespace srb {
 		int setMapping(const uint8* map, int map_num);
 		int sendAccess(int port);
 		void accessDone(iAccess*) override;
-
-
-
 		int toJsonAll(iJsonWriter & json_printer);
 	};	
 }

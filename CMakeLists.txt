@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("SRB_Frame")
+project (SRB_Frame_top)
 
 
 

@@ -11,5 +11,4 @@ namespace srb {
 
 	class iCluster;
 	class iJsonWriter;
-
 };

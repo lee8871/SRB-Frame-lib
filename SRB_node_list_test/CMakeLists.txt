@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project (proj_SRB_frame_test)
+project (proj_SRB_Node_list_read)
 
 
 

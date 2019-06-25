@@ -18,7 +18,7 @@ namespace srb {
 
 	int iAccess::sendJson(iJsonWriter & recordJW) {
 		recordJW.beginObj("");
-		recordJW.writeNum("Ts", _send_time.tv_nsec);
+		recordJW.writeNum("Ts", _send_time);
 		recordJW.writeNum("Addr", owner->Addr());
 		recordJW.writeNum("Status", (int)Status);
 		recordJW.writeEndLine();
@@ -27,5 +27,50 @@ namespace srb {
 		srbPkgToJson(Recv_pkg, "Recv", recordJW);
 		recordJW.endObj();
 		return done;
+	}		
+	bool iAccess::cancle() {
+		if (_status <= eAccessStatus::WaitSend) {
+			_status = eAccessStatus::Cancel;
+		}
+	};
+	bool iAccess::isStatusFinish() {
+		return (_status >= eAccessStatus::RecvedDone);
+	};
+
+
+
+
+
+#ifdef WINDOW_86
+#include <time.h>  
+	static int cpu_freq = -1;
+	static void initTimes() {
+		if (cpu_freq == -1) {
+			LARGE_INTEGER fcpu;
+			QueryPerformanceFrequency(&fcpu);
+			cpu_freq = fcpu.QuadPart;
+		}
 	}
+	void iAccess::recordSendTime(void) {
+		if(cpu_freq==-1){
+			initTimes();
+		}
+		LARGE_INTEGER time;
+		QueryPerformanceCounter(&time);
+		_send_time = time.QuadPart*1000000 / cpu_freq;
+	}
+#endif
+
+#if UNIX
+#include <sys/time.h> 
+	void iAccess::recordSendTime(void) {
+		struct timeval t;
+		if (gettimeofday(&t,null) != 0) {
+			_send_time = -1;
+		}
+		_send_time = t.tv_usec + t.tv_sec*1000*1000;
+	}
+#endif
+
+
 };

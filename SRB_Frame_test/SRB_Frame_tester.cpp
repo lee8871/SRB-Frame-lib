@@ -50,19 +50,20 @@ void setPriority() {
 }
 #endif
 
+int mainErrorExit();
 UsbToSrb* mainbusUB;
 const int TEST_PKG_NUM = 10000;
 Master* mainSRBM;
 PerformanceTimer access_PT;
 
-bool ctrlhandler(DWORD fdwctrltype);
+//bool ctrlhandler(DWORD fdwctrltype);
 
 
 
 int main(int argc, char *argv[]) {
-	if (!(SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrlhandler, true))){
-		return 0;
-	}	
+//	if (!(SetConsoleCtrlHandler((PHANDLER_ROUTINE)ctrlhandler, true))){
+//		return 0;
+//	}	
 	setPriority();
 	mainbusUB = new UsbToSrb();
 	mainSRBM = new Master(mainbusUB);
@@ -70,38 +71,47 @@ int main(int argc, char *argv[]) {
 	char test_node_name[] = "key ctrl";
 	char test_node2_name[] = "key ctrl 2";
 	int rev;
+	time_t begin_time;
+
+	Node * node ;
+	Node * node2;
+
+	DumotorNode * key_ctrl_DUMOTOR ;
+	DumotorNode * key_ctrl_2_DUMOTOR ;
+
+	
 	rev = mainbusUB->openUsbByName(usb_port_name);
 	if (rev != done) {
 		cout << "Try open port: [" << usb_port_name << "] fail!"<<endl;
-		goto main_error_exit;
+		mainErrorExit();return 0;
 	}
 	cout << "Open port: [" << usb_port_name << "]" << endl << endl;
-
-	time_t begin_time;	time(&begin_time);
+	time(&begin_time);
 	cout << "Test send begin at " << timeToString(begin_time) << endl;
 
 	cout << TEST_PKG_NUM << " accessing is doing. " << endl;
 	mainSRBM->scanNodes();
-	Node * node = mainSRBM->getNode(test_node_name);
-	Node * node2 = mainSRBM->getNode(test_node2_name);
+	node = mainSRBM->getNode(test_node_name);
+	node2 = mainSRBM->getNode(test_node2_name);
 	if(node ==null){
 		cout << "get node fail, no node is named " << '"'<< test_node_name << '"' << endl;
-		goto main_error_exit;
+		mainErrorExit();return 0;
 	}
 	if (node == null) {
 		cout << "get node2 fail, no node is named " << '"' << test_node2_name << '"' << endl;
-		goto main_error_exit;
+		mainErrorExit();return 0;
 	}
-	DumotorNode * key_ctrl_DUMOTOR = DumotorNode::expand(node);
-	DumotorNode * key_ctrl_2_DUMOTOR = DumotorNode::expand(node2);
+	key_ctrl_DUMOTOR = DumotorNode::expand(node);
+	key_ctrl_2_DUMOTOR = DumotorNode::expand(node2);
 
 	if (key_ctrl_DUMOTOR == null) {
 		cout << "Node expand error, Node type is " << '"' << node->Node_type() << '"' << endl;
-		goto main_error_exit;
+		mainErrorExit();return 0;
 	}
 	if (key_ctrl_2_DUMOTOR == null) {
 		cout << "Node2 expand error, Node type is " << '"' << node->Node_type() << '"' << endl;
-		goto main_error_exit;
+		
+	mainErrorExit();return 0;
 	}
 	long long int totle_send_time_us = 0;
 	for (int i = 0;i < TEST_PKG_NUM;i++) {
@@ -149,37 +159,39 @@ int main(int argc, char *argv[]) {
 	cout << "It cost " << end_time - begin_time << "(s) at all." << endl;
 	cout << "accessing time avariage is " << totle_send_time_us / (TEST_PKG_NUM) << "(us)." << endl;	
 	
-	
-	main_error_exit:
+	mainErrorExit();return 0;
+}
+
+
+int mainErrorExit(){
 	delete mainbusUB ;
 	delete mainSRBM ;	
 	system("pause");
 	return 0;
 }
 
-
-bool ctrlhandler(DWORD fdwctrltype)
-{
-	switch (fdwctrltype)	{
-	case CTRL_C_EVENT:
-		cout<<"ctrl-c event\n\n";
-		break;
-	case CTRL_CLOSE_EVENT:
-		cout << "ctrl-close event\n\n";
-		break;
-	case CTRL_BREAK_EVENT:
-		cout << "ctrl-break event\n\n";
-		break;
-	case CTRL_LOGOFF_EVENT:
-		cout << "ctrl-logoff event\n\n";
-		break;
-	case CTRL_SHUTDOWN_EVENT:
-		cout << "ctrl-shutdown event\n\n";
-		break;
-	default:
-		break;
-	}
-	delete mainbusUB;
-	delete mainSRBM;
-	return false;
-}
+// bool ctrlhandler(DWORD fdwctrltype)
+// {
+// 	switch (fdwctrltype)	{
+// 	case CTRL_C_EVENT:
+// 		cout<<"ctrl-c event\n\n";
+// 		break;
+// 	case CTRL_CLOSE_EVENT:
+// 		cout << "ctrl-close event\n\n";
+// 		break;
+// 	case CTRL_BREAK_EVENT:
+// 		cout << "ctrl-break event\n\n";
+// 		break;
+// 	case CTRL_LOGOFF_EVENT:
+// 		cout << "ctrl-logoff event\n\n";
+// 		break;
+// 	case CTRL_SHUTDOWN_EVENT:
+// 		cout << "ctrl-shutdown event\n\n";
+// 		break;
+// 	default:
+// 		break;
+// 	}
+// 	delete mainbusUB;
+// 	delete mainSRBM;
+// 	return false;
+// }

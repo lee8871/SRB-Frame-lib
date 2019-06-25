@@ -39,7 +39,13 @@ namespace srb {
 		preWrite(name);
 		*record << value;
 		return done;
+	}	
+	int srb::StreamJsonWriter::writeLongLongNum(const char * name, long long value) {
+		preWrite(name);
+		*record << value;
+		return done;
 	}
+
 
 	int srb::StreamJsonWriter::writeU8Str(const char * name, uint8 value)	{
 		preWrite(name);

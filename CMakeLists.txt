@@ -23,7 +23,8 @@ ELSEIF(APPLE)
 	MESSAGE(STATUS Sorry, we do not have a MAC, so may you port it by yourself.)
 ENDIF(WIN32)
 
-
+# This define opening Mapping array define in share files,
+ADD_DEFINITIONS(-DBUILD_FOR_SRB_MASTER)
 
 # 包含子项目。
 add_subdirectory (SRB_Frame)

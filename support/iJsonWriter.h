@@ -4,6 +4,7 @@ namespace srb {
 	public :
 
 		virtual int writeNum(const char* name, int value) = 0;
+		virtual int writeLongLongNum(const char * name, long long value) = 0;
 		virtual int writeU8Str(const char* name, uint8 value) = 0;
 		virtual int writeU8ArrayStr(const char * name, const uint8 * data, int len) = 0;
 		virtual int writeStr(const char * name, const char * value) = 0;

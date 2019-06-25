@@ -2,11 +2,10 @@
 #include "iAccess.h"
 #include "iJsonWriter.h"
 namespace srb {
-	//TODO:整理全部的初始化簇ID
-	InfoCluster::InfoCluster(Node* node, uint8 cid)
+	InfoCluster::InfoCluster(Node* node)
 		:iCluster(node)
 	{
-		_cluster_id = cid;
+		_cluster_id = DEFAULT_CID;
 	}
 	InfoCluster::~InfoCluster(){	}
 

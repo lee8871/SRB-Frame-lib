@@ -1,13 +1,5 @@
 #include "Node.h"
-
-
-
-#define __MASTER__
-#define __MAPPING_DECLEAR__
 #include "SRB-app-dumotor-share.h"
-#undef __MASTER__
-#undef __MAPPING_DECLEAR__
-
 #include "DumotorNode.h"
 #include "MappingCluster.h"
 #include <string.h>
@@ -25,9 +17,9 @@ namespace srb {
 		addCluster(setCLU);
 		addCluster(adjCLU);
 		base_node->setMapping(base_node->MappingCLU->Data()->u8, 0);
-		base_node->setMapping(Du_Motor::mapping1, 1);
-		base_node->setMapping(Du_Motor::mapping2, 2);
-		base_node->setMapping(Du_Motor::mapping3, 1);
+		base_node->setMapping(Du_Motor::Mapping1, 1);
+		base_node->setMapping(Du_Motor::Mapping2, 2);
+		base_node->setMapping(Du_Motor::Mapping3, 1);
 		
 	}
 	DumotorNode::~DumotorNode()	{	

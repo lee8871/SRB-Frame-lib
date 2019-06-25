@@ -1,14 +1,13 @@
 #include "MotorSetCluster.h"
 #include "iAccess.h"
 #include "iJsonWriter.h"
-using namespace Du_Motor;
 
 namespace srb {
-	//TODO:整理全部的初始化簇ID
-	MotorSetCluster::MotorSetCluster(Node* node, uint8 cid)
+	using namespace Du_Motor;
+	MotorSetCluster::MotorSetCluster(Node* node)
 		:iCluster(node)
 	{
-		_cluster_id = cid;
+		_cluster_id = DEFAULT_CID;
 	}
 	MotorSetCluster::~MotorSetCluster(){	}
 

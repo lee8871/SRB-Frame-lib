@@ -5,7 +5,7 @@ namespace srb {
 	class iCluster{
 	protected:
 		uint8 _data_u8[30] = { 0 };
-		Node* _parent_node = null;
+		Node* _parent_node = nullptr;
 		uint8 _cluster_id;
 	public :
 

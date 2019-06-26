@@ -6,9 +6,9 @@ namespace srb {
 	private:
 	
 	protected:
-		Master* master = null;
+		SrbMaster* master = nullptr;
 	public:
-		Broadcaster(Master* m);
+		Broadcaster(SrbMaster* m);
 		~Broadcaster();
 		iBus*  Bus();
 		uint8 Addr() override;

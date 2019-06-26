@@ -1,26 +1,26 @@
-#include "Master.h"
+#include "SrbMaster.h"
 #include "Node.h"
 #include "Broadcaster.h"
 #include <string.h>
 
 namespace srb {
 
-	Master::Master(iBus* b) {
+	SrbMaster::SrbMaster(iBus* b) {
 		_bus = b;
 		commonBC = new Broadcaster(this);
 	}
 
-	Master::~Master() {
+	SrbMaster::~SrbMaster() {
 		for (int addr = 0;addr < MAX_NODE_NUM;addr++) {
 			removeNode(addr);
 		}
 		delete commonBC;
 	}
 
-	int Master::addNode(uint8 addr){
-		if (nodes[addr] == null) {
+	int SrbMaster::addNode(uint8 addr){
+		if (nodes[addr] == nullptr) {
 			nodes[addr] = new Node(addr,this);
-			if (nodes[addr] == null) {
+			if (nodes[addr] == nullptr) {
 				return no_memory;
 			}
 			else {
@@ -31,18 +31,18 @@ namespace srb {
 			return node_exsist;
 		}
 	}
-	int Master::removeNode(uint8 addr){
-		if (nodes[addr] == null) {
+	int SrbMaster::removeNode(uint8 addr){
+		if (nodes[addr] == nullptr) {
 			return node_no_exsist;
 		}
 		else {
 			delete (nodes[addr]);
-			nodes[addr] = null;
+			nodes[addr] = nullptr;
 			return done;
 		}
 	}
 
-	iExpandNode*  Master::operator[] (uint8 addr) {
+	iExpandNode*  SrbMaster::operator[] (uint8 addr) {
 		Node * n = getNode(addr);
 		if(n == nullptr){
 			return nullptr;
@@ -50,7 +50,7 @@ namespace srb {
 		return n->Expand_node;
 	}
 
-	iExpandNode* Master::operator[] (const char* name) {
+	iExpandNode* SrbMaster::operator[] (const char* name) {
 
 		Node * n = getNode(name);
 		if (n == nullptr) {
@@ -60,21 +60,21 @@ namespace srb {
 	}
 
 
-	Node * Master::getNode(uint8 addr){
+	Node * SrbMaster::getNode(uint8 addr){
 		return nodes[addr];
 	}
-	Node * Master::getNode(const char * name)	{
+	Node * SrbMaster::getNode(const char * name)	{
 		for (int i = 0;i < MAX_NODE_NUM; i++) {
-			if (nodes[i] != null) {
+			if (nodes[i] != nullptr) {
 				if (0 == strcmp(nodes[i]->Node_name(), name)) {
 					return nodes[i];
 				}
 			}
 		}
-		return null;
+		return nullptr;
 	}
 
-	void Master::scanNodes(){
+	void SrbMaster::scanNodes(){
 		for (int addr = 0; addr < MAX_NODE_NUM; addr++) {
 			if (done == addNode(addr)) {
 				if (nodes[addr]->Exsist == false) {
@@ -87,7 +87,7 @@ namespace srb {
 
 
 
-	iBus * Master::Bus()	{
+	iBus * SrbMaster::Bus()	{
 		return _bus;
 	}
 

@@ -10,7 +10,7 @@ namespace srb {
 	private:
 	protected:
 		friend class Node;
-		Node* base_node = null;
+		Node* base_node = nullptr;
 		int addCluster(iCluster* cluster);
 		void * data_rs_void;
 	public:
@@ -24,6 +24,9 @@ namespace srb {
 		InfoCluster *  InfoCLU();
 		ErrorCluster *  ErrorCLU();
 		MappingCluster *  Mapping0CLU();
+
+		iBus*  Bus();
+		SrbMaster * Master();
 
 	};
 }

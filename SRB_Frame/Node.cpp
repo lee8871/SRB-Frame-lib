@@ -4,7 +4,7 @@
 #include "ErrorCluster.h"
 #include "MappingCluster.h"
 #include "iBus.h"
-#include "Master.h"
+#include "SrbMaster.h"
 #include "iJsonWriter.h"
 
 #include "iExpandNode.h"
@@ -14,7 +14,7 @@
 namespace srb {
 
 	//TODO: how to throw error
-	Node::Node(uint8 address, Master* master){
+	Node::Node(uint8 address, SrbMaster* master){
 		this->master = master;
 		clusters[0] = baseCLU = new BaseCluster(this, address);
 		iAccess* acs = Bus()->newAccess(this);
@@ -48,25 +48,25 @@ namespace srb {
 
 
 	Node::~Node(){
-		if (_expand_node != null) {
+		if (_expand_node != nullptr) {
 			if (strcmp(Node_type(), DumotorNode::Node_type) == 0) {
 				 delete (DumotorNode*)_expand_node;
 			}
 			else {
 				delete _expand_node;
 			}
-			_expand_node = null;
+			_expand_node = nullptr;
 		}
 		for (int i = 0;i < 4;i++) {
-			if (mapping[i] != null) {
+			if (mapping[i] != nullptr) {
 				delete (mapping[i]);
-				mapping[i] = null;
+				mapping[i] = nullptr;
 			}
 		}
 		for (int i = 0;i < MAX_CLUSTER_NUMBER;i++) {
-			if (clusters[i] != null) {
+			if (clusters[i] != nullptr) {
 				delete (clusters[i]);
-				clusters[i] = null;
+				clusters[i] = nullptr;
 			}
 		}
 	}
@@ -77,7 +77,7 @@ namespace srb {
 		sMapping* map_to_set = (sMapping*)map;
 		int len = map_to_set->up_len + map_to_set->down_len + 2;
 		uint8* map_copy = new uint8[len];
-		if(map_copy==null){
+		if(map_copy==nullptr){
 			return no_memory;
 		}
 		for (int i = 0; i < len;i++){
@@ -131,7 +131,7 @@ namespace srb {
 	int Node::toJsonAll(iJsonWriter & json_printer)	{
 		json_printer.beginObj("untyped_node");
 		for (int i = 0;i < MAX_CLUSTER_NUMBER;i++) {
-			if (clusters[i] != null) {
+			if (clusters[i] != nullptr) {
 				clusters[i]->toJson(json_printer);
 				json_printer.writeEndLine();
 			}

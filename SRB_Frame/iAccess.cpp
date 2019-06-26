@@ -3,7 +3,7 @@
 
 namespace srb {
 	static inline int srbPkgToJson(const sSrbPkg* pkg, const char* name, iJsonWriter &recordJW) {
-		if (pkg != null) {
+		if (pkg != nullptr) {
 			recordJW.beginObj(name);
 			recordJW.writeU8Str("bfc,", pkg->bfc.byte);
 			recordJW.writeU8ArrayStr("data", pkg->data, pkg->bfc.length);
@@ -67,7 +67,7 @@ namespace srb {
 #include <sys/time.h> 
 	void iAccess::recordSendTime(void) {
 		struct timeval t;
-		if (gettimeofday(&t,null) != 0) {
+		if (gettimeofday(&t,nullptr) != 0) {
 			_send_time = -1;
 		}
 		_send_time = t.tv_usec + t.tv_sec*1000*1000;

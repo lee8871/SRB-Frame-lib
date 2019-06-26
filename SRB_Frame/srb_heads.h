@@ -8,7 +8,7 @@ namespace srb {
 	class iAccess;
 
 	class iBus;
-	class Master;
+	class SrbMaster;
 
 	class iCluster;
 	class iJsonWriter;

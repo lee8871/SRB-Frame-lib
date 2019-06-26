@@ -2,12 +2,12 @@
 #include "srb_heads.h"
 namespace srb {
 	class iBus;
-	class Master {
+	class SrbMaster {
 	public:
 		static const int MAX_NODE_NUM = 200;
 	protected:
-		iBus* _bus = null;
-		Node* nodes[MAX_NODE_NUM] = { null };
+		iBus* _bus = nullptr;
+		Node* nodes[MAX_NODE_NUM] = { nullptr };
 	public:
 		Broadcaster* commonBC;
 		void scanNodes();
@@ -21,8 +21,8 @@ namespace srb {
 		int removeNode(uint8 addr);
 		int changeAddressNode(uint8 addr,uint8 new_addr);
 			   
-		Master(iBus* b);
-		~Master();
+		SrbMaster(iBus* b);
+		~SrbMaster();
 		iBus* Bus();
 
 	};

@@ -36,14 +36,14 @@ namespace srb {
 	}
 
 	DumotorNode * DumotorNode::expand(iExpandNode * n){
-		if (n == null) {
-			return null;
+		if (n == nullptr) {
+			return nullptr;
 		}
 		if (strcmp(n->Node_type(), Node_type) == 0) {
 			return (DumotorNode *)n;
 		}
 		else {
-			return null;
+			return nullptr;
 		}
 	}
 

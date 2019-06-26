@@ -6,7 +6,7 @@ namespace srb {
 			owner = n;
 			_status = eAccessStatus::NoInit;
 			usb_send_pkg = new sUsbToSrbPkg;
-			if (usb_send_pkg != null) {
+			if (usb_send_pkg != nullptr) {
 				_status = eAccessStatus::WaitSend;
 				_send_pkg = &(usb_send_pkg->pkg);
 			}
@@ -27,7 +27,7 @@ namespace srb {
 			if (_status != eAccessStatus::SendWaitRecv) {
 				return fail;
 			}
-			if (usb_recv_pkg != null) {
+			if (usb_recv_pkg != nullptr) {
 				delete usb_recv_pkg;
 			}
 			usb_recv_pkg = pkg;
@@ -68,10 +68,10 @@ namespace srb {
 		}
 
 		UsbAccess::~UsbAccess() {
-			if (usb_send_pkg != null) {
+			if (usb_send_pkg != nullptr) {
 				delete usb_send_pkg;
 			}
-			if (usb_recv_pkg != null) {
+			if (usb_recv_pkg != nullptr) {
 				delete usb_recv_pkg;
 			}
 

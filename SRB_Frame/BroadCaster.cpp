@@ -1,10 +1,10 @@
 #include "Broadcaster.h"
 #include "iBus.h"
-#include "Master.h"
+#include "SrbMaster.h"
 #include "BaseCluster.h"
 
 namespace srb {
-	Broadcaster::Broadcaster(Master * m)	{
+	Broadcaster::Broadcaster(SrbMaster * m)	{
 		this->master = m;
 	}
 	Broadcaster::~Broadcaster()	{
@@ -23,7 +23,7 @@ namespace srb {
 	int Broadcaster::setLedAddress(uint8 cmd) {
 		iAccess* acs;
 		acs = Bus()->newAccess(this);
-		BaseCluster* base_cluster = null;
+		BaseCluster* base_cluster = nullptr;
 		int rev = base_cluster->addressLedSet(acs, cmd);
 		Bus()->doAccess();
 		return rev;

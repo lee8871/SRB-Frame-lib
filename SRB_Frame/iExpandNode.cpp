@@ -10,7 +10,7 @@
 namespace srb {
 
 	int iExpandNode::addCluster(iCluster* cluster)	{
-		if (base_node->clusters[cluster->Cluster_id] != null)
+		if (base_node->clusters[cluster->Cluster_id] != nullptr)
 		{
 			throw "Cluster is existence";
 			return fail;
@@ -54,6 +54,11 @@ namespace srb {
 
 	MappingCluster * iExpandNode::Mapping0CLU() {
 		return base_node->mapping0CLU;
+	}
+
+
+	SrbMaster * iExpandNode::Master()	{
+		return base_node->master;
 	}
 
 }

@@ -4,7 +4,7 @@
 
 
 #include "UsbToSrb.h"
-#include "Master.h"
+#include "SrbMaster.h"
 #include "Broadcaster.h"
 #include "./Nodes/dumotor/DumotorNode.h"
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
 	try {
 		setPriority();
 		auto mainbusUB(std::make_unique<UsbToSrb>());
-		auto mainSRBM(std::make_unique<Master>(mainbusUB.get()));
+		auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
 		char usb_port_name[] = "USB-TEST-BED";
 		char test_node_name[] = "key ctrl";
 		char test_node2_name[] = "key ctrl 2";
@@ -84,11 +84,11 @@ int main(int argc, char *argv[]) {
 		key_ctrl_DUMOTOR = DumotorNode::expand((*mainSRBM)[test_node_name]);
 		key_ctrl_2_DUMOTOR = DumotorNode::expand((*mainSRBM)[test_node2_name]);
 
-		if (key_ctrl_DUMOTOR == null) {
+		if (key_ctrl_DUMOTOR == nullptr) {
 			cout << "Node expand error,"  << endl;
 			return -1;
 		}
-		if (key_ctrl_2_DUMOTOR == null) {
+		if (key_ctrl_2_DUMOTOR == nullptr) {
 			cout << "Node2 expand error, " << endl;
 			return -1;
 		}

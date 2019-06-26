@@ -62,7 +62,7 @@ namespace srb {
 
 	int StreamJsonWriter::writeNull(const char * name)	{
 		preWrite(name);
-		*record << "null" ;
+		*record << "nullptr" ;
 		return done;
 	}
 

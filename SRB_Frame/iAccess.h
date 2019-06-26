@@ -26,8 +26,8 @@ namespace srb {
 	class iAccess {
 	protected:
 		eAccessStatus _status = eAccessStatus::NoInit;
-		sSrbPkg* _send_pkg = null;
-		sSrbPkg* _recv_pkg = null;
+		sSrbPkg* _send_pkg = nullptr;
+		sSrbPkg* _recv_pkg = nullptr;
 		long long _send_time;
 
 	public:
@@ -38,7 +38,7 @@ namespace srb {
 
 	public:
 
-		iAccesser* owner = null;
+		iAccesser* owner = nullptr;
 		int cancle() ;
 		bool isStatusFinish();
 		void recordSendTime(void);

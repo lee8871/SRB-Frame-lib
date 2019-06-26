@@ -30,7 +30,7 @@ namespace srb {
 	}
 	long long int PerformanceTimer::getTimesUs() {
 		struct timeval time;
-		while ( 0 != gettimeofday(&time, null) );
+		while ( 0 != gettimeofday(&time, nullptr) );
 		long long int rev = time.tv_usec+time.tv_sec*1000*1000;
 		return rev;
 	}

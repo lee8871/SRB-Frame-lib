@@ -1,5 +1,6 @@
 #pragma once
 #include "srb_heads.h"
+#include "SRB-share-const.h"
 namespace srb {
 	class Node;
 /***********************************************************************

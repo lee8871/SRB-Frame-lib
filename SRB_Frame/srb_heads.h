@@ -1,6 +1,5 @@
 #pragma once
 #include "lee.h"
-#include "SRB-share-const.h"
 namespace srb {
 	class Node;
 	class Broadcaster;

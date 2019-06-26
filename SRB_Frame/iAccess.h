@@ -39,7 +39,7 @@ namespace srb {
 	public:
 
 		iAccesser* owner = null;
-		bool cancle() ;
+		int cancle() ;
 		bool isStatusFinish();
 		void recordSendTime(void);
 		int sendJson(iJsonWriter & record);

@@ -4,6 +4,7 @@
 namespace srb {
 	class Node;
 	class Broadcaster;
+	class iExpandNode;
 	class iAccess;
 
 	class iBus;

@@ -1,7 +1,11 @@
 #pragma once
 #include "srb_heads.h"
-#include "iAccess.h"
+
 namespace srb {
+	class BaseCluster;
+	class InfoCluster;
+	class ErrorCluster;
+	class MappingCluster;
 	class iExpandNode {
 	private:
 	protected:
@@ -12,5 +16,14 @@ namespace srb {
 	public:
 		iExpandNode(Node* base_node);
 		~iExpandNode();
+		int sendAccess(int port);
+		const char* Node_type();
+
+
+		BaseCluster *  BaseCLU();
+		InfoCluster *  InfoCLU();
+		ErrorCluster *  ErrorCLU();
+		MappingCluster *  Mapping0CLU();
+
 	};
 }

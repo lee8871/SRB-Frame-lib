@@ -1,6 +1,5 @@
 #pragma once
 #include "srb_heads.h"
-
 namespace srb {
 	class iBus;
 	class Master {
@@ -11,10 +10,12 @@ namespace srb {
 		Node* nodes[MAX_NODE_NUM] = { null };
 	public:
 		Broadcaster* commonBC;
-		Node* getNode(uint8 addr);
-
-		Node* getNode(const char* name);
 		void scanNodes();
+		iExpandNode* operator[] (uint8 addr);
+		iExpandNode* operator[] (const char* name);
+
+		Node* getNode(uint8 addr);
+		Node* getNode(const char* name);
 		
 		int addNode(uint8 addr);
 		int removeNode(uint8 addr);

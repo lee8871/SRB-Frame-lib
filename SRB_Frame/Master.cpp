@@ -41,6 +41,25 @@ namespace srb {
 			return done;
 		}
 	}
+
+	iExpandNode*  Master::operator[] (uint8 addr) {
+		Node * n = getNode(addr);
+		if(n == nullptr){
+			return nullptr;
+		}
+		return n->Expand_node;
+	}
+
+	iExpandNode* Master::operator[] (const char* name) {
+
+		Node * n = getNode(name);
+		if (n == nullptr) {
+			return nullptr;
+		}
+		return n->Expand_node;
+	}
+
+
 	Node * Master::getNode(uint8 addr){
 		return nodes[addr];
 	}

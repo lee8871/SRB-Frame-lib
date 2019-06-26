@@ -1,6 +1,5 @@
 #include "iAccess.h"
 #include "iJsonWriter.h"
-#include <chrono>
 
 namespace srb {
 	static inline int srbPkgToJson(const sSrbPkg* pkg, const char* name, iJsonWriter &recordJW) {
@@ -28,10 +27,12 @@ namespace srb {
 		recordJW.endObj();
 		return done;
 	}		
-	bool iAccess::cancle() {
+	int iAccess::cancle() {
 		if (_status <= eAccessStatus::WaitSend) {
 			_status = eAccessStatus::Cancel;
+			return done;
 		}
+		return fail;
 	};
 	bool iAccess::isStatusFinish() {
 		return (_status >= eAccessStatus::RecvedDone);
@@ -42,13 +43,14 @@ namespace srb {
 
 
 #ifdef WINDOW_86
-#include <time.h>  
+#include <time.h>
+#include <windows.h>
 	static int cpu_freq = -1;
 	static void initTimes() {
 		if (cpu_freq == -1) {
-			LARGE_INTEGER fcpu;
-			QueryPerformanceFrequency(&fcpu);
-			cpu_freq = fcpu.QuadPart;
+			LARGE_INTEGER f;
+			QueryPerformanceFrequency(&f);
+			cpu_freq =(int)( f.QuadPart);
 		}
 	}
 	void iAccess::recordSendTime(void) {

@@ -29,7 +29,7 @@ namespace srb {
 	int Node::initCluster() {
 		clusters[1] = infoCLU = new InfoCluster(this);
 		clusters[2] = errorCLU = new ErrorCluster(this);
-		clusters[3] = mappingCLU = new MappingCluster(this, 3);
+		clusters[3] = mapping0CLU = new MappingCluster(this, 3);
 
 		iAccess* acs;
 		acs = Bus()->newAccess(this);
@@ -37,7 +37,7 @@ namespace srb {
 		acs = Bus()->newAccess(this);
 		errorCLU->loadReadPkg(acs);
 		acs = Bus()->newAccess(this);
-		mappingCLU->loadReadPkg(acs);
+		mapping0CLU->loadReadPkg(acs);
 		Bus()->doAccess();
 
 		if (strcmp((char*)(infoCLU->Data()->node_type), DumotorNode::Node_type) ==0){

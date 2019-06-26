@@ -3,6 +3,10 @@
 #include "iCluster.h"
 #include "iBus.h"
 
+#include "BaseCluster.h"
+#include "InfoCluster.h"
+#include "ErrorCluster.h"
+#include "MappingCluster.h"
 namespace srb {
 
 	int iExpandNode::addCluster(iCluster* cluster)	{
@@ -26,6 +30,30 @@ namespace srb {
 
 	iExpandNode::~iExpandNode()	{
 
+	}
+
+	int iExpandNode::sendAccess(int port){
+		return base_node->sendAccess(port);
+	}
+
+	const char * iExpandNode::Node_type()	{
+		return base_node->Node_type();
+	}
+
+	BaseCluster * iExpandNode::BaseCLU()	{
+		return base_node->baseCLU;
+	}
+
+	InfoCluster * iExpandNode::InfoCLU() {
+		return base_node->infoCLU;
+	}
+
+	ErrorCluster * iExpandNode::ErrorCLU() {
+		return base_node->errorCLU;
+	}
+
+	MappingCluster * iExpandNode::Mapping0CLU() {
+		return base_node->mapping0CLU;
 	}
 
 }

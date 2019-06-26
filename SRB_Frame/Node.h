@@ -17,19 +17,14 @@ namespace srb {
 		BaseCluster* baseCLU = null;
 		InfoCluster* infoCLU = null;
 		ErrorCluster* errorCLU = null;
-		MappingCluster* mappingCLU = null;
+		MappingCluster* mapping0CLU = null;
 		bool _exsist = false;
-
 		int initCluster();
 		iExpandNode* _expand_node = null;
 
 
 	public:
 		bool const& Exsist = _exsist;
-		BaseCluster * const& BaseCLU = baseCLU;
-		InfoCluster * const& InfoCLU = infoCLU;
-		ErrorCluster * const& ErrorCLU = errorCLU;
-		MappingCluster * const& MappingCLU = mappingCLU;
 		iBus*  Bus();
 		const char* Node_name();
 		const char* Node_type();

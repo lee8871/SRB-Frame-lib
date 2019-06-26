@@ -56,7 +56,7 @@ int PerformanceTimer::beginCheck(){
 int PerformanceTimer::endCheck(){
 	long long int  end = getTimesUs();
 	_is_checking = false;
-	_last_time_cost = (end - check_buf);
+	_last_time_cost = (int)(end - check_buf);
 	return done;
 }
 

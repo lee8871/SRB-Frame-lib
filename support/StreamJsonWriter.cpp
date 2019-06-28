@@ -18,13 +18,13 @@ namespace srb {
 			else {
 				is_first[iteration] = false;
 			}
-			if (is_next_obj_in_new_line == true){
-				*record << endl;
+			if ((is_next_obj_in_new_line )&&(!is_expand_mode)){
+				*record << '\n';
 				is_next_obj_in_new_line = false;
 			}
 			if (name[0] != '\0') {//may write name(in Object) or not(in array)
 				if (is_expand_mode) {
-					*record << endl;
+					*record << '\n';
 					for (int i = 0;i <= iteration;i++) {
 						*record << '\t';
 					}
@@ -133,13 +133,13 @@ namespace srb {
 	int srb::StreamJsonWriter::endObj() {
 		iteration--;				
 		if (is_expand_mode) {
-			*record << endl;
+			*record << '\n';
 			for (int i = 0;i <= iteration;i++) {
 				*record << '\t';
 			}
 		}
 		*record << '}';
-		if (iteration == -1){//force new line
+		if (iteration == -1){//force new line and flush buffer
 			*record  << endl;
 		}
 		else if (iteration < -1) {

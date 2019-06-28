@@ -9,7 +9,7 @@ namespace srb {
 			+->	Cancle  							+->	RecvedBadPkg
 *************************************************************************/
 	enum class eAccessStatus {
-		NoInit,
+		Initing,
 		Cancel,
 		WaitSend, 
 		SendWaitRecv, 
@@ -26,7 +26,7 @@ namespace srb {
 
 	class iAccess {
 	protected:
-		eAccessStatus _status = eAccessStatus::NoInit;
+		eAccessStatus _status = eAccessStatus::Initing;
 		sSrbPkg* _send_pkg = nullptr;
 		sSrbPkg* _recv_pkg = nullptr;
 		long long _send_time;
@@ -37,13 +37,15 @@ namespace srb {
 		eAccessStatus const& Status = _status;
 		long long const& Send_time = _send_time;
 
-	public:
 
+	public:
 		iAccesser* owner = nullptr;
-		int cancle() ;
+		int cancle();
 		bool isStatusFinish();
 		void recordSendTime(void);
 		int sendJson(iJsonWriter & record);
+		virtual const char* getType();
+		
 	};
 	//不需要让节点的Mapping或者cluster等实际的接收者成为iAccesser
 	//因为节点需要更新存在情况

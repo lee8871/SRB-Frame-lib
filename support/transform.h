@@ -1,4 +1,5 @@
-﻿#include "lee.h"
+﻿#pragma once
+#include "lee.h"
 #include <iostream>
 namespace srb {
 	namespace trans {

@@ -26,7 +26,10 @@ namespace srb {
 		srbPkgToJson(Recv_pkg, "Recv", recordJW);
 		recordJW.endObj();
 		return done;
-	}		
+	}
+	const char * iAccess::getType(){
+		return "iAccess";
+	}
 	int iAccess::cancle() {
 		if (_status <= eAccessStatus::WaitSend) {
 			_status = eAccessStatus::Cancel;

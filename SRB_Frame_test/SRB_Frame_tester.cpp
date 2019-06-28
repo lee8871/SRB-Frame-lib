@@ -47,12 +47,8 @@ void setPriority() {
 }
 #endif
 
-int mainErrorExit();
-const int TEST_PKG_NUM = 10000;
+const int TEST_PKG_NUM = 100000;
 PerformanceTimer access_PT;
-
-
-
 
 int main(int argc, char *argv[]) {
 	try {
@@ -67,7 +63,6 @@ int main(int argc, char *argv[]) {
 		
 		DumotorNode * key_ctrl_DUMOTOR;
 		DumotorNode * key_ctrl_2_DUMOTOR;
-
 
 		rev = mainbusUB->openUsbByName(usb_port_name);
 		if (rev != done) {
@@ -137,7 +132,6 @@ int main(int argc, char *argv[]) {
 		cout << "Test send end at " << timeToString(end_time) << endl;
 		cout << "It cost " << end_time - begin_time << "(s) at all." << endl;
 		cout << "accessing time avariage is " << totle_send_time_us / (TEST_PKG_NUM) << "(us)." << endl;
-
 		return 0;
 	}
 	catch(const char * str) {
@@ -148,28 +142,3 @@ int main(int argc, char *argv[]) {
 
 
 
-// bool ctrlhandler(DWORD fdwctrltype)
-// {
-// 	switch (fdwctrltype)	{
-// 	case CTRL_C_EVENT:
-// 		cout<<"ctrl-c event\n\n";
-// 		break;
-// 	case CTRL_CLOSE_EVENT:
-// 		cout << "ctrl-close event\n\n";
-// 		break;
-// 	case CTRL_BREAK_EVENT:
-// 		cout << "ctrl-break event\n\n";
-// 		break;
-// 	case CTRL_LOGOFF_EVENT:
-// 		cout << "ctrl-logoff event\n\n";
-// 		break;
-// 	case CTRL_SHUTDOWN_EVENT:
-// 		cout << "ctrl-shutdown event\n\n";
-// 		break;
-// 	default:
-// 		break;
-// 	}
-// 	delete mainbusUB;
-// 	delete mainSRBM;
-// 	return false;
-// }

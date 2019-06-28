@@ -8,6 +8,7 @@ namespace srb {
 	public:
 		//
 		virtual iAccess*  newAccess(iAccesser* sender_node) = 0;
+		virtual int loadAccess(iAccess* acs) = 0;
 		virtual int doAccess() = 0;
 		virtual int getAccessQueueLen() = 0;
 	};

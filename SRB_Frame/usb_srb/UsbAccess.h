@@ -7,13 +7,15 @@ namespace srb {
 		protected:
 			sUsbToSrbPkg* usb_send_pkg = nullptr;
 			sUsbToSrbPkg* usb_recv_pkg = nullptr;
+			UsbAccess(iAccesser*);
 		public:
+			~UsbAccess();
 			int getUsbSendPkg(sUsbToSrbPkg** pkg, int* len);
 			int setUsbRecvPkg(sUsbToSrbPkg* pkg, int len);
 			int timeoutAccess();
-			eAccessStatus getStatus();
-			UsbAccess(iAccesser*);
-			~UsbAccess();
+			int initDone();
+			static UsbAccess* newAccess(iAccesser*);
+			virtual const char* getType() override;
 		};
 	}
 }

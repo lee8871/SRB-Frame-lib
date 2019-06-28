@@ -18,6 +18,7 @@ namespace srb {
 		base_node->clusters[cluster->Cluster_id] = cluster;
 		iAccess* acs = base_node->Bus()->newAccess(base_node);
 		cluster->loadReadPkg(acs);
+		base_node->Bus()->loadAccess(acs);
 		base_node->Bus()->doAccess();
 		return done;
 	}

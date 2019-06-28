@@ -24,8 +24,6 @@ namespace srb {
 		InfoCluster *  InfoCLU();
 		ErrorCluster *  ErrorCLU();
 		MappingCluster *  Mapping0CLU();
-
-		iBus*  Bus();
 		SrbMaster * Master();
 
 	};

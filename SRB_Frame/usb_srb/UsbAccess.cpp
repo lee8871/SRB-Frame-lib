@@ -4,14 +4,44 @@ namespace srb {
 	namespace usb_bus {
 		UsbAccess::UsbAccess(iAccesser* n) {
 			owner = n;
-			_status = eAccessStatus::NoInit;
-			usb_send_pkg = new sUsbToSrbPkg;
+			_status = eAccessStatus::Initing;
+		}
+		UsbAccess::~UsbAccess() {
 			if (usb_send_pkg != nullptr) {
-				_status = eAccessStatus::WaitSend;
-				_send_pkg = &(usb_send_pkg->pkg);
+				delete usb_send_pkg;
+			}
+			if (usb_recv_pkg != nullptr) {
+				delete usb_recv_pkg;
 			}
 
 		}
+		UsbAccess * UsbAccess::newAccess(iAccesser * owner)		{
+			UsbAccess * acs = new UsbAccess(owner);
+			if (acs == nullptr) {
+				return nullptr;
+			}			
+			acs->usb_send_pkg = new sUsbToSrbPkg;
+			if (acs->usb_send_pkg == nullptr) {
+				delete acs;
+				return nullptr;
+			}
+			acs->_send_pkg = &(acs->usb_send_pkg->pkg);
+			return acs;
+		}
+		int UsbAccess::initDone() {
+			if (Status != eAccessStatus::Initing) {
+				return fail;
+			}
+			_status = eAccessStatus::WaitSend;
+			return done;
+			
+		}
+		const char * UsbAccess::getType()		{
+			return "usbToSrb-V1.x";
+		}
+		
+
+
 		int UsbAccess::getUsbSendPkg(sUsbToSrbPkg** pkg, int* len) {
 			if (_status != eAccessStatus::WaitSend) {
 				return fail;
@@ -22,6 +52,7 @@ namespace srb {
 			_status = eAccessStatus::SendWaitRecv;
 			return done;
 		}
+
 		int UsbAccess::setUsbRecvPkg(sUsbToSrbPkg * pkg, int len) {
 			//check my status
 			if (_status != eAccessStatus::SendWaitRecv) {
@@ -31,7 +62,6 @@ namespace srb {
 				delete usb_recv_pkg;
 			}
 			usb_recv_pkg = pkg;
-
 			if (len >= 3) {//check receive done
 				if ((len == usb_recv_pkg->pkg.bfc.length + 3) && (usb_recv_pkg->err < 0x10)) {
 					_recv_pkg = &(usb_recv_pkg->pkg);
@@ -54,6 +84,7 @@ namespace srb {
 			}
 			_status = eAccessStatus::RecvedBadPkg;return done;
 		}
+
 		int UsbAccess::timeoutAccess() {
 			if (_status != eAccessStatus::SendWaitRecv) {
 				return fail;
@@ -61,22 +92,5 @@ namespace srb {
 			_status = eAccessStatus::BusTimeOut;
 			return done;
 		}
-
-
-		eAccessStatus UsbAccess::getStatus() {
-			return _status;
-		}
-
-		UsbAccess::~UsbAccess() {
-			if (usb_send_pkg != nullptr) {
-				delete usb_send_pkg;
-			}
-			if (usb_recv_pkg != nullptr) {
-				delete usb_recv_pkg;
-			}
-
-		}
-
 	}
-
 }

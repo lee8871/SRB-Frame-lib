@@ -20,6 +20,7 @@ namespace srb {
 		MappingCluster* mapping0CLU = nullptr;
 		bool _exsist = false;
 		int initCluster();
+		int expand();
 		iExpandNode* _expand_node = nullptr;
 
 

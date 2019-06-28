@@ -19,9 +19,11 @@ namespace srb {
 		clusters[0] = baseCLU = new BaseCluster(this, address);
 		iAccess* acs = Bus()->newAccess(this);
 		baseCLU->loadReadPkg(acs);
+		Bus()->loadAccess(acs);
 		Bus()->doAccess();
 		if (Exsist) {
 			initCluster();
+			expand();
 		}
 	}
 
@@ -34,16 +36,25 @@ namespace srb {
 		iAccess* acs;
 		acs = Bus()->newAccess(this);
 		infoCLU->loadReadPkg(acs);
+		Bus()->loadAccess(acs);
 		acs = Bus()->newAccess(this);
 		errorCLU->loadReadPkg(acs);
+		Bus()->loadAccess(acs);
 		acs = Bus()->newAccess(this);
 		mapping0CLU->loadReadPkg(acs);
-		Bus()->doAccess();
+		Bus()->loadAccess(acs);
 
-		if (strcmp((char*)(infoCLU->Data()->node_type), DumotorNode::Node_type) ==0){
-			_expand_node = new DumotorNode(this);
-		}
+		Bus()->doAccess();
 		return done;
+	}
+	int Node::expand() {
+		if (strcmp((char*)(infoCLU->Data()->node_type), DumotorNode::Node_type) == 0) {
+			_expand_node = new DumotorNode(this);
+			return done;
+		}
+		//TODO add other NodeType expand
+
+		return fail;
 	}
 
 
@@ -98,6 +109,7 @@ namespace srb {
 		}
 		acs->Send_pkg->bfc.length = i;
 		acs->Send_pkg->bfc.port = port;
+		Bus()->loadAccess(acs);
 		return done;
 	}
 
@@ -115,6 +127,7 @@ namespace srb {
 			case SC_PORT_D3:
 				break;
 			case SC_PORT_CFG:
+				//TODO Note this if cluster is not exsist
 				clusters[acs->Send_pkg->data[0]]->readDone(acs);
 				break;
 			default:

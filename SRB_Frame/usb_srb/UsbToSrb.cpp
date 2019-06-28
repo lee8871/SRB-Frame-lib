@@ -1,9 +1,8 @@
+#include "UsbToSrb.h"
 #include "string.h"
-
 #include "libusb.h"
 #include <mutex> 
 #include <fstream>
-
 #include <time.h>  
 
 #include "StreamJsonWriter.h"
@@ -35,7 +34,6 @@ namespace srb {
 			//------------------------------about access--------------------------------------------
 			UsbAccess* acs_queue[256] = { nullptr };
 			uint8 point_in = 0;
-			uint8 point_send = 0;
 			uint8 point_out = 0;
 
 			int accessSend(uint8 point) {
@@ -166,34 +164,43 @@ namespace srb {
 				}
 			}
 			iAccess*  newAccess(iAccesser* owner) {
-				//access_lock.lock();
-				if(((point_in + 1) & 0xff) == point_out) {
-					access_lock.unlock();return nullptr;
-				}
-				UsbAccess *acs = new UsbAccess(owner);
-				if (acs == nullptr) {
-					access_lock.unlock();return nullptr;
-				}
-				if (acs->getStatus() == eAccessStatus::NoInit) {
-					access_lock.unlock();delete acs;return nullptr;
-				}
-				acs_queue[point_in] = acs;
-				point_in++;
-				//access_lock.unlock();
+				UsbAccess *acs = UsbAccess::newAccess(owner);
 				return acs;
+			}
+
+			int loadAccess(iAccess* acs){
+				UsbAccess* uacs = dynamic_cast<UsbAccess*>(acs);
+				if (uacs == nullptr) { return fail; }
+				if (uacs->initDone() == fail) { return fail; };
+				access_lock.lock();
+				acs_queue[point_in++] = uacs;
+				if(point_in == point_out) {
+					point_in--;
+					acs_queue[point_in] = nullptr;
+					access_lock.unlock();
+					return fail;
+				}
+				access_lock.unlock();
+				return done;
 			};
+
+
 			int doAccess() {
 				int active_counter = 0;//记录正在交给硬件处理的包的数量,硬件带有双缓冲,可以进行访问的同时接收下一个访问,
 				int error_counter = 0;//记录错误的次数,如果错误过多,则退出
 				if (isOpen() == false) {
 					return -1;
 				}
+				uint8 point_send = 0;
 				access_lock.lock();
 				point_send = point_out;
 				while (1) {
-					if ((point_send != point_in) && (active_counter < 2)) {	//需要发送的情况
-						if (acs_queue[point_send]->Status == eAccessStatus::WaitSend) {//是需要发送的包
-							if (done == accessSend(point_send)) {
+					if ((point_send != point_in) && (active_counter < 2)) {//需要发送的情况
+						if (acs_queue[point_send]->Status == eAccessStatus::WaitSend) {//是需要发送的包							
+							access_lock.unlock();
+							int is_access_send_status = accessSend(point_send);
+							access_lock.lock();
+							if (done == is_access_send_status) {
 								active_counter++;
 								point_send++;
 							}
@@ -208,19 +215,31 @@ namespace srb {
 					}
 					else {//需要接收的情况
 						while (acs_queue[point_out]->isStatusFinish()) {
-							iAccesser* node = acs_queue[point_out]->owner;
-							node->accessDone(acs_queue[point_out]);
-							acs_queue[point_out]->sendJson(*recordSJW);
-							delete acs_queue[point_out];
+							UsbAccess* acs = acs_queue[point_out];
 							acs_queue[point_out] = nullptr;
 							point_out++;
-							if (point_out == point_in) {
 
-								access_lock.unlock();return done;
+
+							access_lock.unlock();
+							iAccesser* node = acs->owner;
+							node->accessDone(acs);
+
+							acs -> sendJson(*recordSJW);//this line may move to master
+							delete acs;//may not delete acs;
+
+							if (point_out == point_in) {
+								return done;
 							}
+							access_lock.lock();
 						}
-						if (accessRecv()) {
+						access_lock.unlock();
+						int access_recv_status = accessRecv();
+						access_lock.lock();
+						if (done == access_recv_status ) {
 							active_counter--;
+						}
+						else {
+							error_counter++;
 						}
 					}
 				}
@@ -247,6 +266,9 @@ namespace srb {
 		}
 		iAccess*  UsbToSrb::newAccess(iAccesser* owner) {
 			return pimpl->newAccess(owner);
+		}
+		int UsbToSrb::loadAccess(iAccess * acs)		{
+			return pimpl->loadAccess(acs);
 		}
 		int UsbToSrb::doAccess() {
 			return pimpl->doAccess();

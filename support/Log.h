@@ -1,14 +1,15 @@
-﻿#include "lee.h"
-#include "iJsonWriter.h"
-#include <iostream> 
+﻿#pragma once 
 
 namespace srb {
-	class Log {
+	class cLog {
 	private:
-//		ostream write_to_STM;
-		int log_level;
+		static const int BUF_LEN = 4096;
+		char last_error_string[BUF_LEN];
+		int(*srbErrorReportCB)(char *);
 	public:
-		Log();
-		~Log();
+		int errPrint(const char *format, ...);
+		int setReportCallback(int(*srbErrorReportCB)(char *));
 	};
+	extern cLog log;
+
 }

@@ -18,6 +18,7 @@ namespace srb {
 			int openUsbByName(const char* name);
 
 			iAccess*  newAccess(iAccesser* owner)  override;
+			int loadAccess(iAccess* acs) override;
 			int doAccess() override;
 			int getAccessQueueLen()override;
 		};

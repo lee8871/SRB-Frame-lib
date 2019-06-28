@@ -84,9 +84,6 @@ namespace srb {
 		}
 	}
 
-
-
-
 	iBus * SrbMaster::Bus()	{
 		return _bus;
 	}

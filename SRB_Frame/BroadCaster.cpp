@@ -26,7 +26,6 @@ namespace srb {
 		BaseCluster* base_cluster = nullptr;
 		int rev = base_cluster->addressLedSet(acs, cmd);
 		Bus()->loadAccess(acs);
-		Bus()->doAccess();
 		return rev;
 		
 	}

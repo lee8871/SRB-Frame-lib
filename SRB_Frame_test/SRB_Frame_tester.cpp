@@ -1,6 +1,7 @@
 ﻿#include <time.h>  
 #include <string>
-#include <iostream>     
+#include <stdio.h>   
+#include <conio.h>  
 
 
 #include "UsbToSrb.h"
@@ -9,16 +10,14 @@
 #include "./Nodes/dumotor/DumotorNode.h"
 
 
-#include "PerformanceAnalyzer.h"
+#include "PerformanceAnalyzer.h" include <conio.h>
 
 using namespace std;
 using namespace srb::usb_bus;
 using namespace srb;
-string timeToString(time_t tim)
-{
-	char str[64];
-	strftime(str, sizeof(str), "%Y-%m-%d %H:%M:%S", localtime(&tim));
-	return str;
+char time_str_temp[64];
+int timeToString(time_t& tim, char *str){
+	return strftime(str, 64, "%Y-%m-%d %H:%M:%S", localtime(&tim));
 }
 #ifdef WINDOW_86
 #include <windows.h>
@@ -39,15 +38,16 @@ void setPriority() {
 	maxpri = sched_get_priority_max(SCHED_FIFO);
 	param.sched_priority = maxpri;
 	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
-		cout << "Set priority fail" << endl;
+		printf("Set priority fail");
 	}
 	else {
-		cout << "Set priority done" << endl;
+		printf("Set priority done");
 	}
 }
 #endif
 
-const int TEST_PKG_NUM = 100000;
+const int TEST_PKG_NUM = 10000000;
+const int REPORT_RAT = 1000;
 PerformanceTimer access_PT;
 
 int main(int argc, char *argv[]) {
@@ -66,29 +66,41 @@ int main(int argc, char *argv[]) {
 
 		rev = mainbusUB->openUsbByName(usb_port_name);
 		if (rev != done) {
-			cout << "Try open port: [" << usb_port_name << "] fail!" << endl;
+			printf("Try open port: [%s] fail!\n", usb_port_name );
 			return -1;
 		}
-		cout << "Open port: [" << usb_port_name << "]" << endl << endl;
-		time(&begin_time);
-		cout << "Test send begin at " << timeToString(begin_time) << endl;
 
-		cout << TEST_PKG_NUM << " accessing is doing. " << endl;
+		printf("Open port: [%s].\n", usb_port_name);
+		time(&begin_time);
+		timeToString(begin_time, time_str_temp);
+		printf("Test send begin at %s .\n", time_str_temp);
+
+
+		printf("Close address LED.\n");
+		mainSRBM->commonBC->setLedAddress(BCC_SHOW_CLOSE);
+		mainbusUB->doAccess();
+
+
 		mainSRBM->scanNodes();
 
 		key_ctrl_DUMOTOR = DumotorNode::expand((*mainSRBM)[test_node_name]);
 		key_ctrl_2_DUMOTOR = DumotorNode::expand((*mainSRBM)[test_node2_name]);
 
 		if (key_ctrl_DUMOTOR == nullptr) {
-			cout << "Node expand error,"  << endl;
+			printf("Node expand error.");
 			return -1;
 		}
 		if (key_ctrl_2_DUMOTOR == nullptr) {
-			cout << "Node2 expand error, " << endl;
+			printf("Node2 expand error.");
 			return -1;
 		}
 		long long int totle_send_time_us = 0;
-		for (int i = 0;i < TEST_PKG_NUM;i++) {
+		int report_counter = 0;
+
+
+		printf("%d accesses are doing.\n", TEST_PKG_NUM);
+
+		for (int access_group_counter = 0;access_group_counter < TEST_PKG_NUM;) {
 			key_ctrl_DUMOTOR->Data()->ma.brake = no;
 			key_ctrl_DUMOTOR->Data()->ma.speed++;
 			if (key_ctrl_DUMOTOR->Data()->ma.speed >= 1000) {
@@ -116,26 +128,39 @@ int main(int argc, char *argv[]) {
 				key_ctrl_2_DUMOTOR->sendAccess(0);
 				mainbusUB->doAccess();
 			}
+
+			access_group_counter++;
+
 			totle_send_time_us += access_PT.Last_time_cost;
+			report_counter++;
+			if (report_counter == REPORT_RAT){
+				printf("[%d]: %d accesses time avariage is %10.1f(us).\n", access_group_counter, REPORT_RAT, (1.0 * totle_send_time_us / report_counter));
+				totle_send_time_us = 0;
+				report_counter = 0;		
+				bool is_get_char_c = false;
+				while(kbhit() != 0) {
+					if (is_get_char_c = (getche() == 'c')) {
+						break;
+					}
+				}
+				if (is_get_char_c){
+					printf("Get c and stop test!\n");
+					break;
+				}
+			}
 		}
+		time_t end_time;	
+		time(&end_time);
 
-		for (int i = 0;i < 5;i++) {
-			mainSRBM->commonBC->setLedAddress(BCC_SHOW_HIGH_ADDR);
-			__Sleep(100);
-			mainSRBM->commonBC->setLedAddress(BCC_SHOW_LOW_ADDR);
-			__Sleep(100);
-			mainSRBM->commonBC->setLedAddress(BCC_SHOW_CLOSE);
-			__Sleep(100);
-		}
-
-		time_t end_time;	time(&end_time);
-		cout << "Test send end at " << timeToString(end_time) << endl;
-		cout << "It cost " << end_time - begin_time << "(s) at all." << endl;
-		cout << "accessing time avariage is " << totle_send_time_us / (TEST_PKG_NUM) << "(us)." << endl;
+		printf("\n");
+		timeToString(end_time, time_str_temp);
+		printf( "Test end at %s\n" , time_str_temp);
+		printf("It cost %10.2f(s) at all.\n", end_time - begin_time);
+		getchar();
 		return 0;
 	}
 	catch(const char * str) {
-		cout << "topic catch error:"<<str;
+		printf("topic catch error: %s",str);
 		return -2;
 	}
 }

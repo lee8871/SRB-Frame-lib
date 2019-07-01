@@ -1,14 +1,11 @@
 ﻿#pragma once
 #include "lee.h"
-#include "iJsonWriter.h"
-#include <iostream> 
+#include "OsSupport.h"
 namespace srb {
 	class PerformanceTimer {
 	private:
 		int cpu_freq = -1;	
-		void initTimes();
-		long long int getTimesUs();
-		long long int  check_buf;
+		tUs  check_buf;
 		bool _is_checking;
 		int _last_time_cost;
 	public:

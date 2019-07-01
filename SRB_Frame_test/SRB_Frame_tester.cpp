@@ -1,66 +1,34 @@
-﻿#include <time.h>  
-#include <string>
+﻿#include <string>
 #include <stdio.h>   
-#include <conio.h>  
+#include <conio.h>
 
 
 #include "UsbToSrb.h"
 #include "SrbMaster.h"
 #include "Broadcaster.h"
 #include "./Nodes/dumotor/DumotorNode.h"
-
-
-#include "PerformanceAnalyzer.h" include <conio.h>
+#include "PerformanceAnalyzer.h" 
+#include "OsSupport.h" 
+#include "transform.h"
 
 using namespace std;
 using namespace srb::usb_bus;
 using namespace srb;
-char time_str_temp[64];
-int timeToString(time_t& tim, char *str){
-	return strftime(str, 64, "%Y-%m-%d %H:%M:%S", localtime(&tim));
-}
-#ifdef WINDOW_86
-#include <windows.h>
-
-#define __Sleep(ms) Sleep(ms)
-void setPriority() {
-	return;
-}
-
-#endif
-#if UNIX
-#include <sched.h>
-#include <unistd.h>
-#define __Sleep(ms) usleep(ms*1000)
-void setPriority() {
-	struct sched_param param;
-	int maxpri;
-	maxpri = sched_get_priority_max(SCHED_FIFO);
-	param.sched_priority = maxpri;
-	if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
-		printf("Set priority fail");
-	}
-	else {
-		printf("Set priority done");
-	}
-}
-#endif
 
 const int TEST_PKG_NUM = 10000000;
 const int REPORT_RAT = 1000;
-PerformanceTimer access_PT;
 
+PerformanceTimer access_PT;
 int main(int argc, char *argv[]) {
 	try {
-		setPriority();
+		OsSupport::setPriority();
 		auto mainbusUB(std::make_unique<UsbToSrb>());
 		auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
 		char usb_port_name[] = "USB-TEST-BED";
 		char test_node_name[] = "key ctrl";
 		char test_node2_name[] = "key ctrl 2";
-		int rev;
-		time_t begin_time;
-		
+		int rev;		
+
 		DumotorNode * key_ctrl_DUMOTOR;
 		DumotorNode * key_ctrl_2_DUMOTOR;
 
@@ -71,15 +39,13 @@ int main(int argc, char *argv[]) {
 		}
 
 		printf("Open port: [%s].\n", usb_port_name);
-		time(&begin_time);
-		timeToString(begin_time, time_str_temp);
+		char time_str_temp[64];
+		trans::usTotimestr(time_str_temp,64, OsSupport::getTimesUs());
 		printf("Test send begin at %s .\n", time_str_temp);
-
 
 		printf("Close address LED.\n");
 		mainSRBM->commonBC->setLedAddress(BCC_SHOW_CLOSE);
 		mainbusUB->doAccess();
-
 
 		mainSRBM->scanNodes();
 
@@ -138,8 +104,8 @@ int main(int argc, char *argv[]) {
 				totle_send_time_us = 0;
 				report_counter = 0;		
 				bool is_get_char_c = false;
-				while(kbhit() != 0) {
-					if (is_get_char_c = (getche() == 'c')) {
+				while(_kbhit() != 0) {
+					if (is_get_char_c = (_getche() == 'c')) {
 						break;
 					}
 				}
@@ -149,13 +115,9 @@ int main(int argc, char *argv[]) {
 				}
 			}
 		}
-		time_t end_time;	
-		time(&end_time);
-
 		printf("\n");
-		timeToString(end_time, time_str_temp);
-		printf( "Test end at %s\n" , time_str_temp);
-		printf("It cost %10.2f(s) at all.\n", end_time - begin_time);
+		trans::usTotimestr(time_str_temp, 64, OsSupport::getTimesUs());
+		printf("Test end at %s\n", time_str_temp);
 		getchar();
 		return 0;
 	}

@@ -45,6 +45,8 @@ namespace srb {
 	typedef signed short int int16;
 	typedef signed long int int32;
 
+	using tUs = long long int;
+
 	typedef union
 	{
 		uint32 u32;

@@ -6,9 +6,16 @@ namespace srb {
 		extern char u8ToLow(uint8 u8);
 	}
 	StreamJsonWriter::StreamJsonWriter(std::ostream * record_ostream) {
-		record = record_ostream;
+		setStream(record_ostream);
 		iteration = -1;
 	}
+
+	int StreamJsonWriter::setStream(std::ostream * record_ostream)	{
+		record = record_ostream;
+		return done;
+	}
+
+
 	int srb::StreamJsonWriter::preWrite(const char * name)
 	{
 		if (iteration != -1) {//if not root object

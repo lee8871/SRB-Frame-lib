@@ -1,15 +1,14 @@
-#include "UsbToSrb.h"
-#include "string.h"
 #include "libusb.h"
 #include <mutex> 
 #include <fstream>
 #include <time.h>  
-
+#include "UsbToSrb.h"
+#include "string.h"
 #include "StreamJsonWriter.h"
 
 #include "UsbToSrb.h"
 #include "UsbAccess.h"
-
+#include "AccessRecorder.h"
 
 
 
@@ -24,6 +23,7 @@ namespace srb {
 			libusb_context* mainCTX = nullptr;
 			libusb_device * mainDEV = nullptr;
 			libusb_device_handle *mainDH = nullptr;
+			AccessRecorder recorder;
 
 
 
@@ -94,6 +94,9 @@ namespace srb {
 				}
 				recordSTM.open("record.json", ios::out | ios::trunc);
 				recordSJW = new StreamJsonWriter(&recordSTM);
+
+				recorder.setPathname("2019-6-29record-%d.json");
+
 			}
 			~Impl() {
 				closeUsb();
@@ -219,12 +222,12 @@ namespace srb {
 							acs_queue[point_out] = nullptr;
 							point_out++;
 
-
 							access_lock.unlock();
 							iAccesser* node = acs->owner;
 							node->accessDone(acs);
 
 							acs -> sendJson(*recordSJW);//this line may move to master
+							recorder.record(acs);
 							delete acs;//may not delete acs;
 
 							if (point_out == point_in) {

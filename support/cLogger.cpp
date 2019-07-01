@@ -1,11 +1,11 @@
-﻿#include "Log.h"
+﻿#include <iostream> 
+#include <stdio.h>
+#include "cLogger.h"
 #include "lee.h"
-#include <iostream> 
-#include <stdio.h> 
 
 using namespace std;
 namespace srb {
-	int cLog::errPrint(const char *format, ...){
+	int cLogger::errPrint(const char *format, ...){
 		int str_len_inc = 0;
 		str_len_inc += sprintf_s((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "[SRBERR][]:");
 		va_list args;
@@ -17,10 +17,10 @@ namespace srb {
 		}
 		return str_len_inc;
 	}
-	int cLog::setReportCallback(int(*srbErrorReportCB)(char *)){
+	int cLogger::setReportCallback(int(*srbErrorReportCB)(char *)){
 		this->srbErrorReportCB = srbErrorReportCB;
 		return 0;
 	}
-	cLog log;
+	cLogger logger;
 
 }

@@ -1,7 +1,7 @@
 ﻿#pragma once 
 
 namespace srb {
-	class cLog {
+	class cLogger {
 	private:
 		static const int BUF_LEN = 4096;
 		char last_error_string[BUF_LEN];
@@ -10,6 +10,6 @@ namespace srb {
 		int errPrint(const char *format, ...);
 		int setReportCallback(int(*srbErrorReportCB)(char *));
 	};
-	extern cLog log;
+	extern cLogger logger;
 
 }

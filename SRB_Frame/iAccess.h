@@ -1,6 +1,7 @@
 #pragma once
 #include "srb_heads.h"
 #include "SRB-share-const.h"
+
 namespace srb {
 	class Node;
 /***********************************************************************
@@ -29,13 +30,15 @@ namespace srb {
 		eAccessStatus _status = eAccessStatus::Initing;
 		sSrbPkg* _send_pkg = nullptr;
 		sSrbPkg* _recv_pkg = nullptr;
-		long long _send_time;
+		tUs _send_time = 0;
+		iAccess() {}
+		~iAccess() {}
 
 	public:
 		sSrbPkg* const& Send_pkg = _send_pkg;
 		sSrbPkg* const& Recv_pkg = _recv_pkg;
 		eAccessStatus const& Status = _status;
-		long long const& Send_time = _send_time;
+		tUs const& Send_time = _send_time;
 
 
 	public:

@@ -1,5 +1,6 @@
 #include "iAccess.h"
 #include "iJsonWriter.h"
+#include "OsSupport.h"
 
 namespace srb {
 	static inline int srbPkgToJson(const sSrbPkg* pkg, const char* name, iJsonWriter &recordJW) {
@@ -27,6 +28,7 @@ namespace srb {
 		recordJW.endObj();
 		return done;
 	}
+
 	const char * iAccess::getType(){
 		return "iAccess";
 	}
@@ -41,41 +43,9 @@ namespace srb {
 		return (_status >= eAccessStatus::RecvedDone);
 	};
 
-
-
-
-
-#ifdef WINDOW_86
-#include <time.h>
-#include <windows.h>
-	static int cpu_freq = -1;
-	static void initTimes() {
-		if (cpu_freq == -1) {
-			LARGE_INTEGER f;
-			QueryPerformanceFrequency(&f);
-			cpu_freq =(int)( f.QuadPart);
-		}
-	}
 	void iAccess::recordSendTime(void) {
-		if(cpu_freq==-1){
-			initTimes();
-		}
-		LARGE_INTEGER time;
-		QueryPerformanceCounter(&time);
-		_send_time = time.QuadPart*1000000 / cpu_freq;
+		_send_time = OsSupport::getTimesUs();
 	}
-#endif
-
-#if UNIX
-#include <sys/time.h> 
-	void iAccess::recordSendTime(void) {
-		struct timeval t;
-		if (gettimeofday(&t,nullptr) != 0) {
-			_send_time = -1;
-		}
-		_send_time = t.tv_usec + t.tv_sec*1000*1000;
-	}
-#endif
 
 
 };

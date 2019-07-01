@@ -18,6 +18,7 @@ namespace srb {
 
 	public:
 		StreamJsonWriter(std::ostream* record_ostream);
+		int setStream(std::ostream* record_ostream);
 		int writeNum(const char* name, int value) override;
 		int writeLongLongNum(const char * name, long long value)override;
 		int writeU8Str(const char* name, uint8 value) override;
@@ -28,9 +29,7 @@ namespace srb {
 
 		int writeNumArray(const char* name, const int* value, int len) override;
 		int writeNumArray(const char * name, const uint8 * value, int len)override;
-
-
-		
+				
 		int writeEndLine() override;
 		int beginObj(const char* name) override;
 		int endObj() override;

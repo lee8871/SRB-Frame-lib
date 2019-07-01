@@ -1,5 +1,6 @@
 #pragma once
 #include "lee.h"
+#include "cLogger.h"
 namespace srb {
 	class Node;
 	class Broadcaster;

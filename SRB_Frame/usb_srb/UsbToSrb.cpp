@@ -112,51 +112,92 @@ namespace srb {
 				return done;
 			}
 			int openUsbByName(const char* name) {
-				{
-					libusb_device **devs;
-					char str[256];
-					int usb_device_num;
-					closeUsb();
+				libusb_device **devs;
+				char str[256];
+				int usb_device_num;
+				closeUsb();
 
-					usb_device_num = libusb_get_device_list(mainCTX, &devs);
-					if (usb_device_num < 0) {
-						return usb_device_num;
+				usb_device_num = libusb_get_device_list(mainCTX, &devs);
+				if (usb_device_num < 0) {
+					return usb_device_num;
+				}
+				libusb_device_descriptor dev_desc;
+				libusb_device_handle *tempDH = nullptr;
+				for (int i = 0;i < usb_device_num;i++)
+				{
+					if (libusb_get_device_descriptor(devs[i], &dev_desc) < 0) {
+						continue;
 					}
-					libusb_device_descriptor dev_desc;
-					libusb_device_handle *tempDH = nullptr;
-					for (int i = 0;i < usb_device_num;i++)
-					{
-						if (libusb_get_device_descriptor(devs[i], &dev_desc) < 0) {
-							continue;
-						}
-						if ((dev_desc.idVendor != 0x16c0) || (dev_desc.idProduct != 0x05dc)) {
-							continue;
-						}
-						if (LIBUSB_SUCCESS != libusb_open(devs[i], &tempDH)) {
-							continue;
-						}
-						libusb_get_string_descriptor_ascii(tempDH, dev_desc.iProduct, (unsigned char*)str, sizeof(str));
-						if (0 != strcmp(str, "SRB-USB")) {
-							libusb_close(tempDH);
-							continue;
-						}
-						libusb_get_string_descriptor_ascii(tempDH, dev_desc.iSerialNumber, (unsigned char*)str, sizeof(str));
-						if (0 != strcmp(str, name)) {
-							libusb_close(tempDH);
-							continue;
-						}
-						initUsbSrb(devs[i], tempDH);
-						break;
+					if ((dev_desc.idVendor != 0x16c0) || (dev_desc.idProduct != 0x05dc)) {
+						continue;
 					}
-					libusb_free_device_list(devs, 1);
-					if (mainDEV != nullptr) {
-						return 0;
+					if (LIBUSB_SUCCESS != libusb_open(devs[i], &tempDH)) {
+						continue;
 					}
-					else {
-						return -1;
+					libusb_get_string_descriptor_ascii(tempDH, dev_desc.iProduct, (unsigned char*)str, sizeof(str));
+					if (0 != strcmp(str, "SRB-USB")) {
+						libusb_close(tempDH);
+						continue;
 					}
+					libusb_get_string_descriptor_ascii(tempDH, dev_desc.iSerialNumber, (unsigned char*)str, sizeof(str));
+					if (0 != strcmp(str, name)) {
+						libusb_close(tempDH);
+						continue;
+					}
+					initUsbSrb(devs[i], tempDH);
+					break;
+				}
+				libusb_free_device_list(devs, 1);
+				if (mainDEV != nullptr) {
+					return 0;
+				}
+				else {
+					return -1;
 				}
 			}
+			int lsUsbByName(strlist name_len_64,int len) {
+				libusb_device **devs;
+				char str[256];
+				int usb_device_num;
+				closeUsb();
+
+				usb_device_num = libusb_get_device_list(mainCTX, &devs);
+				if (usb_device_num < 0) {
+					return usb_device_num;
+				}
+				libusb_device_descriptor dev_desc;
+				libusb_device_handle *tempDH = nullptr;
+				int scan_counter = 0;
+				for (int i = 0;i < usb_device_num;i++)
+				{
+					if (libusb_get_device_descriptor(devs[i], &dev_desc) < 0) {
+						continue;
+					}
+					if ((dev_desc.idVendor != 0x16c0) || (dev_desc.idProduct != 0x05dc)) {
+						continue;
+					}
+					if (LIBUSB_SUCCESS != libusb_open(devs[i], &tempDH)) {
+						continue;
+					}
+					libusb_get_string_descriptor_ascii(tempDH, dev_desc.iProduct, (unsigned char*)str, sizeof(str));
+					if (0 != strcmp(str, "SRB-USB")) {
+						libusb_close(tempDH);
+						continue;
+					}
+					libusb_get_string_descriptor_ascii(tempDH, dev_desc.iSerialNumber, (unsigned char*)str, 64);
+					libusb_close(tempDH);
+					strcpy((name_len_64[scan_counter]),str);
+					scan_counter++;
+					if(scan_counter == len)
+					{
+						return scan_counter;
+					}
+				}
+				libusb_free_device_list(devs, 1);				
+				return scan_counter;
+			}
+
+
 			iAccess*  newAccess(iAccesser* owner) {
 				UsbAccess *acs = UsbAccess::newAccess(owner);
 				return acs;
@@ -249,6 +290,10 @@ namespace srb {
 
 		int UsbToSrb::openUsbByName(const char* name){
 			return pimpl->openUsbByName(name);
+		}
+
+		int UsbToSrb::lsUsbByName(strlist name_len_64,int len){
+			return pimpl->lsUsbByName(name_len_64,len);
 		}
 		int UsbToSrb::closeUsb() {
 			return pimpl->closeUsb();

@@ -1,10 +1,15 @@
-﻿#include "UsbToSrb.h"
+﻿
+#include <string.h>
+#include <iostream>  
+#include <stdio.h>
+
+
+
+#include "OsSupport.h" 
+#include "UsbToSrb.h"
 #include "Node.h"
 #include "SrbMaster.h"
 #include "StreamJsonWriter.h"
-
-#include <iostream>  
-#include <stdio.h>
 #include "cLogger.h"
 
 using namespace std;
@@ -18,29 +23,49 @@ json的方法还是可以沿用流的但是要移动到Master里面，以便控�
 日志系统全部搞在内存里面。使用内存搞一个字符串指针来存放出现的问题，然后通过调用方的日志系统记录错误
 */
 
+char usb_port_name[64] = "";//like "USB-TEST-BED";
+int listNode();
 
-static UsbToSrb* mainbusUB;
-static SrbMaster* mainSRBM;int main(int argc, char *argv[]) {	
-	//TODO: 让设置程序优先级的方法修改为 一个公共的类
-	//setPriority();
-	int16 speed = 0;
-	mainbusUB = new UsbToSrb();
-	mainSRBM = new SrbMaster(mainbusUB);
-	srb::logger.errPrint("hello error %d", 12);
-	printf("try Open Port:%d\n",mainbusUB->openUsbByName("USB-TEST-BED"));
+int main(int argc, char *argv[]) {
+	for(int i = 0;i<argc; i++){
+		if(argv[i][0] == '-'){
+			switch(argv[i][1]){
+				case 'B':
+				strcpy(usb_port_name,argv[i]+2);
+				break;
+				default:
+				printf("Unknow parament '%s'\n",argv[i]);
+				return -1;
+			}
+		}
+	}
+	return listNode();	
+}
+
+
+
+int listNode(){	
+	if(usb_port_name[0] == '\0'){
+		printf("test bus name should set by -B<bus_name>\n");
+		return -1;			
+	}
+	OsSupport::setPriority();	
+	auto mainbusUB(std::make_unique<UsbToSrb>());
+	auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
+
+	int rev;	
+	rev = mainbusUB->openUsbByName(usb_port_name);
+	if (rev != done) {
+		printf("Try open port: [%s] fail!\n", usb_port_name );
+		return -1;
+	}
 	mainSRBM->scanNodes();
-
-	StreamJsonWriter * coutSJW; 
-	coutSJW = new StreamJsonWriter(&cout);
+	auto coutSJW(std::make_unique<StreamJsonWriter>(&cout));
 	coutSJW->is_expand_mode = true;
 	for (int i = 0;i < mainSRBM->MAX_NODE_NUM;i++) {
 		if (mainSRBM->getNode(i) != nullptr) {
 			mainSRBM->getNode(i)->toJsonAll(*coutSJW);
 		}
 	}
-	delete coutSJW;
-	delete mainbusUB ;
-	delete mainSRBM ;	
-	system("pause");	
 	return 0;
 }

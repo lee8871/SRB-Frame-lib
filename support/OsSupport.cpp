@@ -56,10 +56,10 @@ namespace srb {
 		maxpri = sched_get_priority_max(SCHED_FIFO);
 		param.sched_priority = maxpri;
 		if (sched_setscheduler(getpid(), SCHED_FIFO, &param) == -1) {
-			printf("Set priority fail");
+			printf("Set priority fail\n");
 		}
 		else {
-			printf("Set priority done");
+			printf("Set priority done\n");
 		}
 	}
 #endif

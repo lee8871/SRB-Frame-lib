@@ -4,6 +4,7 @@
 #include <memory>
 namespace srb {
 	class StreamJsonWriter;
+	using strlist = char(*)[64];
 	namespace usb_bus {
 		class UsbToSrb : public iBus		{
 		private:
@@ -16,6 +17,7 @@ namespace srb {
 			bool isOpen();
 			int closeUsb();
 			int openUsbByName(const char* name);
+			int lsUsbByName(strlist name_len_64,int len);
 
 			iAccess*  newAccess(iAccesser* owner)  override;
 			int loadAccess(iAccess* acs) override;

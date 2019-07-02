@@ -25,11 +25,7 @@ namespace srb {
 			libusb_device_handle *mainDH = nullptr;
 			AccessRecorder recorder;
 
-
-
 			std::mutex access_lock;
-			std::ofstream  recordSTM;
-			StreamJsonWriter* recordSJW = nullptr;
 
 			//------------------------------about access--------------------------------------------
 			UsbAccess* acs_queue[256] = { nullptr };
@@ -92,17 +88,12 @@ namespace srb {
 				{
 					throw "libusb can not init!";
 				}
-				recordSTM.open("record.json", ios::out | ios::trunc);
-				recordSJW = new StreamJsonWriter(&recordSTM);
-
 				recorder.setPathname("2019-6-29record-%d.json");
 
 			}
 			~Impl() {
 				closeUsb();
 				libusb_exit(mainCTX);
-				recordSTM.close();
-				delete recordSJW;
 			}
 
 			bool isOpen() {
@@ -226,8 +217,7 @@ namespace srb {
 							iAccesser* node = acs->owner;
 							node->accessDone(acs);
 
-							acs -> sendJson(*recordSJW);//this line may move to master
-							recorder.record(acs);
+							recorder.record(acs);//this line may move to master
 							delete acs;//may not delete acs;
 
 							if (point_out == point_in) {

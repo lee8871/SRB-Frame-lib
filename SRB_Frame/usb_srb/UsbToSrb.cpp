@@ -22,7 +22,7 @@ namespace srb {
 		private:
 			libusb_context* mainCTX = nullptr;
 			libusb_device * mainDEV = nullptr;
-			libusb_device_handle *mainDH = nullptr;
+			libusb_device_handle *mainDH = nullptr;		
 			AccessRecorder recorder;
 
 			std::mutex access_lock;
@@ -66,8 +66,7 @@ namespace srb {
 			int initUsbSrb(libusb_device * initDEV, libusb_device_handle * initDH) {
 				mainDH = initDH;
 				mainDEV = initDEV;
-				libusb_ref_device(mainDEV);
-				int rev;
+				int rev = -1;
 				rev = libusb_set_configuration(mainDH, 1);
 				if (LIBUSB_SUCCESS != rev) {
 					closeUsb();
@@ -78,6 +77,7 @@ namespace srb {
 					closeUsb();
 					return rev;
 				}
+				libusb_ref_device(mainDEV);
 				return 0;
 			}
 
@@ -107,12 +107,15 @@ namespace srb {
 				}
 				if (mainDEV != nullptr) {
 					libusb_unref_device(mainDEV);
+					libusb_unref_device(mainDEV);
+					libusb_unref_device(mainDEV);
 					mainDEV = nullptr;
 				}
 				return done;
 			}
 			int openUsbByName(const char* name) {
 				libusb_device **devs;
+				int rev;
 				char str[256];
 				int usb_device_num;
 				closeUsb();
@@ -144,7 +147,7 @@ namespace srb {
 						libusb_close(tempDH);
 						continue;
 					}
-					initUsbSrb(devs[i], tempDH);
+					rev = initUsbSrb(devs[i], tempDH);
 					break;
 				}
 				libusb_free_device_list(devs, 1);
@@ -152,7 +155,7 @@ namespace srb {
 					return 0;
 				}
 				else {
-					return -1;
+					return rev;
 				}
 			}
 			int lsUsbByName(strlist name_len_64,int len) {

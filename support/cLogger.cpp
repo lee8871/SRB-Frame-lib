@@ -14,6 +14,7 @@ namespace srb {
 		va_start(args, format);
 		str_len_inc += vsnprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, format, args);
 		va_end(args);
+		str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "\n");
 		if (nullptr != srbErrorReportCB) {
 			srbErrorReportCB(last_error_string);
 		}

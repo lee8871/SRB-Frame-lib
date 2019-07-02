@@ -54,7 +54,7 @@ namespace srb {
 				}
 				uint8 point = pkg->sno;
 				if (acs_queue[point] == nullptr) {
-					//throw "recv a package to nonexistent node.";
+					logger.errPrint("recv a package to nonexistent node.(addr:%d,sno:%d); ",pkg->addr,pkg->sno);
 					delete pkg;
 					return fail;
 				}
@@ -75,6 +75,8 @@ namespace srb {
 				rev = libusb_claim_interface(mainDH, 0);
 				if (LIBUSB_SUCCESS != rev) {
 					closeUsb();
+					libusb_unref_device(mainDEV);
+					libusb_unref_device(mainDEV);
 					return rev;
 				}
 				libusb_ref_device(mainDEV);
@@ -84,9 +86,8 @@ namespace srb {
 		public:
 			Impl() {
 				int usb_status_flag = libusb_init(&mainCTX);
-				if (usb_status_flag < 0)
-				{
-					throw "libusb can not init!";
+				if (usb_status_flag < 0){
+					logger.errPrint("libusb can not init! rev:%d",usb_status_flag);
 				}
 				recorder.setPathname("2019-6-29record-%d.json");
 
@@ -106,8 +107,6 @@ namespace srb {
 					mainDH = nullptr;
 				}
 				if (mainDEV != nullptr) {
-					libusb_unref_device(mainDEV);
-					libusb_unref_device(mainDEV);
 					libusb_unref_device(mainDEV);
 					mainDEV = nullptr;
 				}
@@ -225,9 +224,12 @@ namespace srb {
 
 			int doAccess() {
 				int active_counter = 0;//记录正在交给硬件处理的包的数量,硬件带有双缓冲,可以进行访问的同时接收下一个访问,
-				int error_counter = 0;//记录错误的次数,如果错误过多,则退出
+				int send_error_counter = 0;
+				int recv_error_counter = 0;
 				if (isOpen() == false) {
-					return -1;
+					logger.errPrint("Do access before open port.");
+					access_lock.unlock();return fail;
+					return fail;
 				}
 				uint8 point_send = 0;
 				access_lock.lock();
@@ -243,7 +245,7 @@ namespace srb {
 								point_send++;
 							}
 							else {
-								error_counter++;
+								send_error_counter++;
 							}
 						}
 						else {
@@ -276,11 +278,14 @@ namespace srb {
 							active_counter--;
 						}
 						else {
-							error_counter++;
+							recv_error_counter++;
 						}
 					}
+					if((recv_error_counter >=5)||(send_error_counter >=5)){
+						logger.errPrint("Access timeover (recv:%d,send:%d)",recv_error_counter,send_error_counter);
+						access_lock.unlock();return fail;
+					}
 				}
-				access_lock.unlock();return fail;
 			}
 			int getAccessQueueLen(){
 				return (int)(point_in - point_out);

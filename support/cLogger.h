@@ -9,6 +9,7 @@ namespace srb {
 	public:
 		int errPrint(const char *format, ...);
 		int setReportCallback(int(*srbErrorReportCB)(char *));
+		const char * const& Last_error_str = last_error_string;
 	};
 	extern cLogger logger;
 

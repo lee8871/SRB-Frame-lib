@@ -151,7 +151,9 @@ int testNode(){
 			for (access_PT.beginCheck();access_PT.Is_checking;access_PT.endCheck()) {
 				key_ctrl_DUMOTOR->sendAccess(0);
 				key_ctrl_2_DUMOTOR->sendAccess(0);
-				mainbusUB->doAccess();
+				if(done!=mainbusUB->doAccess()){
+					printf(logger.Last_error_str);
+				}
 			}
 
 			access_group_counter++;

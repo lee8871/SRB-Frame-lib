@@ -1,4 +1,5 @@
-﻿#include "lee.h"
+﻿#include <stdio.h>
+#include "lee.h"
 #include "OsSupport.h"
 
 
@@ -61,9 +62,5 @@ namespace srb {
 			printf("Set priority done");
 		}
 	}
-}
-
 #endif
-
-
 };

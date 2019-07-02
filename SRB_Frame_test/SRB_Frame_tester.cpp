@@ -1,6 +1,6 @@
 ﻿#include <string>
 #include <stdio.h>   
-#include <conio.h>
+//#include <conio.h>
 
 
 #include "UsbToSrb.h"
@@ -104,6 +104,7 @@ int main(int argc, char *argv[]) {
 				totle_send_time_us = 0;
 				report_counter = 0;		
 				bool is_get_char_c = false;
+				/****************************************** 
 				while(_kbhit() != 0) {
 					if (is_get_char_c = (_getche() == 'c')) {
 						break;
@@ -113,6 +114,7 @@ int main(int argc, char *argv[]) {
 					printf("Get c and stop test!\n");
 					break;
 				}
+				//********************************/
 			}
 		}
 		printf("\n");

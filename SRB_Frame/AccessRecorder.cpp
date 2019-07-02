@@ -1,4 +1,7 @@
 #include <fstream>
+#include <iostream>
+#include <stdio.h>
+#include <memory>
 #include "StreamJsonWriter.h"
 #include "OsSupport.h"
 #include "AccessRecorder.h"
@@ -23,7 +26,7 @@ namespace srb {
 				is_open = false;
 				return fail;
 			}
-			int len = sprintf_s(pathname, 256, base_pathname, file_name_counter);	
+			int len = snprintf(pathname, 256, base_pathname, file_name_counter);	
 			if (len >= 256) {
 				logger.errPrint("Pathname is too long <%s> ",pathname);
 				is_open = false;

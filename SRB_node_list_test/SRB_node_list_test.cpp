@@ -5,7 +5,7 @@
 
 #include <iostream>  
 #include <stdio.h>
-#include "Log.h"
+#include "cLogger.h"
 
 using namespace std;
 using namespace srb::usb_bus;
@@ -26,7 +26,7 @@ static SrbMaster* mainSRBM;int main(int argc, char *argv[]) {
 	int16 speed = 0;
 	mainbusUB = new UsbToSrb();
 	mainSRBM = new SrbMaster(mainbusUB);
-	srb::log.errPrint("hello error %d", 12);
+	srb::logger.errPrint("hello error %d", 12);
 	printf("try Open Port:%d\n",mainbusUB->openUsbByName("USB-TEST-BED"));
 	mainSRBM->scanNodes();
 

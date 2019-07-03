@@ -99,6 +99,7 @@ int enalbeLog(const char* pathname){
 }
 int writeToLog(char* str){
 	fprintf(fp,"%s",str);
+	fflush(fp);
 	return done;
 }
 

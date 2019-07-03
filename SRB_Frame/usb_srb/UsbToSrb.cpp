@@ -20,10 +20,10 @@ namespace srb {
 
 		class UsbToSrb::Impl{
 		private:
+			UsbToSrb* parent;
 			libusb_context* mainCTX = nullptr;
 			libusb_device * mainDEV = nullptr;
 			libusb_device_handle *mainDH = nullptr;		
-			AccessRecorder recorder;
 
 			std::mutex access_lock;
 
@@ -84,12 +84,12 @@ namespace srb {
 			}
 
 		public:
-			Impl() {
+			Impl(UsbToSrb *p) {
+				parent = p;
 				int usb_status_flag = libusb_init(&mainCTX);
 				if (usb_status_flag < 0){
 					logger.errPrint("libusb can not init! rev:%d",usb_status_flag);
 				}
-				recorder.setPathname("2019-6-29record-%d.json");
 
 			}
 			~Impl() {
@@ -198,13 +198,6 @@ namespace srb {
 				libusb_free_device_list(devs, 1);				
 				return scan_counter;
 			}
-
-
-			iAccess*  newAccess(iAccesser* owner) {
-				UsbAccess *acs = UsbAccess::newAccess(owner);
-				return acs;
-			}
-
 			int loadAccess(iAccess* acs){
 				UsbAccess* uacs = dynamic_cast<UsbAccess*>(acs);
 				if (uacs == nullptr) { return fail; }
@@ -254,18 +247,14 @@ namespace srb {
 						}
 					}
 					else {//需要接收的情况
+					//check if access finish. If finish dequeue and report to accesser
 						while (acs_queue[point_out]->isStatusFinish()) {
 							UsbAccess* acs = acs_queue[point_out];
 							acs_queue[point_out] = nullptr;
 							point_out++;
-
 							access_lock.unlock();
-							iAccesser* node = acs->owner;
-							node->accessDone(acs);
-
-							recorder.record(acs);//this line may move to master
-							delete acs;//may not delete acs;
-
+							parent->accessDone(acs);
+							delete acs;
 							if (point_out == point_in) {
 								return done;
 							}
@@ -282,6 +271,7 @@ namespace srb {
 						}
 					}
 					if((recv_error_counter >=5)||(send_error_counter >=5)){
+						//TODO: if fail exit ,we shold do some thing.
 						logger.errPrint("Access timeover (recv:%d,send:%d)",recv_error_counter,send_error_counter);
 						access_lock.unlock();return fail;
 					}
@@ -293,7 +283,7 @@ namespace srb {
 		};
 
 
-		UsbToSrb::UsbToSrb():pimpl(std::make_unique<Impl>()){}
+		UsbToSrb::UsbToSrb():pimpl(std::make_unique<Impl>(this)){}
 		UsbToSrb::~UsbToSrb() = default;
 
 		int UsbToSrb::openUsbByName(const char* name){
@@ -308,24 +298,19 @@ namespace srb {
 		}
 		bool UsbToSrb::isOpen() {
 			return pimpl->isOpen();
-
 		}
-		iAccess*  UsbToSrb::newAccess(iAccesser* owner) {
-			return pimpl->newAccess(owner);
+		iAccess*  UsbToSrb::newAccess(iAccesser* owner) {			
+			UsbAccess *acs = UsbAccess::newAccess(owner);
+			return acs;
 		}
-		int UsbToSrb::loadAccess(iAccess * acs)		{
+		int UsbToSrb::loadAccess(iAccess * acs){
 			return pimpl->loadAccess(acs);
 		}
-		int UsbToSrb::doAccess() {
+		int UsbToSrb::doAccess(){
 			return pimpl->doAccess();
 		}
-
 		int UsbToSrb::getAccessQueueLen() {
 			return pimpl->getAccessQueueLen();
 		}
-
-
-
-		
 	}
 }

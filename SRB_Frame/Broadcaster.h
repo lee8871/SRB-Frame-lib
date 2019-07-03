@@ -12,7 +12,7 @@ namespace srb {
 		~Broadcaster();
 		iBus*  Bus();
 		uint8 Addr() override;
-		void accessDone(iAccess*) override;
+		void accessDoneReply(iAccess*) override;
 
 		int setLedAddress(uint8 cmd);
 

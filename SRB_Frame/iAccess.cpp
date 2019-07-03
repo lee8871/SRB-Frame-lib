@@ -15,7 +15,6 @@ namespace srb {
 		}
 		return done;
 	}
-
 	int iAccess::sendJson(iJsonWriter & recordJW) {
 		recordJW.beginObj("");
 		recordJW.writeLongLongNum("Ts", _send_time);
@@ -28,7 +27,6 @@ namespace srb {
 		recordJW.endObj();
 		return done;
 	}
-
 	const char * iAccess::getType(){
 		return "iAccess";
 	}
@@ -42,10 +40,7 @@ namespace srb {
 	bool iAccess::isStatusFinish() {
 		return (_status >= eAccessStatus::RecvedDone);
 	};
-
 	void iAccess::recordSendTime(void) {
 		_send_time = OsSupport::getTimesUs();
 	}
-
-
 };

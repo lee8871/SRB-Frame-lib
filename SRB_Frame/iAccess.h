@@ -24,15 +24,15 @@ namespace srb {
 	class iAccesser;
 	class ostream;
 	class iJsonWriter;
-
+	using accessDeleteCB_t = int (*)(iAccess*);
 	class iAccess {
 	protected:
 		eAccessStatus _status = eAccessStatus::Initing;
 		sSrbPkg* _send_pkg = nullptr;
 		sSrbPkg* _recv_pkg = nullptr;
 		tUs _send_time = 0;
-		iAccess() {}
-		~iAccess() {}
+		iAccess() = default;
+		~iAccess() = default;
 
 	public:
 		sSrbPkg* const& Send_pkg = _send_pkg;
@@ -40,6 +40,8 @@ namespace srb {
 		eAccessStatus const& Status = _status;
 		tUs const& Send_time = _send_time;
 
+		iAccess(const iAccess&) = delete;
+		iAccess& operator=(const iAccess&)=delete;
 
 	public:
 		iAccesser* owner = nullptr;
@@ -47,6 +49,7 @@ namespace srb {
 		bool isStatusFinish();
 		void recordSendTime(void);
 		int sendJson(iJsonWriter & record);
+
 		virtual const char* getType();
 		
 	};
@@ -55,6 +58,6 @@ namespace srb {
 	class iAccesser {
 		public:
 		virtual uint8 Addr() = 0;
-		virtual void accessDone(iAccess* a) = 0;		
+		virtual void accessDoneReply(iAccess* a) = 0;		
 	};
 }

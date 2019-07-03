@@ -19,7 +19,7 @@ int TEST_PKG_NUM = -1;
 const int REPORT_RAT = 1000;
 
 char usb_port_name[64] = "";//like "USB-TEST-BED";
-char test_node_name[64] = "Edel";
+char test_node_name[64] = "key ctrl";
 char test_node2_name[64] = "key ctrl 2";
 
 char node_name[64] = "";
@@ -28,6 +28,7 @@ char node_name[64] = "";
 int testOneNodeDUMOTOR();	
 int testNode();	
 int lsBus();
+int enalbeLog(const char* pathname);
 PerformanceTimer access_PT;
 
 int main(int argc, char *argv[]) {
@@ -45,6 +46,11 @@ int main(int argc, char *argv[]) {
 				break;
 				case 'E':
 				return lsBus();
+				break;
+				case 'L':
+					if(enalbeLog(argv[i]+2)!=done){
+						printf("Log file open fail <%s>",argv[i]);
+					}
 				break;
 				case 'S':
 				strcpy(node_name,argv[i]+2);
@@ -65,6 +71,36 @@ int main(int argc, char *argv[]) {
 		return testOneNodeDUMOTOR();
 	}
 }
+FILE *fp = nullptr;
+
+int writeToLog(char* str);
+int enalbeLog(const char* pathname){
+	if(fp!=nullptr){
+		fclose(fp);
+		fp = nullptr;
+	}
+	if(pathname[0] == '~'){
+	char expandedPathName[256];
+		snprintf(expandedPathName,256,"%s%s",getenv("HOME"),pathname+1);
+		fp = fopen(expandedPathName,"a");
+	}
+	else{
+		fp = fopen(pathname,"a");
+	}
+
+
+    if( fp == nullptr){
+       return fail;		
+    }
+	else{
+		logger.setReportCallback(writeToLog);	
+	}
+	//TODO:: close file
+}
+int writeToLog(char* str){
+	fprintf(fp,"%s",str);
+	return done;
+}
 
 int lsBus(){
 	char SRB_bus_name[10][64];
@@ -80,6 +116,9 @@ int lsBus(){
 	
 int testNode(){
 	try {
+		char time_str_temp[64];
+		trans::usTotimestr(time_str_temp,64, OsSupport::getTimesUs());
+		logger.errPrint("new log %s",time_str_temp);
 		if(usb_port_name[0] == '\0'){
 			printf("test bus name should set by -B<bus_name>\n");
 			return -1;			
@@ -98,7 +137,6 @@ int testNode(){
 		}
 
 		printf("Open port: [%s].\n", usb_port_name);
-		char time_str_temp[64];
 		trans::usTotimestr(time_str_temp,64, OsSupport::getTimesUs());
 		printf("Test send begin at %s .\n", time_str_temp);
 
@@ -152,7 +190,7 @@ int testNode(){
 				key_ctrl_DUMOTOR->sendAccess(0);
 				key_ctrl_2_DUMOTOR->sendAccess(0);
 				if(done!=mainbusUB->doAccess()){
-					printf(logger.Last_error_str);
+					printf("%s",logger.Last_error_str);
 				}
 			}
 

@@ -16,8 +16,8 @@ namespace srb {
 	uint8 Broadcaster::Addr() {
 		return 0xff;
 	}
-	void Broadcaster::accessDone(iAccess * acs) {
-
+	void Broadcaster::accessDoneReply(iAccess * acs) {
+		
 	}
 
 	int Broadcaster::setLedAddress(uint8 cmd) {

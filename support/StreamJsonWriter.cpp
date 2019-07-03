@@ -1,5 +1,6 @@
 ﻿#include "StreamJsonWriter.h"
 #include <iostream>   
+#include "cLogger.h"
 using namespace std;
 namespace srb {
 	namespace trans {
@@ -130,7 +131,8 @@ namespace srb {
 		preWrite(name);
 		iteration++;
 		if (iteration >= MAX_ITERATION_NUM) {
-			throw "enter too much object";
+			logger.errPrint("Json maker enter too much object.");
+			return fail;
 		}
 		is_first[iteration] = true;
 		*record << '{';
@@ -150,7 +152,8 @@ namespace srb {
 			*record  << endl;
 		}
 		else if (iteration < -1) {
-			throw "endding object is more than begining";
+			logger.errPrint("Json maker endding more object than begining");
+			return fail;
 		}
 		return done;
 	}

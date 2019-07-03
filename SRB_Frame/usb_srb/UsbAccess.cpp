@@ -2,6 +2,7 @@
 
 namespace srb {
 	namespace usb_bus {
+
 		UsbAccess::UsbAccess(iAccesser* n) {
 			owner = n;
 			_status = eAccessStatus::Initing;
@@ -9,7 +10,7 @@ namespace srb {
 		UsbAccess::~UsbAccess() {
 			if (usb_send_pkg != nullptr) {
 				delete usb_send_pkg;
-			}
+		}
 			if (usb_recv_pkg != nullptr) {
 				delete usb_recv_pkg;
 			}
@@ -39,6 +40,7 @@ namespace srb {
 		const char * UsbAccess::getType()		{
 			return "usbToSrb-V1.x";
 		}
+
 		
 
 

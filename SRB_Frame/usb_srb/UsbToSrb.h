@@ -3,7 +3,6 @@
 #include "iBus.h"
 #include <memory>
 namespace srb {
-	class StreamJsonWriter;
 	using strlist = char(*)[64];
 	namespace usb_bus {
 		class UsbToSrb : public iBus		{
@@ -19,7 +18,7 @@ namespace srb {
 			int openUsbByName(const char* name);
 			int lsUsbByName(strlist name_len_64,int len);
 
-			iAccess*  newAccess(iAccesser* owner)  override;
+			iAccess* newAccess(iAccesser* owner) override;
 			int loadAccess(iAccess* acs) override;
 			int doAccess() override;
 			int getAccessQueueLen()override;

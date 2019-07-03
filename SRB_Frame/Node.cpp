@@ -114,11 +114,12 @@ namespace srb {
 	}
 
 
-	void Node::accessDone(iAccess * acs)	{	
+	void Node::accessDoneReply(iAccess * acs)	{	
 		if (acs->Status == eAccessStatus::RecvedDone) {
 			_exsist = true;
 			if (acs->Recv_pkg->bfc.error == yes) {
-				throw  "receive error package";
+				logger.errPrint("access recv bfc.error IS yes, may node error or send data error.");
+				return;
 			}
 			switch (acs->Send_pkg->bfc.port) {
 			case SC_PORT_D0:
@@ -138,7 +139,7 @@ namespace srb {
 			_exsist = false;
 		}
 		else {
-			throw "receive bad package";
+			logger.errPrint("accessDoneReply shold call when status is ReceiveDone or BusTimeOut ");
 		}
 	}
 	int Node::toJsonAll(iJsonWriter & json_printer)	{

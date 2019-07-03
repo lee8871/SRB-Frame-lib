@@ -4,7 +4,7 @@
 namespace srb {
 	namespace usb_bus {
 		class UsbAccess : public iAccess {
-		protected:
+		private:
 			sUsbToSrbPkg* usb_send_pkg = nullptr;
 			sUsbToSrbPkg* usb_recv_pkg = nullptr;
 			UsbAccess(iAccesser*);

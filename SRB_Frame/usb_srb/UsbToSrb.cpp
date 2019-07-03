@@ -39,7 +39,7 @@ namespace srb {
 				int sent_len;
 				a->getUsbSendPkg(&pkg, &length);
 				pkg->sno = point;
-				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 1000)) {
+				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10)) {
 					return fail;
 				}
 				a->recordSendTime();
@@ -48,7 +48,7 @@ namespace srb {
 			int accessRecv() {
 				sUsbToSrbPkg* pkg = new sUsbToSrbPkg();
 				int rcvd_len;
-				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 1000)) {
+				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10)) {
 					delete pkg;
 					return fail;
 				}

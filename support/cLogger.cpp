@@ -4,12 +4,14 @@
 
 #include "cLogger.h"
 #include "lee.h"
+#include "transform.h"
+#include "OsSupport.h"
 
 using namespace std;
 namespace srb {
 	int cLogger::errPrint(const char *format, ...){
 		int str_len_inc = 0;
-		str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "[SRBERR][]:");
+		str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "\t[SRBERR][]:");
 		va_list args;
 		va_start(args, format);
 		str_len_inc += vsnprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, format, args);
@@ -22,6 +24,14 @@ namespace srb {
 	}
 	int cLogger::setReportCallback(int(*srbErrorReportCB)(char *)){
 		this->srbErrorReportCB = srbErrorReportCB;
+		if (nullptr != srbErrorReportCB) {
+			char time_str_temp[32];
+			trans::usTotimestr(time_str_temp,32, OsSupport::getTimesUs());
+			int str_len_inc = 0;
+			str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "[SRB LOG][%s]:",time_str_temp);
+			str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "\n");
+			srbErrorReportCB(last_error_string);
+		}
 		return 0;
 	}
 	cLogger logger;

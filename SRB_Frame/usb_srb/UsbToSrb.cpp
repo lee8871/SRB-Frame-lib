@@ -120,6 +120,7 @@ namespace srb {
 				}
 				return done;
 			}
+
 			bool isDeviceNamed(const char* name,libusb_device * device){
 				libusb_device_descriptor dev_desc;
 				if (libusb_get_device_descriptor(device, &dev_desc) < 0) {
@@ -194,6 +195,36 @@ namespace srb {
 				return done;
 			}
 
+			int resetUSB(){
+				int rev;
+				if (mainDH != nullptr) {
+					libusb_release_interface(mainDH, 0);
+					libusb_close(mainDH);
+					mainDH!= nullptr;
+				}
+				rev = libusb_open(mainDEV, &mainDH);
+				if (LIBUSB_SUCCESS != rev) {
+					logger.errPrint("libusb device open fail, libusb_err=%d.", rev);	
+					libusb_close(mainDH);
+					closeUsb();	return fail;
+				}
+				rev = libusb_reset_device(mainDH);
+				if (LIBUSB_SUCCESS != rev) {
+					logger.errPrint("libusb device reset fail, libusb_err=%d.", rev);
+				}
+				rev = libusb_set_configuration(mainDH, 1);
+				if (LIBUSB_SUCCESS != rev) {					
+					logger.errPrint("libusb_set_configuration fail, libusb_err=%d.",rev);
+					closeUsb();	return fail;
+				}
+				rev = libusb_claim_interface(mainDH, 0);
+				if (LIBUSB_SUCCESS != rev) {
+					logger.errPrint("libusb_claim_interface fail, libusb_err=%d.",rev);
+					closeUsb();	return fail;
+				}
+				return done;
+
+			}
 
 
 			int lsUsbByName(strlist name_len_64,int len) {
@@ -239,7 +270,8 @@ namespace srb {
 			}
 
 
-
+			int access_reset_counter = 0;
+			static const int ACCESS_RESET_MAX = 5;
 			int loadAccess(iAccess* acs){
 				UsbAccess* uacs = dynamic_cast<UsbAccess*>(acs);
 				if (uacs == nullptr) { return fail; }
@@ -312,7 +344,12 @@ namespace srb {
 					}
 					if((recv_error_counter >=5)||(send_error_counter >=5)){
 						//TODO: if fail exit ,we shold do some thing.
-						logger.errPrint("Access timeover (recv:%d,send:%d)",recv_error_counter,send_error_counter);
+						logger.errPrint("Access timeover %d (recv:%d,send:%d) ",access_reset_counter,recv_error_counter,send_error_counter);
+						resetUSB();
+						access_reset_counter++;
+						if(access_reset_counter == ACCESS_RESET_MAX){
+							throw "Access timeover too many times!";
+						}
 						access_lock.unlock();return fail;
 					}
 				}

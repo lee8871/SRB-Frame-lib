@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 				break;
 				case 'S':
 				strcpy(node_name,argv[i]+2);
-				break;
+				break;ACCESS_RESET_MAX = 5;
 				default:
 				printf("Unknow parament '%s'\n",argv[i]);
 				return -1;
@@ -192,6 +192,7 @@ int testNode(){
 					printf("%s",logger.Last_error_str);
 				}
 			}
+			OsSupport::msSleep(1);
 
 			access_group_counter++;
 

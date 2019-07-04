@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 				break;
 				case 'S':
 				strcpy(node_name,argv[i]+2);
-				break;ACCESS_RESET_MAX = 5;
+				break;
 				default:
 				printf("Unknow parament '%s'\n",argv[i]);
 				return -1;

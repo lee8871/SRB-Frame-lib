@@ -39,7 +39,7 @@ namespace srb {
 				int sent_len;
 				a->getUsbSendPkg(&pkg, &length);
 				pkg->sno = point;
-				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10)) {
+				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 1)) {
 					return fail;
 				}
 				a->recordSendTime();
@@ -48,7 +48,7 @@ namespace srb {
 			int accessRecv() {
 				sUsbToSrbPkg* pkg = new sUsbToSrbPkg();
 				int rcvd_len;
-				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10)) {
+				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 1)) {
 					delete pkg;
 					return fail;
 				}
@@ -63,25 +63,7 @@ namespace srb {
 			}
 
 			//----------------------------private method-------------------------------------------
-			int initUsbSrb(libusb_device * initDEV, libusb_device_handle * initDH) {
-				mainDH = initDH;
-				mainDEV = initDEV;
-				int rev = -1;
-				rev = libusb_set_configuration(mainDH, 1);
-				if (LIBUSB_SUCCESS != rev) {
-					closeUsb();
-					return rev;
-				}
-				rev = libusb_claim_interface(mainDH, 0);
-				if (LIBUSB_SUCCESS != rev) {
-					closeUsb();
-					libusb_unref_device(mainDEV);
-					libusb_unref_device(mainDEV);
-					return rev;
-				}
-				libusb_ref_device(mainDEV);
-				return 0;
-			}
+
 
 		public:
 			Impl(UsbToSrb *p) {
@@ -112,51 +94,108 @@ namespace srb {
 				}
 				return done;
 			}
-			int openUsbByName(const char* name) {
-				libusb_device **devs;
-				int rev;
-				char str[256];
-				int usb_device_num;
-				closeUsb();
 
-				usb_device_num = libusb_get_device_list(mainCTX, &devs);
-				if (usb_device_num < 0) {
-					return usb_device_num;
+			int initUsbSrb(libusb_device * device) {
+				mainDEV = device;
+				int rev;
+				rev = libusb_open(mainDEV, &mainDH);
+				if (LIBUSB_SUCCESS != rev) {
+					logger.errPrint("libusb device open fail, libusb_err=%d.", rev);	
+					libusb_close(mainDH);
+					closeUsb();	return fail;
 				}
-				libusb_device_descriptor dev_desc;
-				libusb_device_handle *tempDH = nullptr;
-				for (int i = 0;i < usb_device_num;i++)
-				{
-					if (libusb_get_device_descriptor(devs[i], &dev_desc) < 0) {
-						continue;
-					}
-					if ((dev_desc.idVendor != 0x16c0) || (dev_desc.idProduct != 0x05dc)) {
-						continue;
-					}
-					if (LIBUSB_SUCCESS != libusb_open(devs[i], &tempDH)) {
-						continue;
-					}
-					libusb_get_string_descriptor_ascii(tempDH, dev_desc.iProduct, (unsigned char*)str, sizeof(str));
-					if (0 != strcmp(str, "SRB-USB")) {
-						libusb_close(tempDH);
-						continue;
-					}
-					libusb_get_string_descriptor_ascii(tempDH, dev_desc.iSerialNumber, (unsigned char*)str, sizeof(str));
-					if (0 != strcmp(str, name)) {
-						libusb_close(tempDH);
-						continue;
-					}
-					rev = initUsbSrb(devs[i], tempDH);
-					break;
+				rev = libusb_reset_device(mainDH);
+				if (LIBUSB_SUCCESS != rev) {
+					logger.errPrint("libusb device reset fail, libusb_err=%d.", rev);
 				}
-				libusb_free_device_list(devs, 1);
-				if (mainDEV != nullptr) {
-					return 0;
+				rev = libusb_set_configuration(mainDH, 1);
+				if (LIBUSB_SUCCESS != rev) {					
+					logger.errPrint("libusb_set_configuration fail, libusb_err=%d.",rev);
+					closeUsb();	return fail;
 				}
-				else {
-					return rev;
+				rev = libusb_claim_interface(mainDH, 0);
+				if (LIBUSB_SUCCESS != rev) {
+					logger.errPrint("libusb_claim_interface fail, libusb_err=%d.",rev);
+					closeUsb();	return fail;
 				}
+				return done;
 			}
+			bool isDeviceNamed(const char* name,libusb_device * device){
+				libusb_device_descriptor dev_desc;
+				if (libusb_get_device_descriptor(device, &dev_desc) < 0) {
+					return false;
+				}
+				if ((dev_desc.idVendor != 0x16c0) || (dev_desc.idProduct != 0x05dc)) {
+					return false;
+				}
+				libusb_device_handle *device_handle = nullptr;
+				int rev = libusb_open(device, &device_handle);
+				if (LIBUSB_SUCCESS != rev) {
+					logger.errPrint("libusb device open fail, libusb_err=%d.", rev);	
+					libusb_close(device_handle);
+					return false;
+				}
+				char str[256];
+				rev = libusb_get_string_descriptor_ascii(device_handle, dev_desc.iProduct, (unsigned char*)str, sizeof(str));
+				if(rev < 0){					
+					logger.errPrint("libusb get string_descriptor.iProduct(%d) fail, libusb_err=%d.", dev_desc.iProduct, rev);						
+					libusb_close(device_handle);return false;
+				}
+				if (0 != strcmp(str, "SRB-USB")){								
+					libusb_close(device_handle);return false;
+				}
+
+				rev =libusb_get_string_descriptor_ascii(device_handle, dev_desc.iSerialNumber, (unsigned char*)str, sizeof(str));
+				if(rev < 0){							
+					logger.errPrint("libusb get string_descriptor.iSerialNumber(%d) fail, libusb_err=%d.", dev_desc.iSerialNumber,rev);	
+					libusb_close(device_handle);return false;
+				}
+				if (0 != strcmp(str, name)) {	
+					libusb_close(device_handle);return false;
+				}
+				libusb_close(device_handle);
+				return true;
+			}
+
+			int selectUsbByName(const char* name, libusb_device ** selected_device){				
+				*selected_device = nullptr;
+				libusb_device **devices;
+				int rev;
+				char str[64];
+				int usb_device_num;
+				usb_device_num = libusb_get_device_list(mainCTX, &devices);
+				if (usb_device_num < 0) {
+					logger.errPrint("Get device list fail, libusb_err=%d.",usb_device_num);
+					return fail;
+				}				
+				for (int i = 0;i < usb_device_num;i++){
+					if(true == isDeviceNamed(name,devices[i])){
+						libusb_ref_device(devices[i]);
+						*selected_device = devices[i];
+						break;
+					}
+				}								
+				libusb_free_device_list(devices, 1);
+				return done;
+			}
+
+			int openUsbByName(const char* name) {
+				closeUsb();
+				libusb_device * selected_device = nullptr;
+				if(fail == selectUsbByName(name, &selected_device))	{
+					return fail;
+				}
+				if(selected_device == nullptr){
+					return fail;
+				}
+				if(fail == initUsbSrb(selected_device)){
+					return fail;
+				}
+				return done;
+			}
+
+
+
 			int lsUsbByName(strlist name_len_64,int len) {
 				libusb_device **devs;
 				char str[256];
@@ -198,6 +237,9 @@ namespace srb {
 				libusb_free_device_list(devs, 1);				
 				return scan_counter;
 			}
+
+
+
 			int loadAccess(iAccess* acs){
 				UsbAccess* uacs = dynamic_cast<UsbAccess*>(acs);
 				if (uacs == nullptr) { return fail; }
@@ -213,8 +255,6 @@ namespace srb {
 				access_lock.unlock();
 				return done;
 			};
-
-
 			int doAccess() {
 				int active_counter = 0;//记录正在交给硬件处理的包的数量,硬件带有双缓冲,可以进行访问的同时接收下一个访问,
 				int send_error_counter = 0;
@@ -280,6 +320,8 @@ namespace srb {
 			int getAccessQueueLen(){
 				return (int)(point_in - point_out);
 			}
+
+
 		};
 
 

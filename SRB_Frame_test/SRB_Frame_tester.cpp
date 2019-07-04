@@ -118,8 +118,6 @@ int lsBus(){
 int testNode(){
 	try {
 		char time_str_temp[64];
-		trans::usTotimestr(time_str_temp,64, OsSupport::getTimesUs());
-		logger.errPrint("new log %s",time_str_temp);
 		if(usb_port_name[0] == '\0'){
 			printf("test bus name should set by -B<bus_name>\n");
 			return -1;			

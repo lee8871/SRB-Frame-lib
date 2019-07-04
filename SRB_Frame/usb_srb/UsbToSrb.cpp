@@ -180,9 +180,9 @@ namespace srb {
 				return done;
 			}
 			//TODO last_name is just for test reset USB
-			char last_name[64];
+			const char* last_name;
 			int openUsbByName(const char* name) {
-				strcpy(last_name,name);
+				last_name=name;
 				closeUsb();
 				libusb_device * selected_device = nullptr;
 				if(fail == selectUsbByName(name, &selected_device))	{
@@ -346,14 +346,21 @@ namespace srb {
 					}
 					if((recv_error_counter >=5)||(send_error_counter >=5)){
 						//TODO: if fail exit ,we shold do some thing.
-						access_lock.unlock();						
-						access_reset_counter++;
+						access_lock.unlock();		
 						if(access_reset_counter == ACCESS_RESET_MAX){
 							throw "Access timeover too many times!\n\n";
 						}
 						else{
-							openUsbByName(last_name);		//resetUSB();
-							logger.errPrint("Access timeover %d (recv:%d,send:%d) ",access_reset_counter,recv_error_counter,send_error_counter);
+							int rev = openUsbByName(last_name);
+							if(rev == done){
+								logger.errPrint("Access timeover resetUSB%d done(recv:%d,send:%d), portname is %s"
+								,access_reset_counter,recv_error_counter,send_error_counter, last_name);				
+							}
+							else{
+								logger.errPrint("Access timeover resetUSB%d fail(recv:%d,send:%d), portname is %s "
+								,access_reset_counter,recv_error_counter,send_error_counter, last_name);				
+							}
+							access_reset_counter++;
 						}
 						return fail;
 					}

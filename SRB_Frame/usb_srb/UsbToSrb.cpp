@@ -179,8 +179,10 @@ namespace srb {
 				libusb_free_device_list(devices, 1);
 				return done;
 			}
-
+			//TODO last_name is just for test reset USB
+			char last_name[64];
 			int openUsbByName(const char* name) {
+				strcpy(last_name,name);
 				closeUsb();
 				libusb_device * selected_device = nullptr;
 				if(fail == selectUsbByName(name, &selected_device))	{
@@ -344,13 +346,16 @@ namespace srb {
 					}
 					if((recv_error_counter >=5)||(send_error_counter >=5)){
 						//TODO: if fail exit ,we shold do some thing.
-						logger.errPrint("Access timeover %d (recv:%d,send:%d) ",access_reset_counter,recv_error_counter,send_error_counter);
-						resetUSB();
+						access_lock.unlock();						
 						access_reset_counter++;
 						if(access_reset_counter == ACCESS_RESET_MAX){
-							throw "Access timeover too many times!";
+							throw "Access timeover too many times!\n\n";
 						}
-						access_lock.unlock();return fail;
+						else{
+							openUsbByName(last_name);		//resetUSB();
+							logger.errPrint("Access timeover %d (recv:%d,send:%d) ",access_reset_counter,recv_error_counter,send_error_counter);
+						}
+						return fail;
 					}
 				}
 			}

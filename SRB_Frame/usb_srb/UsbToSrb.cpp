@@ -88,7 +88,9 @@ namespace srb {
 					mainDEV = nullptr;
 				}
 				if(mainCTX!=nullptr){
-					libusb_exit(mainCTX);
+					libusb_exit(mainCTX);					
+					logger.errPrint("close mainCTX!");
+					mainCTX=nullptr;
 				}				
 				return done;
 			}

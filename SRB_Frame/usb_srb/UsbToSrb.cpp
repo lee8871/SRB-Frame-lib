@@ -68,15 +68,10 @@ namespace srb {
 		public:
 			Impl(UsbToSrb *p) {
 				parent = p;
-				int usb_status_flag = libusb_init(&mainCTX);
-				if (usb_status_flag < 0){
-					logger.errPrint("libusb can not init! rev:%d",usb_status_flag);
-				}
 
 			}
 			~Impl() {
 				closeUsb();
-				libusb_exit(mainCTX);
 			}
 
 			bool isOpen() {
@@ -92,6 +87,9 @@ namespace srb {
 					libusb_unref_device(mainDEV);
 					mainDEV = nullptr;
 				}
+				if(mainCTX!=nullptr){
+					libusb_exit(mainCTX);
+				}				
 				return done;
 			}
 
@@ -184,6 +182,10 @@ namespace srb {
 			int openUsbByName(const char* name) {
 				last_name=name;
 				closeUsb();
+				int usb_status_flag = libusb_init(&mainCTX);
+				if (usb_status_flag < 0){
+					logger.errPrint("libusb can not init! rev:%d",usb_status_flag);
+				}				
 				libusb_device * selected_device = nullptr;
 				if(fail == selectUsbByName(name, &selected_device))	{
 					return fail;
@@ -353,16 +355,17 @@ namespace srb {
 						else{
 							int rev = openUsbByName(last_name);
 							if(rev == done){
-								logger.errPrint("Access timeover resetUSB%d done(recv:%d,send:%d), portname is %s"
+								logger.errPrint("Access timeover reset all USB%d done(recv:%d,send:%d), portname is %s"
 								,access_reset_counter,recv_error_counter,send_error_counter, last_name);				
 							}
 							else{
-								logger.errPrint("Access timeover resetUSB%d fail(recv:%d,send:%d), portname is %s "
+								logger.errPrint("Access timeover reset all USB%d fail(recv:%d,send:%d), portname is %s "
 								,access_reset_counter,recv_error_counter,send_error_counter, last_name);				
 							}
 							access_reset_counter++;
 						}
 						return fail;
+						//paste
 					}
 				}
 			}

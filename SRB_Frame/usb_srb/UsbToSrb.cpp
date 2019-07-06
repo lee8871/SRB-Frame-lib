@@ -31,7 +31,8 @@ namespace srb {
 			UsbAccess* acs_queue[256] = { nullptr };
 			uint8 point_in = 0;
 			uint8 point_out = 0;
-
+			int __fortest_sendcounter = 0;
+			int __fortest_recvcounter = 0;
 			int accessSend(uint8 point) {
 				UsbAccess *a = acs_queue[point];
 				sUsbToSrbPkg* pkg;
@@ -39,17 +40,20 @@ namespace srb {
 				int sent_len;
 				a->getUsbSendPkg(&pkg, &length);
 				pkg->sno = point;
-				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 1)) {
+				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10)) {
+					logger.errPrint("send Pkg Timeover");
 					return fail;
 				}
 				a->recordSendTime();
+				logger.errPrint("send Pkg %d",__fortest_sendcounter++);
 				return done;
 			}
 			int accessRecv() {
 				sUsbToSrbPkg* pkg = new sUsbToSrbPkg();
 				int rcvd_len;
-				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 1)) {
+				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10)) {
 					delete pkg;
+					logger.errPrint("recv Pkg Timeover");
 					return fail;
 				}
 				uint8 point = pkg->sno;
@@ -59,6 +63,7 @@ namespace srb {
 					return fail;
 				}
 				acs_queue[point]->setUsbRecvPkg(pkg, rcvd_len);
+				logger.errPrint("recv Pkg %d",__fortest_recvcounter++);
 				return done;
 			}
 
@@ -145,7 +150,6 @@ namespace srb {
 				if (0 != strcmp(str, "SRB-USB")){								
 					libusb_close(device_handle);return false;
 				}
-
 				rev =libusb_get_string_descriptor_ascii(device_handle, dev_desc.iSerialNumber, (unsigned char*)str, sizeof(str));
 				if(rev < 0){							
 					logger.errPrint("libusb get string_descriptor.iSerialNumber(%d) fail, libusb_err=%d.", dev_desc.iSerialNumber,rev);	

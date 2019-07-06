@@ -10,7 +10,7 @@
 #include "UsbAccess.h"
 #include "AccessRecorder.h"
 
-
+#include "OsSupport.h"
 
 
 
@@ -41,11 +41,11 @@ namespace srb {
 				a->getUsbSendPkg(&pkg, &length);
 				pkg->sno = point;
 				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10)) {
-					logger.errPrint("send Pkg Timeover");
+					logger.infoPrint("send Pkg Timeover");
 					return fail;
 				}
 				a->recordSendTime();
-				logger.errPrint("send Pkg %d",__fortest_sendcounter++);
+				logger.infoPrint("send Pkg %d",__fortest_sendcounter++);
 				return done;
 			}
 			int accessRecv() {
@@ -53,17 +53,17 @@ namespace srb {
 				int rcvd_len;
 				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10)) {
 					delete pkg;
-					logger.errPrint("recv Pkg Timeover");
+					logger.infoPrint("recv Pkg Timeover");
 					return fail;
 				}
 				uint8 point = pkg->sno;
 				if (acs_queue[point] == nullptr) {
-					logger.errPrint("recv a package to nonexistent node.(addr:%d,sno:%d); ",pkg->addr,pkg->sno);
+					logger.infoPrint("recv a package to nonexistent node.(addr:%d,sno:%d); ",pkg->addr,pkg->sno);
 					delete pkg;
 					return fail;
 				}
 				acs_queue[point]->setUsbRecvPkg(pkg, rcvd_len);
-				logger.errPrint("recv Pkg %d",__fortest_recvcounter++);
+				logger.infoPrint("recv Pkg %d",__fortest_recvcounter++);
 				return done;
 			}
 
@@ -94,7 +94,8 @@ namespace srb {
 				}
 				if(mainCTX!=nullptr){
 					libusb_exit(mainCTX);					
-					logger.errPrint("close mainCTX!");
+					logger.infoPrint("close mainCTX!");
+					OsSupport::msSleep(50);
 					mainCTX=nullptr;
 				}				
 				return done;
@@ -359,7 +360,9 @@ namespace srb {
 							throw "Access timeover too many times!\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
 						}
 						else{
+							OsSupport::msSleep(50);
 							int rev = openUsbByName(last_name);
+							OsSupport::msSleep(50);
 							if(rev == done){
 								logger.errPrint("Access timeover reset all USB%d done(recv:%d,send:%d), portname is %s"
 								,access_reset_counter,recv_error_counter,send_error_counter, last_name);				

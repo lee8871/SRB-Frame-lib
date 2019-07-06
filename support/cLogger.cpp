@@ -22,6 +22,9 @@ namespace srb {
 		}
 		return str_len_inc;
 	}
+	int cLogger::infoPrint(const char *format, ...){
+		return 0;
+	}
 	int cLogger::setReportCallback(int(*srbErrorReportCB)(char *)){
 		this->srbErrorReportCB = srbErrorReportCB;
 		if (nullptr != srbErrorReportCB) {

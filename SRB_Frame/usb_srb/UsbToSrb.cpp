@@ -356,7 +356,7 @@ namespace srb {
 						//TODO: if fail exit ,we shold do some thing.
 						access_lock.unlock();		
 						if(access_reset_counter == ACCESS_RESET_MAX){
-							throw "Access timeover too many times!\n\n";
+							throw "Access timeover too many times!\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
 						}
 						else{
 							int rev = openUsbByName(last_name);

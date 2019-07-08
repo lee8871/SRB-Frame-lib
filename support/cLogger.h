@@ -5,11 +5,19 @@ namespace srb {
 	private:
 		static const int BUF_LEN = 4096;
 		char last_error_string[BUF_LEN];
-		int(*srbErrorReportCB)(char *);
+		static const int LOG_TYPE_MAX = 127;
+		char is_log_enable[LOG_TYPE_MAX] = {0};
+		int(*srbErrorReportCB)(char *) = nullptr;
+		int setLogHead(const char* head,int type);
+		int sendHead();
 	public:
+		int crashPrint(const char *format, ...);
 		int errPrint(const char *format, ...);
-		int infoPrint(const char *format, ...);
+		int infoPrint(int info_type, const char *format, ...);
 		int setReportCallback(int(*srbErrorReportCB)(char *));
+		int increaseLogType(int type);
+		int decreaseLogType(int type);
+		
 		const char * const& Last_error_str = last_error_string;
 	};
 	extern cLogger logger;

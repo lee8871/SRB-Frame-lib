@@ -41,11 +41,11 @@ namespace srb {
 				a->getUsbSendPkg(&pkg, &length);
 				pkg->sno = point;
 				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10)) {
-					logger.infoPrint("send Pkg Timeover");
+					logger.infoPrint('U',"send Pkg Timeover");
 					return fail;
 				}
 				a->recordSendTime();
-				logger.infoPrint("send Pkg %d",__fortest_sendcounter++);
+				logger.infoPrint('U',"send Pkg %d",__fortest_sendcounter++);
 				return done;
 			}
 			int accessRecv() {
@@ -53,17 +53,17 @@ namespace srb {
 				int rcvd_len;
 				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10)) {
 					delete pkg;
-					logger.infoPrint("recv Pkg Timeover");
+					logger.infoPrint('U',"recv Pkg Timeover");
 					return fail;
 				}
 				uint8 point = pkg->sno;
 				if (acs_queue[point] == nullptr) {
-					logger.infoPrint("recv a package to nonexistent node.(addr:%d,sno:%d); ",pkg->addr,pkg->sno);
+					logger.errPrint("recv a package to nonexistent node.(addr:%d,sno:%d); ",pkg->addr,pkg->sno);
 					delete pkg;
 					return fail;
 				}
 				acs_queue[point]->setUsbRecvPkg(pkg, rcvd_len);
-				logger.infoPrint("recv Pkg %d",__fortest_recvcounter++);
+				logger.infoPrint('U',"recv Pkg %d",__fortest_recvcounter++);
 				return done;
 			}
 
@@ -94,7 +94,7 @@ namespace srb {
 				}
 				if(mainCTX!=nullptr){
 					libusb_exit(mainCTX);					
-					logger.infoPrint("close mainCTX!");
+					logger.infoPrint('U',"close mainCTX!");
 					OsSupport::msSleep(50);
 					mainCTX=nullptr;
 				}				
@@ -357,7 +357,8 @@ namespace srb {
 						//TODO: if fail exit ,we shold do some thing.
 						access_lock.unlock();		
 						if(access_reset_counter == ACCESS_RESET_MAX){
-							throw "Access timeover too many times!\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+							logger.crashPrint("Access timeover too many times!");
+							throw "Access timeover too many times!";
 						}
 						else{
 							OsSupport::msSleep(50);

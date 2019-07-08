@@ -58,7 +58,7 @@ int listNode(){
 	if (rev != done) {
 		printf("Try open port: [%s] fail!\n", usb_port_name );
 		return -1;
-	}
+	}	
 	mainSRBM->scanNodes();
 	auto coutSJW(std::make_unique<StreamJsonWriter>(&cout));
 	coutSJW->is_expand_mode = true;

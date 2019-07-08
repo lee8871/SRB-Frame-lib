@@ -267,7 +267,7 @@ int testOneNodeDUMOTOR(){
 		long long int totle_send_time_us = 0;
 		int report_counter = 0;
 		printf("%d accesses are doing.\n", TEST_PKG_NUM);
-		double speed = 0;
+		double speed = 100;
 		double Acceleration = 0.2;
 		for (int access_group_counter = 0;access_group_counter < TEST_PKG_NUM;) {
 			node_DUMOTOR->Data()->ma.brake = no;
@@ -286,7 +286,7 @@ int testOneNodeDUMOTOR(){
 				node_DUMOTOR->sendAccess(0);
 				mainbusUB->doAccess();
 			}
-			OsSupport::msSleep(1);
+			//OsSupport::msSleep(1);
 			access_group_counter++;
 			totle_send_time_us += access_PT.Last_time_cost;
 			report_counter++;

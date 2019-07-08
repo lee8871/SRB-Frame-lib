@@ -364,7 +364,7 @@ namespace srb {
 							OsSupport::msSleep(50);
 							int rev = openUsbByName(last_name);
 							OsSupport::msSleep(50);
-							if(rev == done){
+							if(rev == done){     
 								logger.errPrint("Access timeover reset all USB%d done(recv:%d,send:%d), portname is %s"
 								,access_reset_counter,recv_error_counter,send_error_counter, last_name);				
 							}
@@ -375,7 +375,6 @@ namespace srb {
 							access_reset_counter++;
 						}
 						return fail;
-						//paste
 					}
 				}
 			}

@@ -111,7 +111,7 @@ int lsBus(){
 	for(int i = 0;i<counter;i++){
 		printf("\t%s\n", SRB_bus_name[i]);
 	}
-	
+	return done;	
 }	
 	
 	
@@ -192,7 +192,7 @@ int testNode(){
 					printf("%s",logger.Last_error_str);
 				}
 			}
-			OsSupport::msSleep(1);
+			//OsSupport::msSleep(1);
 
 			access_group_counter++;
 

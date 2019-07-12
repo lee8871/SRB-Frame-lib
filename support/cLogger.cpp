@@ -25,6 +25,7 @@ namespace srb {
 		str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "]:"); 
 		str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "Log ReportCallback is set.\n");
 		srbErrorReportCB(last_error_string);
+		return str_len_inc;
 		
 	}
 

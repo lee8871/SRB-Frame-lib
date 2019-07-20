@@ -12,6 +12,7 @@ option(MSCV_X64 "Is build for win64?" OFF)
 
 IF(WIN32)
 	if(MSCV_X86)
+		SET(DEPEND_PATH D:/GitHubClone)
 		MESSAGE("build for Window_x86")
 		ADD_DEFINITIONS(-DWINDOW_86)
 	endif(MSCV_X86)

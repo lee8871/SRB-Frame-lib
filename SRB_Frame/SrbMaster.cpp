@@ -63,6 +63,7 @@ namespace srb {
 	Node * SrbMaster::getNode(uint8 addr){
 		return nodes[addr];
 	}
+
 	Node * SrbMaster::getNode(const char * name)	{
 		for (int i = 0;i < MAX_NODE_NUM; i++) {
 			if (nodes[i] != nullptr) {

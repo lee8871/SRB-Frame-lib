@@ -47,9 +47,13 @@ namespace srb {
 		iAccesser* owner = nullptr;
 		int cancle();
 		bool isStatusFinish();
-		void recordSendTime(void);
-		int sendJson(iJsonWriter & record);
 
+
+		int initDone();
+		int recordSendTime(void);
+		int timeoutAccess();
+
+		int sendJson(iJsonWriter & record);
 		virtual const char* getType();
 		
 	};

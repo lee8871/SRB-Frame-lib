@@ -2,7 +2,6 @@
 #include "iAccess.h"
 #include "iJsonWriter.h"
 namespace srb {
-
 	BaseCluster::BaseCluster(Node* node, uint8 addr)
 		:iCluster(node)
 	{
@@ -27,8 +26,6 @@ namespace srb {
 		json_printer.endObj();
 		return done;
 	}
-
-
 	int BaseCluster::addressLedSet(iAccess* acs, uint8 cmd)	{
 		switch (cmd) {
 		case BCC_SHOW_HIGH_ADDR:

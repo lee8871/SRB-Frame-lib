@@ -8,8 +8,8 @@ project (proj_SRB_frame_test)
 
 
 
-include_directories(../readonly/)
 include_directories(./)
+include_directories(../readonly/)
 include_directories(../SRB_Frame)
 include_directories(../SRB_Frame/usb_srb)
 include_directories(../SRB_Frame/common_cluster)

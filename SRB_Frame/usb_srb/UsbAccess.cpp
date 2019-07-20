@@ -29,14 +29,7 @@ namespace srb {
 			acs->_send_pkg = &(acs->usb_send_pkg->pkg);
 			return acs;
 		}
-		int UsbAccess::initDone() {
-			if (Status != eAccessStatus::Initing) {
-				return fail;
-			}
-			_status = eAccessStatus::WaitSend;
-			return done;
-			
-		}
+
 		const char * UsbAccess::getType()		{
 			return "usbToSrb-V1.x";
 		}
@@ -51,7 +44,6 @@ namespace srb {
 			(*len) = 3 + usb_send_pkg->pkg.bfc.length;
 			usb_send_pkg->addr = owner->Addr();
 			*pkg = usb_send_pkg;
-			_status = eAccessStatus::SendWaitRecv;
 			return done;
 		}
 
@@ -85,14 +77,6 @@ namespace srb {
 				}
 			}
 			_status = eAccessStatus::RecvedBadPkg;return done;
-		}
-
-		int UsbAccess::timeoutAccess() {
-			if (_status != eAccessStatus::SendWaitRecv) {
-				return fail;
-			}
-			_status = eAccessStatus::BusTimeOut;
-			return done;
 		}
 	}
 }

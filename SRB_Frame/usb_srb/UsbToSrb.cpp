@@ -31,45 +31,56 @@ namespace srb {
 			UsbAccess* acs_queue[256] = { nullptr };
 			uint8 point_in = 0;
 			uint8 point_out = 0;
-			int __fortest_sendcounter = 0;
-			int __fortest_recvcounter = 0;
 			int accessSend(uint8 point) {
 				UsbAccess *a = acs_queue[point];
 				sUsbToSrbPkg* pkg;
 				int length;
 				int sent_len;
+				int rev;
 				a->getUsbSendPkg(&pkg, &length);
 				pkg->sno = point;
-				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10)) {
-					logger.infoPrint('U',"send Pkg Timeover");
+				if (LIBUSB_SUCCESS != (rev=libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10))) {
+					logger.infoPrint('u',"Send pkg error %d",rev);
+					return fail;
+				}
+				if (sent_len != length) {
+					logger.infoPrint('u', "USB pkg length is %d but send %d", length, sent_len);
 					return fail;
 				}
 				a->recordSendTime();
-				logger.infoPrint('U',"send Pkg %d",__fortest_sendcounter++);
+				logger.infoPrint('U',"send Pkg len %d", sent_len);
 				return done;
 			}
 			int accessRecv() {
 				sUsbToSrbPkg* pkg = new sUsbToSrbPkg();
 				int rcvd_len;
-				if (LIBUSB_SUCCESS != libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10)) {
+				int rev;
+				if (LIBUSB_SUCCESS != (rev = libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10))) {
+					logger.infoPrint('u',"receive pkg error %d",rev);
 					delete pkg;
-					logger.infoPrint('U',"recv Pkg Timeover");
+					return fail;
+				}
+				if (rcvd_len <= 1) {
+					if (rcvd_len == 1) {
+						logger.infoPrint('u', "recv Pkg length=1(%d)", pkg->u8[0]);
+					}
+					else {
+						logger.infoPrint('u', "recv Pkg length=%d", rcvd_len);
+					}
+					delete pkg;
 					return fail;
 				}
 				uint8 point = pkg->sno;
 				if (acs_queue[point] == nullptr) {
-					logger.errPrint("recv a package to nonexistent node.(addr:%d,sno:%d); ",pkg->addr,pkg->sno);
+					logger.infoPrint('u', "recv a package to nonexistent node.(addr:%d,sno:%d,len:%d); ",pkg->addr,pkg->sno, rcvd_len);
 					delete pkg;
 					return fail;
 				}
 				acs_queue[point]->setUsbRecvPkg(pkg, rcvd_len);
-				logger.infoPrint('U',"recv Pkg %d",__fortest_recvcounter++);
+				logger.infoPrint('U',"recv Pkg ");
 				return done;
 			}
-
 			//----------------------------private method-------------------------------------------
-
-
 		public:
 			Impl(UsbToSrb *p) {
 				parent = p;
@@ -78,7 +89,6 @@ namespace srb {
 			~Impl() {
 				closeUsb();
 			}
-
 			bool isOpen() {
 				return (mainDH != nullptr);
 			}
@@ -304,7 +314,6 @@ namespace srb {
 				int recv_error_counter = 0;
 				if (isOpen() == false) {
 					logger.errPrint("Do access before open port.");
-					access_lock.unlock();return fail;
 					return fail;
 				}
 				uint8 point_send = 0;
@@ -325,8 +334,11 @@ namespace srb {
 							}
 						}
 						else {
+							//如果包的类型奇怪则发布一个错误。
+							if (acs_queue[point_send]->Status != eAccessStatus::Cancel) {
+								logger.errPrint("An access in queue[%d] status %d is sending.", point_send, acs_queue[point_send]->Status );
+							}
 							point_send++;
-							//TODO: 如果包的类型奇怪则发布一个错误。
 						}
 					}
 					else {//需要接收的情况
@@ -337,11 +349,12 @@ namespace srb {
 							point_out++;
 							access_lock.unlock();
 							parent->accessDone(acs);
+							//TODO acs应该可以在访问后不被销毁，由访问的发起者销毁，但是发起者不知道访问对应的接口类型。
 							delete acs;
-							if (point_out == point_in) {
-								return done;
-							}
 							access_lock.lock();
+							if (point_out == point_in) {
+								access_lock.unlock();return done;
+							}
 						}
 						access_lock.unlock();
 						int access_recv_status = accessRecv();
@@ -358,31 +371,28 @@ namespace srb {
 						access_lock.unlock();		
 						if(access_reset_counter == ACCESS_RESET_MAX){
 							logger.crashPrint("Access timeover too many times!");
-							throw "Access timeover too many times!";
+							return fail;
 						}
 						else{
-							OsSupport::msSleep(50);
 							int rev = openUsbByName(last_name);
-							OsSupport::msSleep(50);
 							if(rev == done){     
 								logger.errPrint("Access timeover reset all USB%d done(recv:%d,send:%d), portname is %s"
 								,access_reset_counter,recv_error_counter,send_error_counter, last_name);				
 							}
 							else{
 								logger.errPrint("Access timeover reset all USB%d fail(recv:%d,send:%d), portname is %s "
-								,access_reset_counter,recv_error_counter,send_error_counter, last_name);				
+								,access_reset_counter,recv_error_counter,send_error_counter, last_name);
+								return fail;
 							}
 							access_reset_counter++;
 						}
-						return fail;
+						access_lock.lock();
 					}
 				}
 			}
 			int getAccessQueueLen(){
 				return (int)(point_in - point_out);
 			}
-
-
 		};
 
 

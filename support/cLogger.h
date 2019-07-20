@@ -8,15 +8,15 @@ namespace srb {
 		static const int LOG_TYPE_MAX = 127;
 		char is_log_enable[LOG_TYPE_MAX] = {0};
 		int(*srbErrorReportCB)(char *) = nullptr;
-		int setLogHead(const char* head,int type);
-		int sendHead();
+		int setLogHead(const char* head, int type);
+		int sendFileHead();
 	public:
 		int crashPrint(const char *format, ...);
 		int errPrint(const char *format, ...);
 		int infoPrint(int info_type, const char *format, ...);
 		int setReportCallback(int(*srbErrorReportCB)(char *));
-		int increaseLogType(int type);
-		int decreaseLogType(int type);
+		int onLogType(int info_type, const char *format, ...);
+		int offLogType(int info_type, const char *format, ...);
 		
 		const char * const& Last_error_str = last_error_string;
 	};

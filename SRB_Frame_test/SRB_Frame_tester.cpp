@@ -1,14 +1,14 @@
 ﻿#include <string.h>
 #include <stdio.h>   
-//#include <conio.h>
 
-
+#include "OsSupport.h" 
 #include "UsbToSrb.h"
+#include "Node.h"
 #include "SrbMaster.h"
 #include "Broadcaster.h"
 #include "./Nodes/dumotor/DumotorNode.h"
+#include "cLogger.h"
 #include "PerformanceAnalyzer.h" 
-#include "OsSupport.h" 
 #include "transform.h"
 
 using namespace std;
@@ -95,7 +95,9 @@ int enalbeLog(const char* pathname){
 	else{
 		logger.setReportCallback(writeToLog);	
 	}
+	logger.onLogType('u', "set usb error log");
 	//TODO:: close file
+	return 0;
 }
 int writeToLog(char* str){
 	fprintf(fp,"%s",str);
@@ -189,7 +191,8 @@ int testNode(){
 				key_ctrl_DUMOTOR->sendAccess(0);
 				key_ctrl_2_DUMOTOR->sendAccess(0);
 				if(done!=mainbusUB->doAccess()){
-					printf("%s",logger.Last_error_str);
+					printf("Bus connection down.\n");
+					return -1;
 				}
 			}
 			//OsSupport::msSleep(1);
@@ -203,17 +206,6 @@ int testNode(){
 				totle_send_time_us = 0;
 				report_counter = 0;		
 				bool is_get_char_c = false;
-				/****************************************** 
-				while(_kbhit() != 0) {
-					if (is_get_char_c = (_getche() == 'c')) {
-						break;
-					}
-				}
-				if (is_get_char_c){
-					printf("Get c and stop test!\n");
-					break;
-				}
-				//********************************/
 			}
 		}
 		printf("\n");
@@ -271,9 +263,9 @@ int testOneNodeDUMOTOR(){
 		double Acceleration = 0.2;
 		for (int access_group_counter = 0;access_group_counter < TEST_PKG_NUM;) {
 			node_DUMOTOR->Data()->ma.brake = no;
-			node_DUMOTOR->Data()->ma.speed=speed;
+			node_DUMOTOR->Data()->ma.speed=(uint16)speed;
 			node_DUMOTOR->Data()->mb.brake = no;
-			node_DUMOTOR->Data()->mb.speed=speed;
+			node_DUMOTOR->Data()->mb.speed= (uint16)speed;
 			speed+=Acceleration;
 			if(speed>200){
 				Acceleration = -0.2;

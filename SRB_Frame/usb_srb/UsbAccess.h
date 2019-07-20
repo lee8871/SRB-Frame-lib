@@ -12,8 +12,6 @@ namespace srb {
 			~UsbAccess();
 			int getUsbSendPkg(sUsbToSrbPkg** pkg, int* len);
 			int setUsbRecvPkg(sUsbToSrbPkg* pkg, int len);
-			int timeoutAccess();
-			int initDone();
 			static UsbAccess* newAccess(iAccesser*);
 			virtual const char* getType() override;
 		};

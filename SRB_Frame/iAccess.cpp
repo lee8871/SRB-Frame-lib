@@ -40,7 +40,33 @@ namespace srb {
 	bool iAccess::isStatusFinish() {
 		return (_status >= eAccessStatus::RecvedDone);
 	};
-	void iAccess::recordSendTime(void) {
+
+
+	int iAccess::recordSendTime(void) {
+		if (_status != eAccessStatus::WaitSend) {
+			return fail;
+		}
 		_send_time = OsSupport::getTimesUs();
+		_status = eAccessStatus::SendWaitRecv;
+		return done;
 	}
+	int iAccess::initDone() {
+		if (Status != eAccessStatus::Initing) {
+			return fail;
+		}
+		_status = eAccessStatus::WaitSend;
+		return done;
+
+	}
+	int iAccess::timeoutAccess() {
+		if (_status != eAccessStatus::SendWaitRecv) {
+			return fail;
+		}
+		_status = eAccessStatus::SoftwareTimeout;
+		return done;
+	}
+
+
+
+
 };

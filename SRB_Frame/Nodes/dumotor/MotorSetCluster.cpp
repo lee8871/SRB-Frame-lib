@@ -19,8 +19,6 @@ namespace srb {
 	csMotorSet * MotorSetCluster::Buffer()	{
 		return (csMotorSet*)buffer_u8;
 	}
-
-
 	int MotorSetCluster::toJson(iJsonWriter & json_printer) {
 		json_printer.beginObj("set_adj");
 		json_printer.writeNum("Id", Cluster_id);

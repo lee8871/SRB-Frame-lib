@@ -18,6 +18,7 @@ using namespace std;
 namespace srb {
 	namespace usb_bus {
 
+
 		class UsbToSrb::Impl{
 		private:
 			UsbToSrb* parent;

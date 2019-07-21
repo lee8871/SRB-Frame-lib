@@ -61,15 +61,12 @@ int main(int argc, char *argv[]) {
 					break;
 				default:
 					printf("Unknow parament '%s'\n",argv[i]);
-					return -1;
 			}
 		}
 	}
 	listNode();
 	return 	0;
 }
-
-
 
 int listNode() {
 	if (usb_port_name == nullptr) {

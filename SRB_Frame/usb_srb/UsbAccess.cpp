@@ -33,10 +33,7 @@ namespace srb {
 		const char * UsbAccess::getType()		{
 			return "usbToSrb-V1.x";
 		}
-
 		
-
-
 		int UsbAccess::getUsbSendPkg(sUsbToSrbPkg** pkg, int* len) {
 			if (_status != eAccessStatus::WaitSend) {
 				return fail;

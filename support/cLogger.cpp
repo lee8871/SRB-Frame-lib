@@ -13,7 +13,7 @@ namespace srb {
 		int str_len_inc = 0;
 		switch(type){
 		case -1:
-			str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "[%s][", head, type);
+			str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "[%s][", head);
 			break;
 		case -2:
 			str_len_inc += snprintf((last_error_string + str_len_inc), BUF_LEN - str_len_inc, "%s[", head);

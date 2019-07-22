@@ -1,14 +1,14 @@
 ﻿#include <string.h>
-#include <stdio.h>   
+#include <stdio.h>
 
-#include "OsSupport.h" 
+#include "OsSupport.h"
 #include "UsbToSrb.h"
 #include "Node.h"
 #include "SrbMaster.h"
 #include "Broadcaster.h"
 #include "./Nodes/dumotor/DumotorNode.h"
 #include "cLogger.h"
-#include "PerformanceAnalyzer.h" 
+#include "PerformanceAnalyzer.h"
 #include "transform.h"
 
 using namespace std;
@@ -25,8 +25,8 @@ char test_node2_name[64] = "key ctrl 2";
 char node_name[64] = "";
 
 
-int testOneNodeDUMOTOR();	
-int testNode();	
+int testOneNodeDUMOTOR();
+int testNode();
 int lsBus();
 int enalbeLog(const char* pathname);
 PerformanceTimer access_PT;
@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
 		TEST_PKG_NUM =5000;
 	}
 	if(node_name[0] == '\0'){
-		return testNode();	
+		return testNode();
 	}
 	else{
 		return testOneNodeDUMOTOR();
@@ -90,10 +90,10 @@ int enalbeLog(const char* pathname){
 
 
     if( fp == nullptr){
-       return fail;		
+       return fail;
     }
 	else{
-		logger.setReportCallback(writeToLog);	
+		logger.setReportCallback(writeToLog);
 	}
 	logger.onLogType('u', "set usb error log");
 	//TODO:: close file
@@ -113,16 +113,16 @@ int lsBus(){
 	for(int i = 0;i<counter;i++){
 		printf("\t%s\n", SRB_bus_name[i]);
 	}
-	return done;	
-}	
-	
-	
+	return done;
+}
+
+
 int testNode(){
 	try {
 		char time_str_temp[64];
 		if(usb_port_name[0] == '\0'){
 			printf("test bus name should set by -B<bus_name>\n");
-			return -1;			
+			return -1;
 		}
 		OsSupport::setPriority();
 		auto mainbusUB(std::make_unique<UsbToSrb>());
@@ -130,7 +130,7 @@ int testNode(){
 		DumotorNode * key_ctrl_DUMOTOR;
 		DumotorNode * key_ctrl_2_DUMOTOR;
 
-		int rev;	
+		int rev;
 		rev = mainbusUB->openUsbByName(usb_port_name);
 		if (rev != done) {
 			printf("Try open port: [%s] fail!\n", usb_port_name );
@@ -204,7 +204,7 @@ int testNode(){
 			if (report_counter == REPORT_RAT){
 				printf("[%d]: %d accesses time avariage is %10.1f(us).\n", access_group_counter, REPORT_RAT, (1.0 * totle_send_time_us / report_counter));
 				totle_send_time_us = 0;
-				report_counter = 0;		
+				report_counter = 0;
 				bool is_get_char_c = false;
 			}
 		}
@@ -220,19 +220,19 @@ int testNode(){
 	}
 }
 
-	
+
 int testOneNodeDUMOTOR(){
 	try {
 		if(usb_port_name[0] == '\0'){
 			printf("test bus name should set by -B<bus_name>\n");
-			return -1;			
+			return -1;
 		}
 		OsSupport::setPriority();
 		auto mainbusUB(std::make_unique<UsbToSrb>());
 		auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
 		DumotorNode * node_DUMOTOR;
 
-		int rev;	
+		int rev;
 		rev = mainbusUB->openUsbByName(usb_port_name);
 		if (rev != done) {
 			printf("Try open port: [%s] fail!\n", usb_port_name );
@@ -259,19 +259,20 @@ int testOneNodeDUMOTOR(){
 		long long int totle_send_time_us = 0;
 		int report_counter = 0;
 		printf("%d accesses are doing.\n", TEST_PKG_NUM);
-		double speed = 100;
-		double Acceleration = 0.2;
+		double speed = 0;
+		const double BASE_ACC = 0.1;
+		double Acceleration = -BASE_ACC;
 		for (int access_group_counter = 0;access_group_counter < TEST_PKG_NUM;) {
 			node_DUMOTOR->Data()->ma.brake = no;
-			node_DUMOTOR->Data()->ma.speed=(uint16)speed;
+			node_DUMOTOR->Data()->ma.speed=(int16)speed;
 			node_DUMOTOR->Data()->mb.brake = no;
-			node_DUMOTOR->Data()->mb.speed= (uint16)speed;
+			node_DUMOTOR->Data()->mb.speed= (int16)speed;
 			speed+=Acceleration;
 			if(speed>200){
-				Acceleration = -0.2;
+				Acceleration = -BASE_ACC;
 			}
 			if(speed<-200){
-				Acceleration = 0.2;
+				Acceleration = BASE_ACC;
 			}
 
 			for (access_PT.beginCheck();access_PT.Is_checking;access_PT.endCheck()) {
@@ -285,7 +286,7 @@ int testOneNodeDUMOTOR(){
 			if (report_counter == REPORT_RAT){
 				printf("[%d]: %d accesses time avariage is %10.1f(us).\n", access_group_counter, REPORT_RAT, (1.0 * totle_send_time_us / report_counter));
 				totle_send_time_us = 0;
-				report_counter = 0;		
+				report_counter = 0;
 				bool is_get_char_c = false;
 			}
 		}
@@ -300,6 +301,3 @@ int testOneNodeDUMOTOR(){
 		return -2;
 	}
 }
-
-
-

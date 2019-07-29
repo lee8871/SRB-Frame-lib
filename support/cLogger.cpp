@@ -109,4 +109,63 @@ namespace srb {
 	}
 	cLogger logger;
 
+
+
+
+	
+
+FILE *fp = nullptr;
+int writeToLog(char* str);
+int enalbeLog(const char* pathname) {
+	if (fp != nullptr) {
+		fclose(fp);
+		fp = nullptr;
+	}
+	if (pathname[0] == '~') {
+		char expandedPathName[256];
+		snprintf(expandedPathName, 256, "%s%s", getenv("HOME"), pathname + 1);
+		fp = fopen(expandedPathName, "a");
+	}
+	else {
+		fp = fopen(pathname, "a");
+	}
+
+
+	if (fp == nullptr) {
+		return fail;
+	}
+	else {
+		logger.setReportCallback(writeToLog);
+	}
+	//TODO:: close file
+}
+int enalbeLogToEnv() {
+	if (fp != nullptr) {
+		return redo;
+	}
+	char expandedPathName[256];
+	int str_len_inc = 0;
+	char * srb_base_ENV = getenv("SRB_BASE");
+	if (srb_base_ENV == nullptr) {
+		return fail;
+	}	
+	str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, "%s/log", srb_base_ENV);
+	str_len_inc += trans::usTotimestr((expandedPathName + str_len_inc), 256 - str_len_inc, OsSupport::getTimesUs());
+	str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, ".log");
+	fp = fopen(expandedPathName, "a");
+	if (fp == nullptr) {
+		return fail;
+	}
+	else {
+		logger.setReportCallback(writeToLog);
+	}
+	return done;
+}
+int writeToLog(char* str) {
+	fprintf(fp, "%s", str);
+	fflush(fp);
+	return done;
+}
+
+
 }

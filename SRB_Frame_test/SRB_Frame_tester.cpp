@@ -28,7 +28,7 @@ char node_name[64] = "";
 int testOneNodeDUMOTOR();
 int testNode();
 int lsBus();
-int enalbeLog(const char* pathname);
+
 PerformanceTimer access_PT;
 
 int main(int argc, char *argv[]) {
@@ -70,39 +70,6 @@ int main(int argc, char *argv[]) {
 	else{
 		return testOneNodeDUMOTOR();
 	}
-}
-FILE *fp = nullptr;
-
-int writeToLog(char* str);
-int enalbeLog(const char* pathname){
-	if(fp!=nullptr){
-		fclose(fp);
-		fp = nullptr;
-	}
-	if(pathname[0] == '~'){
-	char expandedPathName[256];
-		snprintf(expandedPathName,256,"%s%s",getenv("HOME"),pathname+1);
-		fp = fopen(expandedPathName,"a");
-	}
-	else{
-		fp = fopen(pathname,"a");
-	}
-
-
-    if( fp == nullptr){
-       return fail;
-    }
-	else{
-		logger.setReportCallback(writeToLog);
-	}
-	logger.onLogType('u', "set usb error log");
-	//TODO:: close file
-	return 0;
-}
-int writeToLog(char* str){
-	fprintf(fp,"%s",str);
-	fflush(fp);
-	return done;
 }
 
 int lsBus(){

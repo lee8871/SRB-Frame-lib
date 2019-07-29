@@ -11,7 +11,7 @@ namespace srb {
 		}
 		int usTotimestr(char* out_str, int len, tUs us_time) {
 			time_t tim = us_time / 1000000;
-			return strftime(out_str, len, "%Y-%m-%d %H:%M:%S", localtime(&tim));
+			return strftime(out_str, len, "%Y%m%d-%H-%M-%S", localtime(&tim));
 		}
 	}
 };

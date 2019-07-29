@@ -21,5 +21,7 @@ namespace srb {
 		const char * const& Last_error_str = last_error_string;
 	};
 	extern cLogger logger;
+	int enalbeLog(const char* pathname);
+	int enalbeLogToEnv();
 
 }

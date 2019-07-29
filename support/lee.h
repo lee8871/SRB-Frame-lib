@@ -29,11 +29,12 @@ namespace srb {
 
 	enum eCommonRev {
 		done = 0,
-		fail = 1,
-		par_error = 2,
-		no_memory = 3,
-		node_exsist = 100,
-		node_no_exsist = 101,
+		fail = -1,
+		par_error = -2,
+		no_memory = -3,
+		redo = -4,
+		node_exsist = -100,
+		node_no_exsist = -101,
 	};
 
 

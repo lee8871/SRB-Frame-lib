@@ -18,8 +18,8 @@ int main(int argc, char *argv[]) {
 	Serializer<int, char> c_jo("c", c, 6);
 	iSerializer<char>* obj[] = { &a_jo, &b_jo, &c_jo };
 	Serializer<iSerializer<char>*, char> obj_jo("test0", obj, 3);
-	iSerializer<char>* o1 = obj_jo.get();
-	auto top_jo(std::make_unique<Serializer<iSerializer<char>*, char>>("top", &o1, 3));
+	iSerializer<char>* o1 = (iSerializer<char>*) &obj_jo;
+	auto top_jo(std::make_unique<Serializer<iSerializer<char>*, char>>("top", &o1, 1));
 	
 	top_jo->get(bank, 4096);
 	printf("%s", bank);

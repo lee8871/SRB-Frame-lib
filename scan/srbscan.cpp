@@ -39,10 +39,10 @@ int connectToBus(const char * usb_port_name) {
 		printf("Try open port: [%s] fail!\n", usb_port_name);
 		return fail;
 	}
+	mainSRBM->scanNodes();
 	return done;
 }
 int listNode(char* sarg) {
-	mainSRBM->scanNodes();
 	for (int i = 0;i < mainSRBM->MAX_NODE_NUM;i++) {
 		auto node = mainSRBM->getNode(i);
 		if (node != nullptr) {
@@ -53,7 +53,7 @@ int listNode(char* sarg) {
 }
 int addrLed(char* sarg) {
 	char cmd = 'c';
-	sscanf(sarg, " %c", &cmd);
+	sscanf(sarg, " -%c", &cmd);
 	switch (cmd) {
 	case 'h':
 		mainSRBM->commonBC->setLedAddress(BCC_SHOW_HIGH_ADDR);
@@ -69,6 +69,35 @@ int addrLed(char* sarg) {
 	}
 	mainbusUB->doAccess();
 	return done;
+}
+int showInfo(char* sarg) {
+	int addr;
+	char name[20];
+	if (1 == sscanf(sarg, " %d", &addr)) {
+		auto node = mainSRBM->getNode(addr);
+		if (node != nullptr) {
+			printf("Addr:%-3d  Name:%-18s  Type:%s\n", node->Addr(), node->Node_name(), node->Node_type());
+			return done;
+		}
+		else {
+			printf("Node which address = %d is not exist.\n", addr);
+			return done;
+		}
+	}
+	else if (1 == sscanf(sarg, " %s", &name)) {
+		auto node = mainSRBM->getNode(name);
+		if (node != nullptr) {
+			printf("Addr:%-3d  Name:%-18s  Type:%s\n", node->Addr(), node->Node_name(), node->Node_type());
+			return done;
+		}
+		else {
+			printf("Node which name = %s is not exist.\n", name);
+			return done;
+		}
+	}
+	else {
+		printf("Cmd 'info' should followed node name or addr.", name);
+	}
 }
 
 
@@ -128,7 +157,8 @@ int readCmd() {
 		exit(0);
 	case getId("led"):
 		return addrLed(argument_str);
-	case: 
+	case getId("info"):
+		return showInfo(argument_str);
 	default:
 		printf("input str is [%s],Id is %u\n", cmd, getId(cmd));
 		return fail;

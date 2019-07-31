@@ -130,13 +130,13 @@ int enalbeLog(const char* pathname) {
 		fp = fopen(pathname, "a");
 	}
 
-
 	if (fp == nullptr) {
 		return fail;
 	}
 	else {
 		logger.setReportCallback(writeToLog);
 	}
+	return done;
 	//TODO:: close file
 }
 int enalbeLogToEnv() {

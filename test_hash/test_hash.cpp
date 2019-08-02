@@ -14,12 +14,12 @@ int main(int argc, char *argv[]) {
 		argument_str[0] = 0;
 		printf(">");
 		scanf("%20s%[^\n]%c", cmd, argument_str, &c);
-		switch (getId(cmd)) {
-		case getId("hello"):
+		switch (getHashCmd(cmd)) {
+		case getHashCmd("hello"):
 			printf("Hi, %s\n",argument_str);
 			break;
 		default:
-			printf("input str is [%s],Id is %u\n", cmd, getId(cmd));
+			printf("input str is [%s],Id is %u\n", cmd, getHashCmd(cmd));
 		}
 	}
 }

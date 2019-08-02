@@ -2,7 +2,7 @@
 #include "lee.h"
 #include <iostream>
 namespace srb {
-	constexpr unsigned int getId(const char * str) {
+	constexpr unsigned int getHashCmd(const char * str) {
 		int i = 0;
 		unsigned int id = 0;
 		unsigned int id_temp = 1;
@@ -24,4 +24,6 @@ namespace srb {
 			}
 		}
 	}
+
+
 };

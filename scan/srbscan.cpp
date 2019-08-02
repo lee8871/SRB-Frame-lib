@@ -150,17 +150,17 @@ int readCmd() {
 	argument_str[0] = 0;
 	printf(">");
 	scanf("%20s%[^\n]%c", cmd, argument_str, &c);
-	switch (getId(cmd)) {
-	case getId("ls"):
+	switch (getHashCmd(cmd)) {
+	case getHashCmd("ls"):
 		return listNode(argument_str);
-	case getId("exit"):
+	case getHashCmd("exit"):
 		exit(0);
-	case getId("led"):
+	case getHashCmd("led"):
 		return addrLed(argument_str);
-	case getId("info"):
+	case getHashCmd("info"):
 		return showInfo(argument_str);
 	default:
-		printf("input str is [%s],Id is %u\n", cmd, getId(cmd));
+		printf("input str is [%s],Id is %u\n", cmd, getHashCmd(cmd));
 		return fail;
 	}
 }

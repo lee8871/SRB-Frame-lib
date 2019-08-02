@@ -16,6 +16,6 @@ include_directories(../support)
 aux_source_directory(. DIR_SRCS)
 
 
-add_executable (test_json ${DIR_SRCS} "../support/Serializer.cpp")
+add_executable (test_json ${DIR_SRCS} "../support/Json.cpp")
 
 

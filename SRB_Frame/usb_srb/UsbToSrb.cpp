@@ -177,8 +177,8 @@ namespace srb {
 			int selectUsbByName(const char* name, libusb_device ** selected_device){				
 				*selected_device = nullptr;
 				libusb_device **devices;
-				int rev;
-				char str[64];
+				//int rev;
+				//char str[64];
 				int usb_device_num;
 				usb_device_num = libusb_get_device_list(mainCTX, &devices);
 				if (usb_device_num < 0) {
@@ -222,7 +222,7 @@ namespace srb {
 				if (mainDH != nullptr) {
 					libusb_release_interface(mainDH, 0);
 					libusb_close(mainDH);
-					mainDH!= nullptr;
+					mainDH = nullptr;
 				}
 				rev = libusb_open(mainDEV, &mainDH);
 				if (LIBUSB_SUCCESS != rev) {
@@ -280,7 +280,7 @@ namespace srb {
 					}
 					libusb_get_string_descriptor_ascii(tempDH, dev_desc.iSerialNumber, (unsigned char*)str, 64);
 					libusb_close(tempDH);
-					strcpy((name_len_64[scan_counter]),str);
+					strcpy_s<64>((name_len_64[scan_counter]),str);
 					scan_counter++;
 					if(scan_counter == len)
 					{

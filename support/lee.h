@@ -28,21 +28,15 @@ namespace srb {
 		yes = 1,
 	};
 
-	#define done (0)
-	#ifdef CHECKFAIL
-	#define fail FAILMARK()
-		int FAILMARK() {
-			return -1;
-		}
-	#else
-	#define fail (-1)
-	#endif
+
 
 
 	enum eCommonRev {
-		par_error = -2,
-		no_memory = -3,
-		redo = -4,
+		done = 0,
+		fail = -1,
+		ARGUMENT_ERROR = -2,
+		NEW_FAIL = -3,
+		REDO = -4,
 		node_exsist = -100,
 		node_no_exsist = -101,
 	};

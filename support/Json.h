@@ -8,9 +8,8 @@ namespace atjson {
 	class json{
 	private:
 		int get(StringPtr* str);
-		int get_obj(StringPtr* str);
-		int get_i32(StringPtr* str);
-
+		int getJsonKey(StringPtr* str);
+		int writeValue(StringPtr* str);
 
 		int set(const char* buf);
 
@@ -21,9 +20,10 @@ namespace atjson {
 		int len;
 		eJsonType type;
 		json(const json&) = delete;
-		json(const char* name, int* value_prt, int len=1);
-		json(const char* name, json* json, int len = 1);
-		friend int getJson(char* buf, int buf_size, json* objectt, int len);
+		json(const char* name, int* value_prt);
+		json(int* value_prt);
+		json(const char* name, json* value_prt, int len = 1,bool is_array = false);
+		int getJson(char * buf, int buf_size);
 	};
 
 

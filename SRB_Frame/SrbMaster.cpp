@@ -21,7 +21,7 @@ namespace srb {
 		if (nodes[addr] == nullptr) {
 			nodes[addr] = new Node(addr,this);
 			if (nodes[addr] == nullptr) {
-				return no_memory;
+				return NEW_FAIL;
 			}
 			else {
 				return done;

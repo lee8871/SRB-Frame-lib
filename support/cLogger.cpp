@@ -141,7 +141,7 @@ int enalbeLog(const char* pathname) {
 }
 int enalbeLogToEnv() {
 	if (fp != nullptr) {
-		return redo;
+		return REDO;
 	}
 	char expandedPathName[256];
 	int str_len_inc = 0;

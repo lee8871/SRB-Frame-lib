@@ -2,33 +2,27 @@
 #include <stdio.h>
 #include <typeinfo>
 #include <string>
+#include <stdarg.h>
 #include "lee.h"
 
 #include "Json.h"
 using namespace std;
 using namespace srb;
 namespace atjson {
-	enum class eJsonType {
-		error,
-		i8,
-		i16,
-		i32,
-		u8,
-		u16,
-		u32,
-		obj
-	};
+
 	class StringPtr {
 	private:
-		char* bgn;
+		char* buf;
 		size_t ptr_i = 0;
 		size_t size;
 	public:
-		StringPtr(char* buf, int size) :
-			bgn(buf), size(size) {}
+		StringPtr(char* b, int s) :
+			buf(b), size(s) {
+			buf[size-1] = 0;
+		}
 
 		inline char* ptr() {
-			return bgn + ptr_i;
+			return buf + ptr_i;
 		}
 		inline int inc(int increase) {
 			if (increase < 0) {
@@ -40,12 +34,49 @@ namespace atjson {
 			}
 			return done;
 		}
-		inline int rem() {
-			return (int)(size - ptr_i);
+		inline size_t rem() {
+			return (size - ptr_i);
 		}
+		int append(char* append) {
+			while (1) {
+				if (*append == 0) {
+					buf[ptr_i] =0;
+					return done;
+				}
+				else{
+					buf[ptr_i++] = *append;
+					if (ptr_i < size) {
+						append++;
+					}
+					else {
+						buf[size - 1] = 0;
+						return fail;
+					}
+				}
+			}
+		}
+		int append(char append) {
+			if(ptr_i < size-1){
+				buf[ptr_i++] = append;
+				buf[ptr_i] = 0;
+				return done;
+			}
+			return fail;
+		}
+		int printf(const char *format, ...) {
+			va_list args;
+			va_start(args, format);
+			int print_inc = vsnprintf(ptr(), rem(), format, args);
+			va_end(args);
+			return inc(print_inc);
+		}
+
 	};
-	constexpr unsigned int HASH_ERROR = 0;
+	constexpr unsigned int NO_HASH = 0;
 	static unsigned int getHashString(const char * str) {
+		if (str == nullptr) {
+			return NO_HASH;
+		}
 		int i = 0;
 		unsigned int id = 0;
 		unsigned int id_temp = 1;
@@ -61,7 +92,7 @@ namespace atjson {
 				id_temp = 1;
 			}
 		}
-		return HASH_ERROR;
+		return NO_HASH;
 	}
 	static unsigned int getHashByDoubleQuotes(const char * str) {
 		int i = 0;
@@ -70,7 +101,7 @@ namespace atjson {
 		const int mod = 1610612741;
 		unsigned char mapped = 0;
 		if (str[i] != '"') {
-			return HASH_ERROR;
+			return NO_HASH;
 		}
 		i++;
 		while (i<255) {
@@ -83,45 +114,46 @@ namespace atjson {
 				id_temp = 1;
 			}
 		}
-		return HASH_ERROR;
+		return NO_HASH;
 	}
 
-	json::json(const char* name, int* value_prt, int len)
-		:value_prt(value_prt), len(len), name(name),
-		type(eJsonType::i32) {
+	enum class eJsonType {
+		error,
+		i8,
+		i16,
+		i32,
+		u8,
+		u16,
+		u32,
+		obj,
+		arr
+	};
 
+	json::json(const char * name, int* value_prt)
+		:value_prt(value_prt), name(name),type(eJsonType::i32)
+	{
 		hash = getHashString(name);
-		if (hash == HASH_ERROR){
-			type = eJsonType::error;
-		}
 	}
-	json::json(const char* name, json* value_prt, int len)
-		: value_prt(value_prt), len(len), name(name),
-		type(eJsonType::obj) {
 
+	json::json(int * value_prt)
+		: value_prt(value_prt), name(nullptr), type(eJsonType::i32), hash(NO_HASH) {}
+
+	json::json(const char * name, json * value_prt, int len, bool is_array)
+
+		: value_prt(value_prt), name(name), len(len)
+	{
 		hash = getHashString(name);
-		if (hash == HASH_ERROR) {
-			type = eJsonType::error;
+		if (is_array) {
+			type = eJsonType::arr;
 		}
+		else {
+			type = eJsonType::obj;
+		}
+
 	}
 
-#define writeToBuf(format, ...) do{\
-	if (done != str->inc(snprintf(str->ptr(), str->rem(), format, __VA_ARGS__)))return -1;	\
-	}while(0)
-	
-	int getJson(char * buf, int buf_size, json* object, int len) {
-		StringPtr str_{ buf,buf_size };
-		StringPtr * str = &str_;
-		writeToBuf("{");
-		int i = 0;
-		if (object[i++].get(str) < 0)return fail;
-		while (i < len) {
-			writeToBuf(",");
-			if (object[i++].get(str) < 0)return fail;
-		}
-		writeToBuf("}");
-		return done;
-	}
+
+
 	int checkchar(const char* &buf, char check) {
 		if (*buf == check) {
 			buf++;
@@ -138,53 +170,72 @@ namespace atjson {
 		return 0;
 	}
 
-	int json::get(StringPtr* str) {
-		switch (type) {
-		case eJsonType::obj:
-			return get_obj(str);
-		case eJsonType::i32:
-			return get_i32(str);
-		}
-		return -1;
+
+
+
+
+#define checkFailReturn(value) do{\
+	int rev = (value);\
+	if (done != rev){return rev;}\
+}while(0)
+
+	int json::getJson(char * buf, int buf_size) {
+		StringPtr str_{ buf,buf_size };
+		StringPtr * str = &str_;
+		return get(str);
 	}
 
-	int json::get_obj(StringPtr* str) {
-		json* objs = (json*)value_prt;
-		writeToBuf("\"%s\":", name);
-		if (len == 0) {
-			writeToBuf("null");
-		}
-		else {
-			int i = 0;
-			writeToBuf("{");
-			if (objs[i++].get(str) < 0)return fail;
-			while (i < len) {
-				writeToBuf(",");
-				if (objs[i++].get(str) < 0)return fail;
-			}
-			writeToBuf("}");
-		}
-		return done;
+	int json::getJsonKey(StringPtr* str) {
+		return str->printf("\"%s\":", name);
 	}
-	int json::get_i32(StringPtr* str) {
-		int* val = (int*)value_prt;
-		writeToBuf("\"%s\":", name);
-		switch (len) {
-		case 0:
-			writeToBuf("null");
-			break;
-		case 1:
-			writeToBuf("%d", val[0]);
-			break;
-		default:
-			int i = 0;
-			writeToBuf("[%d", val[i++]);
-			while (i < len) {
-				writeToBuf(",%d", val[i++]);
+
+	int json::get(StringPtr* str) {
+		int i = 0;
+		switch (type) {
+		case eJsonType::obj:
+			i = 0;
+			checkFailReturn(str->append("{"));
+			while (1) {
+				if (i < len) {
+					checkFailReturn(((json*)value_prt)[i].getJsonKey(str));
+					checkFailReturn(((json*)value_prt)[i].get(str));
+					i++;
+				}
+				if (i < len) {
+					checkFailReturn(str->append(','));
+				}
+				else {
+					checkFailReturn(str->append('}'));
+					return done;
+				}
 			}
-			writeToBuf("]");
-			break;
+		case eJsonType::arr:
+			checkFailReturn(str->append("["));
+			while (1) {
+				if (i < len) {
+					checkFailReturn(((json*)value_prt)[i].get(str));
+					i++;
+				}
+				if (i < len) {
+					checkFailReturn(str->append(','));
+				}
+				else {
+					checkFailReturn(str->append(']'));
+					return done;
+				}
+			}
+		default:		
+			checkFailReturn(writeValue(str));
+			return done ;
 		}
-		return done;
+	}
+
+	int json::writeValue(StringPtr* str) {
+		switch (type) {
+		case eJsonType::i32:
+			return str->printf("%d", *((int*)value_prt));
+		case eJsonType::arr:
+			return ((json*)value_prt)->get(str);
+		}
 	}
 };

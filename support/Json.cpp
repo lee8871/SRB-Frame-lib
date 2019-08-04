@@ -130,17 +130,20 @@ namespace atjson {
 	};
 
 	json::json(const char * name, int* value_prt)
-		:value_prt(value_prt), name(name),type(eJsonType::i32)
+		:value_prt(value_prt), name(name), type(eJsonType::i32)
+		, _test_pointJson(nullptr)
 	{
 		hash = getHashString(name);
 	}
 
 	json::json(int * value_prt)
-		: value_prt(value_prt), name(nullptr), type(eJsonType::i32), hash(NO_HASH) {}
+		: value_prt(value_prt), name(nullptr), type(eJsonType::i32), hash(NO_HASH)
+		, _test_pointJson(nullptr) {}
 
 	json::json(const char * name, json * value_prt, int len, bool is_array)
 
 		: value_prt(value_prt), name(name), len(len)
+		, _test_pointJson(nullptr)
 	{
 		hash = getHashString(name);
 		if (is_array) {
@@ -149,7 +152,34 @@ namespace atjson {
 		else {
 			type = eJsonType::obj;
 		}
+	}
 
+	json::json(json * value_prt, int len, bool is_array)
+
+		: value_prt(value_prt),  len(len)
+		, _test_pointJson(nullptr)
+	{
+		if (is_array) {
+			type = eJsonType::arr;
+		}
+		else {
+			type = eJsonType::obj;
+		}
+	}
+
+	json::json(const char * n, initializer_list<json> v, bool is_array):
+		_test_pointJson(v.begin())
+	{
+		value_prt = ((void *)(v.begin()));
+		name = n;
+		len = v.size();
+		hash = getHashString(name);
+		if (is_array) {
+			type = eJsonType::arr;
+		}
+		else {
+			type = eJsonType::obj;
+		}
 	}
 
 
@@ -238,4 +268,9 @@ namespace atjson {
 			return ((json*)value_prt)->get(str);
 		}
 	}
+
+
+
+
+
 };

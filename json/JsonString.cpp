@@ -4,7 +4,7 @@
 
 
 namespace lee8871_support {
-#define addAndCheck(a) buf[ptr_i++] = (a);if (ptr_i == size) { buf[ptr_i - 1] = 0;return fail; }
+#define addAndCheck(a) buf[ptr_i++] = (a);if (ptr_i == size) { buf[ptr_i - 1] = 0;return buf_use_up; }
 #define endString() buf[ptr_i] = 0; return done;
 
 

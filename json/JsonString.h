@@ -4,9 +4,6 @@
 
 
 namespace lee8871_support {
-	enum class eJsonError {
-		buf_use_up = -5,
-	};
 	class JsonString {
 	private:
 		char* buf;
@@ -30,7 +27,7 @@ namespace lee8871_support {
 			}
 			ptr_i += increase;
 			if (ptr_i == size) {
-				return fail;
+				return buf_use_up;
 			}
 			return done;
 		}

@@ -33,6 +33,7 @@ namespace lee8871_support {
 		argument_error = -2,
 		new_fail = -3,
 		redo = -4,
+		buf_use_up = -5,
 		node_exsist = -100,
 		node_no_exsist = -101,
 	};

@@ -84,13 +84,13 @@ namespace srb {
 	}
 	int Node::setMapping(const uint8* map, int port){
 		if ((port < 0) || (port > 3)) {
-			return ARGUMENT_ERROR;
+			return argument_error;
 		}
 		sMapping* map_to_set = (sMapping*)map;
 		int len = map_to_set->up_len + map_to_set->down_len + 2;
 		uint8* map_copy = new uint8[len];
 		if(map_copy==nullptr){
-			return NEW_FAIL;
+			return new_fail;
 		}
 		for (int i = 0; i < len;i++){
 			map_copy[i] = map[i];
@@ -101,7 +101,7 @@ namespace srb {
 
 	int Node::sendAccess(int port) {
 		if ((port < 0) || (port > 3)) {
-			return ARGUMENT_ERROR;
+			return argument_error;
 		}
 		iAccess* acs = Bus()->newAccess(this);
 		int i;

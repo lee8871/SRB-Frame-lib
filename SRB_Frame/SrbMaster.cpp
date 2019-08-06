@@ -22,7 +22,7 @@ namespace srb {
 		if (nodes[addr] == nullptr) {
 			nodes[addr] = new Node(addr,this);
 			if (nodes[addr] == nullptr) {
-				return NEW_FAIL;
+				return new_fail;
 			}
 			else {
 				return done;

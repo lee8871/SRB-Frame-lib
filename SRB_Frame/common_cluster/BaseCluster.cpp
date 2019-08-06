@@ -37,7 +37,7 @@ namespace srb {
 			acs->Send_pkg->bfc.port = SC_PORT_CFG;
 			return done;
 		default:
-			return ARGUMENT_ERROR;
+			return argument_error;
 		}
 	}
 

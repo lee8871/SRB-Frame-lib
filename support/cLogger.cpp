@@ -111,7 +111,10 @@ namespace srb {
 
 
 
-
+#define checkFailReturn(value) do{\
+		int rev = (value);\
+		if (done != rev){return rev;}\
+	}while(0)
 	
 
 FILE *fp = nullptr;
@@ -124,18 +127,12 @@ int enalbeLog(const char* pathname) {
 	if (pathname[0] == '~') {
 		char expandedPathName[256];
 		snprintf(expandedPathName, 256, "%s%s", getenv("HOME"), pathname + 1);
-		fp = fopen(expandedPathName, "a");
+		checkFailReturn(fopen_s(&fp, expandedPathName, "a"));
 	}
 	else {
-		fp = fopen(pathname, "a");
+		checkFailReturn(fopen_s(&fp, pathname, "a"));
 	}
-
-	if (fp == nullptr) {
-		return fail;
-	}
-	else {
-		logger.setReportCallback(writeToLog);
-	}
+	logger.setReportCallback(writeToLog);
 	return done;
 	//TODO:: close file
 }

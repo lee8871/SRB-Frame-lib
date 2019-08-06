@@ -99,7 +99,8 @@ int showInfo(char* sarg) {
 		}
 	}
 	else {
-		printf("Cmd 'info' should followed node name or addr.", name);
+		printf("Cmd 'info' should followed node name or addr.");
+		return fail;
 	}
 }
 
@@ -143,6 +144,7 @@ int readArgument(char* arg) {
 			return fail;
 		}
 	}
+	return fail;
 }	
 
 int readCmd() {

@@ -13,8 +13,11 @@
 #include "stringHash.h"
 
 using namespace std;
+using namespace lee8871_support;
 using namespace srb::usb_bus;
 using namespace srb;
+using namespace lee8871_support;
+using namespace lee8871_support;
 
 int readCmd();
 int readArgument(char* arg);

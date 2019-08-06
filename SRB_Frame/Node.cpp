@@ -11,6 +11,7 @@
 #include "./Nodes/dumotor/DumotorNode.h"
 #include <string.h>
 
+using namespace lee8871_support;
 namespace srb {
 
 	//TODO: how to throw error

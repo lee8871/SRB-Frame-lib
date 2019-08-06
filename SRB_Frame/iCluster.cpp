@@ -2,6 +2,8 @@
 #include "iAccess.h"
 #include "Node.h"
 #include "iJsonWriter.h"
+
+using namespace lee8871_support;
 namespace srb {
 
 	iCluster::iCluster(Node* n)	{

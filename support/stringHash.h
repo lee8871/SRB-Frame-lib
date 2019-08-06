@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include "lee.h"
-#include <iostream>
 namespace srb {
 	constexpr unsigned int getHashCmd(const char * str) {
 		int i = 0;

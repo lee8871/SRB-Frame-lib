@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "lee.h"
 #include <iostream>
+using namespace lee8871_support;
 namespace srb {
 	namespace trans {
 		char u8ToLow(uint8 u8);

@@ -2,6 +2,7 @@
 #include "lee.h"
 #include "iJsonWriter.h"
 #include <iostream> 
+using namespace lee8871_support;
 namespace srb {
 	class StreamJsonWriter: public iJsonWriter {
 	private:

@@ -1,7 +1,8 @@
-﻿#include "lee.h"
+﻿
 #include <iostream>
 #include <time.h> 
-//#include <conio.h>   
+#include "lee.h"
+#include "transform.h"
 namespace srb {
 	namespace trans {
 		char u8ToLow(uint8 u8) {

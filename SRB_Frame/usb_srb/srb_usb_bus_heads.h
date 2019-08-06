@@ -1,5 +1,6 @@
 #pragma once
 #include "lee.h"
+using namespace lee8871_support;
 #include "SRB-share-const.h"
 #include "SRB-base-cluster-share.h"
 namespace srb {

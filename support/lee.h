@@ -21,16 +21,12 @@
 #define bit6 bit(6)
 #define bit7 bit(7)
 */
-namespace srb {
+namespace lee8871_support {
 
 	enum eYesNo {
 		no = 0,
 		yes = 1,
 	};
-
-
-
-
 	enum eCommonRev {
 		done = 0,
 		fail = -1,
@@ -45,10 +41,10 @@ namespace srb {
 
 	typedef unsigned char uint8;
 	typedef unsigned short int uint16;
-	typedef unsigned long int uint32;
+	typedef unsigned int uint32;
 	typedef signed char int8;
 	typedef signed short int int16;
-	typedef signed long int int32;
+	typedef signed int int32;
 
 	using tUs = long long int;
 

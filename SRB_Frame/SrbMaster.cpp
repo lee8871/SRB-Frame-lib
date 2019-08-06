@@ -3,6 +3,7 @@
 #include "Broadcaster.h"
 #include <string.h>
 
+using namespace lee8871_support;
 namespace srb {
 
 	SrbMaster::SrbMaster(iBus* b) {

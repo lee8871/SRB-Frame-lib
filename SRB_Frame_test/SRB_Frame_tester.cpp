@@ -14,6 +14,7 @@
 using namespace std;
 using namespace srb::usb_bus;
 using namespace srb;
+using namespace lee8871_support;
 
 int TEST_PKG_NUM = -1;
 const int REPORT_RAT = 1000;

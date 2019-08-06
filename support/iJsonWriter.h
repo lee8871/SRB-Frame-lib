@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include "lee.h"
+
+using namespace lee8871_support;
 namespace srb {
 	class iJsonWriter {
 	public :

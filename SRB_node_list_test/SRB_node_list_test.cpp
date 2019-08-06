@@ -15,6 +15,7 @@
 using namespace std;
 using namespace srb::usb_bus;
 using namespace srb;
+using namespace lee8871_support;
 /*     _(:з」∠)_
 现在终于决定不做能写入日志的log了。
 原因很简单，c++的库文件太烂，太乱或者体量比本程序还大，或者又要依赖别的库比如boost。

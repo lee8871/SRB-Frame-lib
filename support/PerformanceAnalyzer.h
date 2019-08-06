@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "lee.h"
 #include "OsSupport.h"
+using namespace lee8871_support;
 namespace srb {
 	class PerformanceTimer {
 	private:

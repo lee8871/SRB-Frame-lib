@@ -1,6 +1,7 @@
 #pragma once
 #include "srb_heads.h"
 #include "iAccess.h"
+
 namespace srb {
 	class iCluster{
 	protected:

@@ -1,4 +1,5 @@
 #pragma once
+
 namespace srb {
 	class iAccess;
 	class iAccesser;

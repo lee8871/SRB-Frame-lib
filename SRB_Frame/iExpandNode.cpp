@@ -7,6 +7,8 @@
 #include "InfoCluster.h"
 #include "ErrorCluster.h"
 #include "MappingCluster.h"
+
+using namespace lee8871_support;
 namespace srb {
 
 	int iExpandNode::addCluster(iCluster* cluster)	{

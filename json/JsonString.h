@@ -3,13 +3,13 @@
 
 
 namespace lee8871_support {
-	class LString {
+	class JsonString {
 	private:
 		char* buf;
 		size_t ptr_i = 0;
 		size_t size;
 	public:
-		LString(char* b, int s) :
+		JsonString(char* b, int s) :
 			buf(b), size(s) {
 			buf[size - 1] = 0;
 		}
@@ -33,13 +33,15 @@ namespace lee8871_support {
 			ptr_i = 0;
 			buf[ptr_i] = 0;
 		}
-		int append(char* append);
 		int append(char append);
 		int printf(const char *format, ...);
+		int inputString(const char * string);
+
+		int inputNumber(int value);
+		int inputNumber(unsigned int value);
+		int inputNumber(double value);
+		int inputNumber(float value);
 	};
-	constexpr unsigned int NO_HASH = 0;
-	unsigned int getHashString(const char * str);
-	unsigned int getHashByDoubleQuotes(const char * str);
 
 
 };

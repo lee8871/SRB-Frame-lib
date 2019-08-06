@@ -1,10 +1,4 @@
-﻿
-#include <stdio.h>
-#include <typeinfo>
-#include <string>
-#include <stdarg.h>
-#include "lee.h"
-#include "Json.h"
+﻿#include "Json.h"
 
 using namespace std;
 namespace lee8871_support {
@@ -19,7 +13,7 @@ namespace lee8871_support {
 	void json::moveFrom(json &from){
 		copyValueFrom(from);
 		value_prt = from.value_prt;
-		from.transform = asNull;
+		from.transform = asError;
 		from.size = 0;
 		from.value_prt = nullptr;
 	}
@@ -43,6 +37,7 @@ namespace lee8871_support {
 		}
 	}
 
+
 	json json::operator= (const json & right)	{
 		copyFrom(right);
 		return right;
@@ -55,53 +50,17 @@ namespace lee8871_support {
 	}
 
 
-
-
-
-
-
-	int asNull(LString* str, void* value_prt, bool is_get) {
-		return str->printf("null");
-	}
-	int asArray(LString* str, void* value_prt, bool is_get) {
+	int asArray(JsonString* str, void* value_prt, bool is_get) {
 		return str->printf("[]");
 	}
-	int asObject(LString* str, void* value_prt, bool is_get) {
+	int asObject(JsonString* str, void* value_prt, bool is_get) {
 		return str->printf("{}");
 	}
-	json::json() :transform(asNull) {}
-
-	int asInt(LString* str, void* value_prt,bool is_get) {
-		return str->printf("%d", *((int*)value_prt));
-	}
-	json::json(int32* vp):transform(asInt),value_prt(vp){}
-
-
-	int asUint16(LString* str, void* value_prt, bool is_get) {
-		return str->printf("%u", *((uint16*)value_prt));
-	}
-	json::json(uint16 * value_prt):transform(asUint16), value_prt(value_prt) {}
-
-
-	int asUint8(LString* str, void* value_prt, bool is_get) {
-		return str->printf("%u", *((uint8*)value_prt));
-	}
-	json::json(uint8 * value_prt):transform(asUint8), value_prt(value_prt) {}
-
-	int asInt8(LString* str, void* value_prt, bool is_get) {
-		return str->printf("%d", *((int8 *)value_prt));
-	}
-	json::json(int8 * value_prt) : transform(asInt8), value_prt((void*)value_prt) {}
-
-	int asCharString(LString* str, void* value_prt, bool is_get) {
-		return str->printf("\"%s\"", ((char *)value_prt));
-	}
-	json jsonString(const char * value_prt) {
-		json rev{ asCharString, (void*)value_prt };
-		return rev;
-	}
+	   
 
 	json::json(transformCB transform, void * value_prt) : transform(transform), value_prt(value_prt) {}
+
+
 
 
 	json::json(initializer_list<json> v) : transform(asArray) {
@@ -115,6 +74,55 @@ namespace lee8871_support {
 			value_prt = table;
 		}
 	}
+
+
+
+	constexpr unsigned int NO_HASH = 0;
+	const int HASH_MOD = 1610612741;
+	unsigned int getHashString(const char * str) {
+		if (str == nullptr) {
+			return NO_HASH;
+		}
+		int i = 0;
+		unsigned int id = 0;
+		unsigned int id_temp = 1;
+		const int HASH_MOD = 1610612741;
+		unsigned char mapped = 0;
+		while (i < 255) {
+			if (str[i] == 0) { return (id^id_temp); }
+			id_temp ^= ((unsigned int)str[i]) << (1 + (i % 4) * 7);
+			i++;
+			if ((i % 4) == 0) {
+				id ^= id_temp;
+				id *= HASH_MOD;
+				id_temp = 1;
+			}
+		}
+		return NO_HASH;
+	}
+	unsigned int getHashByDoubleQuotes(const char * str) {
+		int i = 0;
+		unsigned int id = 0;
+		unsigned int id_temp = 1;
+		const int HASH_MOD = 1610612741;
+		unsigned char mapped = 0;
+		if (str[i] != '"') {
+			return NO_HASH;
+		}
+		i++;
+		while (i < 255) {
+			if (str[i] == '"') { return (id^id_temp); }
+			id_temp ^= ((unsigned int)str[i]) << (1 + (i % 4) * 7);
+			i++;
+			if ((i % 4) == 0) {
+				id ^= id_temp;
+				id *= HASH_MOD;
+				id_temp = 1;
+			}
+		}
+		return NO_HASH;
+	}
+
 
 	json::json(initializer_list<pair<const char*, json>> v) : transform(asObject) {
 		size = v.size();
@@ -135,11 +143,9 @@ namespace lee8871_support {
 
 
 
-	int json::getJsonKey(LString* str) {
-		return str->printf("\"%s\":", name);
-	}
+		
 
-	int json::get(LString* str, void *diff) {
+	int json::get(JsonString* str, void *diff) {
 		if (size != 0) {
 			if (asArray == transform) {
 				return getArray(str, diff);
@@ -165,7 +171,7 @@ namespace lee8871_support {
 	}while(0)
 
 
-	int json::getArray(LString* str, void *diff)	{
+	int json::getArray(JsonString* str, void *diff)	{
 		auto table = (json*)value_prt;
 		int i = 0;
 		checkFailReturn(str->append('['));
@@ -183,13 +189,14 @@ namespace lee8871_support {
 		}
 	}
 
-	int json::getObject(LString* str, void *diff) 	{
+	int json::getObject(JsonString* str, void *diff) 	{
 		auto table = (json*)value_prt;
 		int i = 0;
-		checkFailReturn(str->append("{"));
+		checkFailReturn(str->append('{'));
 		while (1) {
 			if (i < size) {
-				checkFailReturn(table[i].getJsonKey(str));
+				checkFailReturn(str->inputString(table[i].name));
+				checkFailReturn(str->append(':'));
 				checkFailReturn(table[i++].get(str, diff));
 			}
 			if (i < size) {
@@ -201,12 +208,4 @@ namespace lee8871_support {
 			}
 		}
 	}
-
-
-
-
-
-
-
-
 };

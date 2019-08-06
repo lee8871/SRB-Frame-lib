@@ -29,7 +29,7 @@ json listtest{ c,c + 1,c + 2,c + 3,c + 4,c + 5 };
 json listtest1{ {"c",listtest} };//the initializer_list copy listtest, than build listtest1 
 
 json listtest2{
-	{"name",jsonString("csMotorSet") },
+	{"name\t hello",jsonString("csMotorSet \t\n\t\b\f\r\\\'\'\'\"\"\"/// hello") },
 	{"I8test", &i8value},
 	{"b",&b},
 	{"c",listtest}
@@ -75,7 +75,7 @@ json difftest{
 	}}
 };
 
-int writeIntAsStr(LString* str, void* value_prt, bool is_get) {
+int writeIntAsStr(JsonString* str, void* value_prt, bool is_get) {
 	return str->printf("\"%d\"", *((int*)value_prt));
 }
 json specialTest{
@@ -89,7 +89,7 @@ json specialTest{
 };
 
 #undef _ia6
-int writeInt6(LString* str, void* value_prt, bool is_get) {
+int writeInt6(JsonString* str, void* value_prt, bool is_get) {
 	return difftest.get(str, value_prt);
 }
 
@@ -125,7 +125,7 @@ json testForStruct{
 
 int main(int argc, char *argv[]) {
 
-	LString str{ bank,4096 };
+	JsonString str{ bank,4096 };
 
 
 
@@ -141,34 +141,34 @@ int main(int argc, char *argv[]) {
 	print_size(long long int);
 	print_size(size_t);
 
-#undef fine print_size
+#undef print_size
 
 
 
 
 
-	printf("Now test for serialization:\n");
+	printf("\n\nNow test for serialization:\n");
 	listtest.get(&str);	printf("%s\n", bank);str.reset();
 	listtest2.get(&str);	printf("%s\n", bank);str.reset();
 	listtest3.get(&str);	printf("%s\n", bank);str.reset();
 	listtest4.get(&str);	printf("%s\n", bank);str.reset();
 
-	printf("Now test for 1 json transform many Objects:\n");
+	printf("\n\nNow test for 1 json transform many Objects:\n");
 	difftest.get(&str, c1);	printf("%s\n", bank);str.reset();
 	difftest.get(&str, c2);	printf("%s\n", bank);str.reset();
 	difftest.get(&str, c3);	printf("%s\n", bank);str.reset();
 
-	printf("Now test for special output:\n");
+	printf("\n\nNow test for special output:\n");
 	specialTest.get(&str, c1);	printf("%s\n", bank);str.reset();
 	specialTest.get(&str, c2);	printf("%s\n", bank);str.reset();
 	specialTest2.get(&str);	printf("%s\n", bank);str.reset();
 
-	printf("Now test for struct<csMotorSet>:\n");
+	printf("\n\nNow test for struct<csMotorSet>:\n");
 	testForStruct.get(&str, &motor_set_values);	printf("%s\n", bank);str.reset();
 	motor_set_values.min_pwm_a = 1229;
 	motor_set_values.min_pwm_b = 3242;
 	motor_set_values.period = 20;
-	motor_set_values.lose_control_ms = 10;
+	motor_set_values.lose_control_ms = 20;
 	motor_set_values.lose_behavior = 1;
 	testForStruct.get(&str, &motor_set_values);	printf("%s\n", bank);str.reset();
 

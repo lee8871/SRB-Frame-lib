@@ -1,9 +1,8 @@
 ﻿#pragma once
 #include "lee.h"
-#include "lstring.h"
+#include "JsonString.h"
 #include <initializer_list>
-
-
+#include <utility>
 
 
 namespace lee8871_support {
@@ -11,21 +10,18 @@ namespace lee8871_support {
 		
 	};
 
-
-	using transformCB = int(*)(LString*, void*,bool);
-
-	int asNull(LString*,void*, bool);
+	using transformCB = int(*)(JsonString*, void*,bool);
+	int asError(JsonString*,void*, bool);
 
 	class json{
 	private:
-		int getJsonKey(LString* str);
-		int getArray(LString* str, void *diff);
-		int getObject(LString* str, void *diff);
+		int getArray(JsonString* str, void *diff);
+		int getObject(JsonString* str, void *diff);
 
 		void * value_prt = nullptr;
 
 		int size = 0;
-		transformCB transform = asNull;
+		transformCB transform = asError;
 		const char * name = nullptr;
 		unsigned int hash = 0;
 
@@ -48,19 +44,10 @@ namespace lee8871_support {
 		json(std::initializer_list<json> v);//to json array
 		json(std::initializer_list<std::pair<const char*, json>> v);//to json object
 
-
-
-
 		~json();
-		int get(LString* str, void *diff = 0);
+		int get(JsonString* str, void *diff = 0);
 	};
-
-
-
+	   	 
 	json jsonString(const char * value_prt);
-
-
-
-
 
 };

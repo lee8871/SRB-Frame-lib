@@ -139,12 +139,6 @@ namespace lee8871_support {
 		}
 	}
 
-
-
-
-
-		
-
 	int json::get(JsonString* str, void *diff) {
 		if (size != 0) {
 			if (asArray == transform) {
@@ -154,7 +148,6 @@ namespace lee8871_support {
 				return getObject(str, diff);
 			}
 			else {
-				throw "{{\"__json_lib_error__\":\"size is %d(should be 0),but transform callback unknow\"}}";
 				return str->printf(
 					"{{\"__json_lib_error__\":\"size is %d(should be 0),but transform callback unknow\"}}", size);
 			}
@@ -162,6 +155,10 @@ namespace lee8871_support {
 		else{
 			return transform(str, (void*)((size_t)value_prt + (size_t)diff),true);
 		}
+	}
+
+	int json::set(JsonString * str, void * diff){
+		return 0;
 	}
 
 

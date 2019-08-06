@@ -8,11 +8,19 @@ namespace lee8871_support {
 #define endString() buf[ptr_i] = 0; return done;
 
 
-	int JsonString::append(char a) {
+	int LString::append(char a) {
 		addAndCheck(a);
 		endString();
 	}
-	int JsonString::printf(const char *format, ...) {
+
+	int LString::append(const char* a) {
+		while (*a != 0) {
+			addAndCheck(*a);
+			a++;
+		}
+		endString();
+	}
+	int LString::printf(const char *format, ...) {
 		va_list args;
 		va_start(args, format);
 		int print_inc = vsnprintf(ptr(), rem(), format, args);
@@ -91,7 +99,8 @@ namespace lee8871_support {
 			addAndCheck('\n');
 			tab_level++;
 			for (int i = 0;i < tab_level;i++) {
-				addAndCheck('\t');
+				addAndCheck(' ');
+				addAndCheck(' ');
 			}
 		}
 		endString();
@@ -101,7 +110,8 @@ namespace lee8871_support {
 		if (isExpanded) {
 			addAndCheck('\n');
 			for (int i = 0;i < tab_level;i++) {
-				addAndCheck('\t');
+				addAndCheck(' ');
+				addAndCheck(' ');
 			}
 		}
 		endString();
@@ -111,7 +121,8 @@ namespace lee8871_support {
 			addAndCheck('\n');
 			tab_level--;
 			for (int i = 0;i < tab_level;i++) {
-				addAndCheck('\t');
+				addAndCheck(' ');
+				addAndCheck(' ');
 			}
 		}
 		addAndCheck('}');
@@ -132,18 +143,27 @@ namespace lee8871_support {
 
 	}
 
-	int JsonString::append(const char* a) {
-		while (*a != 0) {
-			addAndCheck(*a);
-			a++;
-		}
-		endString();
+	JsonString::JsonString(char *_buf, int _size) 
+		:LString(_buf,_size){
+		tab_level = 0;
 	}
 
-
-
+	char* JsonString::errorReport(int length){
+		if (error_str != nullptr) {
+			delete[] error_str;
+			error_str = nullptr;
+		}
+		error_str = new char[length];
+		return error_str;
+	}
 
 #undef addAndCheck 
 #undef endString 
+
+
+	LString::LString(char *_buf, int _size) : 
+		size(_size),buf(_buf) {
+		buf[ptr_i] = 0;
+	}
 
 };

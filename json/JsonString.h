@@ -4,20 +4,14 @@
 
 
 namespace lee8871_support {
-	class JsonString {
-	private:
+
+	class LString {
+	protected:
 		char* buf;
+		const size_t size;
 		size_t ptr_i = 0;
-		size_t size;
-		int tab_level = 0;
+		LString(char *_buf, int _size);
 	public:
-		std::string* error = nullptr;
-		bool isExpanded = true;
-		JsonString(char* b, int s) :
-			buf(b), size(s) {
-			buf[size - 1] = 0;
-			tab_level = 0;
-		}
 		inline char* ptr() {
 			return buf + ptr_i;
 		}
@@ -37,15 +31,36 @@ namespace lee8871_support {
 		inline void reset() {
 			ptr_i = 0;
 			buf[ptr_i] = 0;
-			tab_level = 0;
-			error = nullptr;
 		}
-
 		int append(const char* a);
 		int append(char append);
 
 		int printf(const char *format, ...);
 
+
+	};
+
+	class JsonString : public LString {
+	protected:
+		int tab_level = 0;
+		char* error_str = nullptr;
+	public:
+
+		bool isExpanded = true;
+		char* tab_string = "  ";
+
+
+		JsonString(char *_buf,int _size);	
+		char* errorReport(int length = 1024);
+
+		inline void reset() {
+			LString::reset();
+			tab_level = 0;		
+			if (error_str != nullptr) {
+				delete[] error_str;
+				error_str = nullptr;
+			}
+		}
 		int objectBgn();
 		int objectGasket();
 		int objectEnd();
@@ -59,7 +74,7 @@ namespace lee8871_support {
 		int inputNumber(unsigned int value);
 		int inputNumber(double value);
 		int inputNumber(float value);
-		
+
 		int inputBool(bool value);
 	};
 

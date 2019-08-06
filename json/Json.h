@@ -17,15 +17,17 @@ namespace lee8871_support {
 		int getObject(JsonString* str, void *diff);
 
 		void * value_prt = nullptr;
-
 		int size = 0;
 		transformCB transform = asError;
 		const char * name = nullptr;
 		unsigned int hash = 0;
 
+
 		void copyValueFrom(const json&);
 		void moveFrom(json&);
 		void copyFrom(const json&);
+
+
 	public:
 		json operator = (const json&);
 		json(json&&);
@@ -43,7 +45,12 @@ namespace lee8871_support {
 		json(std::initializer_list<std::pair<const char*, json>> v);//to json object
 
 		~json();
+
+
+
+
 		int get(JsonString* str, void *diff = 0);
+		int set(JsonString* str, void *diff = 0);
 	};
 	   	 
 	json jsonString(const char * value_prt);

@@ -6,9 +6,7 @@
 
 
 namespace lee8871_support {
-	enum class eJsonError {
-		
-	};
+
 
 	using transformCB = int(*)(JsonString*, void*,bool);
 	int asError(JsonString*,void*, bool);

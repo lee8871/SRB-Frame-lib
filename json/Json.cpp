@@ -192,7 +192,7 @@ namespace lee8871_support {
 	int json::getObject(JsonString* str, void *diff) 	{
 		auto table = (json*)value_prt;
 		int i = 0;
-		checkFailReturn(str->append('{'));
+		checkFailReturn(str->objectBgn());
 		while (1) {
 			if (i < size) {
 				checkFailReturn(str->inputString(table[i].name));
@@ -200,10 +200,10 @@ namespace lee8871_support {
 				checkFailReturn(table[i++].get(str, diff));
 			}
 			if (i < size) {
-				checkFailReturn(str->append(','));
+				checkFailReturn(str->objectGasket());
 			}
 			else {
-				checkFailReturn(str->append('}'));
+				checkFailReturn(str->objectEnd());
 				return done;
 			}
 		}

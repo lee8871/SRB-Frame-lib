@@ -43,7 +43,6 @@ json listtest3{
 		{"d",d},
 		{"d2",d + 1}
 	}},
-	{"e",{}}
 };
 
 json listtest4{ 
@@ -60,9 +59,23 @@ json listtest4{
 			{"d34",d + 3}
 		}},
 	}},
-	{"e",{}}
 };
-
+json listtest5{
+	{"lt1",listtest1},
+	{"lt2",listtest2},
+	{"lt3",listtest3},
+	{"ltag4",{
+		{"d",d},
+		{"d2",d + 1},
+		{"d3",{
+			{"lt4",listtest4},
+			{"d31",c},
+			{"d32",c + 1},
+			{"d33",c + 2},
+			{"d34",d + 3}
+		}},
+	}},
+};
 
 #define _ia6 ((int*)0)
 json difftest{ 
@@ -107,7 +120,6 @@ json specialTest2{
 			{"d34",d + 3}
 		}},
 	}},
-	{"e",{}}
 };
 using namespace srb::Du_Motor;
 struct csMotorSet motor_set_values={222,124,1600,100,128};
@@ -124,11 +136,7 @@ json testForStruct{
 #undef _cs_ms
 
 int main(int argc, char *argv[]) {
-
 	JsonString str{ bank,4096 };
-
-
-
 #define print_size(t) printf("Size of %s is %d.\n",#t,sizeof(t))
 	print_size(uint8);
 	print_size(uint16);
@@ -140,12 +148,7 @@ int main(int argc, char *argv[]) {
 	print_size(long int);
 	print_size(long long int);
 	print_size(size_t);
-
 #undef print_size
-
-
-
-
 
 	printf("\n\nNow test for serialization:\n");
 	listtest.get(&str);	printf("%s\n", bank);str.reset();
@@ -172,9 +175,8 @@ int main(int argc, char *argv[]) {
 	motor_set_values.lose_behavior = 1;
 	testForStruct.get(&str, &motor_set_values);	printf("%s\n", bank);str.reset();
 
+	printf("\n\nNow test a long long serialization:\n");
+	listtest5.get(&str);	printf("%s\n", bank);str.reset();
 	while (1) {
-
-
-
 	}
 }

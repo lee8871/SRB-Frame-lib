@@ -30,9 +30,9 @@ namespace lee8871_support {
 	enum eCommonRev {
 		done = 0,
 		fail = -1,
-		ARGUMENT_ERROR = -2,
-		NEW_FAIL = -3,
-		REDO = -4,
+		argument_error = -2,
+		new_fail = -3,
+		redo = -4,
 		node_exsist = -100,
 		node_no_exsist = -101,
 	};

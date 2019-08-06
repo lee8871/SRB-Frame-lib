@@ -5,17 +5,16 @@ cmake_minimum_required (VERSION 3.7)
 
 project (proj_test_json)
 
-
-
-
 include_directories(./)
+include_directories(../json)
 include_directories(../support)
 
 
 
 aux_source_directory(. DIR_SRCS)
+aux_source_directory(../json DIR_JSON)
 
 
-add_executable (test_json ${DIR_SRCS} "../support/Json.cpp")
+add_executable (test_json ${DIR_SRCS} ${DIR_JSON})
 
 

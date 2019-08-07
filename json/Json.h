@@ -3,22 +3,26 @@
 #include "JsonString.h"
 #include <initializer_list>
 #include <utility>
+#include "transform_define.in.h"
 
 
 namespace lee8871_support {
 
-
-	using transformCB = int(*)(JsonString*, void*,bool);
-	int asError(JsonString*,void*, bool);
+	class json;
+	using transformCB = int(*)(transformCBArgumenrt);
+	int asError(transformCBArgumenrt);
 
 	class json{
 	private:
+
+
+		friend int asArray(transformCBArgumenrt);
+		friend int asObject(transformCBArgumenrt);
 		int getArray(JsonString* str, void *diff);
 		int getObject(JsonString* str, void *diff);
+		int setArray(JsonString* str, void *diff);
+		int setObject(JsonString* str, void *diff);
 
-		void * value_prt = nullptr;
-		int size = 0;
-		transformCB transform = asError;
 		const char * name = nullptr;
 		unsigned int hash = 0;
 
@@ -29,6 +33,10 @@ namespace lee8871_support {
 
 
 	public:
+		void * value_prt = nullptr;
+		int size = 0;
+		transformCB transform = asError;
+
 		json operator = (const json&);
 		json(json&&);
 		json(const json&);
@@ -54,5 +62,7 @@ namespace lee8871_support {
 	};
 	   	 
 	json jsonString(const char * value_prt);
+
+
 
 };

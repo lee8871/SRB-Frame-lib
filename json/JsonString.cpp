@@ -1,13 +1,16 @@
 ﻿#include "JsonString.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 namespace lee8871_support {
-#define addAndCheck(a) buf[ptr_i++] = (a);if (ptr_i == size) { buf[ptr_i - 1] = 0;return buf_use_up; }
-#define endString() buf[ptr_i] = 0; return done;
-
-
+	#define addAndCheck(a) buf[ptr_i++] = (a);if (ptr_i == size) { buf[ptr_i - 1] = 0;return buf_use_up; }
+	#define endString() buf[ptr_i] = 0; return done;
+	LString::LString(char *_buf, int _size) :
+		size(_size), buf(_buf) {
+	}
+	
 	int LString::append(char a) {
 		addAndCheck(a);
 		endString();
@@ -69,13 +72,11 @@ namespace lee8871_support {
 	int JsonString::inputNumber(int value) {
 		int print_inc = snprintf(ptr(), rem(), "%d", value);
 		return JsonString::inc(print_inc);
-	}
-
+	}	
 	int JsonString::inputNumber(unsigned int value) {
 		int print_inc = snprintf(ptr(), rem(), "%u", value);
 		return JsonString::inc(print_inc);
 	}
-
 	int JsonString::inputNumber(double value) {
 		int print_inc = snprintf(ptr(), rem(), "%lf", value);
 		return JsonString::inc(print_inc);
@@ -99,8 +100,7 @@ namespace lee8871_support {
 			addAndCheck('\n');
 			tab_level++;
 			for (int i = 0;i < tab_level;i++) {
-				addAndCheck(' ');
-				addAndCheck(' ');
+				checkFailReturn(append(tab_string));
 			}
 		}
 		endString();
@@ -110,8 +110,7 @@ namespace lee8871_support {
 		if (isExpanded) {
 			addAndCheck('\n');
 			for (int i = 0;i < tab_level;i++) {
-				addAndCheck(' ');
-				addAndCheck(' ');
+				checkFailReturn(append(tab_string));
 			}
 		}
 		endString();
@@ -121,8 +120,7 @@ namespace lee8871_support {
 			addAndCheck('\n');
 			tab_level--;
 			for (int i = 0;i < tab_level;i++) {
-				addAndCheck(' ');
-				addAndCheck(' ');
+				checkFailReturn(append(tab_string));
 			}
 		}
 		addAndCheck('}');
@@ -148,22 +146,25 @@ namespace lee8871_support {
 		tab_level = 0;
 	}
 
-	char* JsonString::errorReport(int length){
-		if (error_str != nullptr) {
-			delete[] error_str;
-			error_str = nullptr;
-		}
-		error_str = new char[length];
-		return error_str;
-	}
-
 #undef addAndCheck 
 #undef endString 
 
-
-	LString::LString(char *_buf, int _size) : 
-		size(_size),buf(_buf) {
-		buf[ptr_i] = 0;
+	int JsonString::outputNumber(int* value){
+		char* p_end_l;
+		char* p_end_ld;
+		*value = strtol(buf+ ptr_i, &p_end_l,10);
+		strtold(buf + ptr_i, &p_end_ld);
+		if (p_end_ld == buf + ptr_i)
+		{
+			return - 202;
+		}
+		ptr_i = p_end_ld - buf;
+		if (p_end_ld != p_end_l) {
+			return -201;
+		}
+		return done;
 	}
+
+
 
 };

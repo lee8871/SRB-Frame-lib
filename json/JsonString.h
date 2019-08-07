@@ -10,8 +10,8 @@ namespace lee8871_support {
 		char* buf;
 		const size_t size;
 		size_t ptr_i = 0;
-		LString(char *_buf, int _size);
 	public:
+		LString(char *_buf, int _size);
 		inline char* ptr() {
 			return buf + ptr_i;
 		}
@@ -30,7 +30,6 @@ namespace lee8871_support {
 		}
 		inline void reset() {
 			ptr_i = 0;
-			buf[ptr_i] = 0;
 		}
 		int append(const char* a);
 		int append(char append);
@@ -43,23 +42,15 @@ namespace lee8871_support {
 	class JsonString : public LString {
 	protected:
 		int tab_level = 0;
-		char* error_str = nullptr;
 	public:
 
 		bool isExpanded = true;
 		char* tab_string = "  ";
-
-
-		JsonString(char *_buf,int _size);	
-		char* errorReport(int length = 1024);
+		JsonString(char *_buf,int _size);
 
 		inline void reset() {
 			LString::reset();
-			tab_level = 0;		
-			if (error_str != nullptr) {
-				delete[] error_str;
-				error_str = nullptr;
-			}
+			tab_level = 0;	
 		}
 		int objectBgn();
 		int objectGasket();
@@ -74,6 +65,8 @@ namespace lee8871_support {
 		int inputNumber(unsigned int value);
 		int inputNumber(double value);
 		int inputNumber(float value);
+
+		int outputNumber(int* value);
 
 		int inputBool(bool value);
 	};

@@ -70,6 +70,12 @@ namespace lee8871_support {
 		uint8 u8[2];
 	}u16to8;
 	constexpr size_t UNDEF_LENGTH=1;
+
+#define checkFailReturn(value) do{\
+		int rev = (value);\
+		if (done != rev){return rev;}\
+	}while(0)
+
 }
 
 #endif// _lee_type_and_common_define_h

@@ -50,12 +50,7 @@ namespace lee8871_support {
 	}
 
 
-	int asArray(JsonString* str, void* value_prt, bool is_get) {
-		return str->printf("[]");
-	}
-	int asObject(JsonString* str, void* value_prt, bool is_get) {
-		return str->printf("{}");
-	}
+
 	   
 
 	json::json(transformCB transform, void * value_prt) : transform(transform), value_prt(value_prt) {}
@@ -140,33 +135,13 @@ namespace lee8871_support {
 	}
 
 	int json::get(JsonString* str, void *diff) {
-		if (size != 0) {
-			if (asArray == transform) {
-				return getArray(str, diff);
-			}
-			else if (asObject == transform) {
-				return getObject(str, diff);
-			}
-			else {
-				return str->printf(
-					"{{\"__json_lib_error__\":\"size is %d(should be 0),but transform callback unknow\"}}", size);
-			}
-		}
-		else{
-			return transform(str, (void*)((size_t)value_prt + (size_t)diff),true);
-		}
+		return transform(this,str, diff, true);
 	}
 
 	int json::set(JsonString * str, void * diff){
+		return transform(this, str, diff, false);
 		return 0;
 	}
-
-
-	#define checkFailReturn(value) do{\
-		int rev = (value);\
-		if (done != rev){return rev;}\
-	}while(0)
-
 
 	int json::getArray(JsonString* str, void *diff)	{
 		auto table = (json*)value_prt;
@@ -206,3 +181,5 @@ namespace lee8871_support {
 		}
 	}
 };
+
+

@@ -88,8 +88,8 @@ json difftest{
 	}}
 };
 
-int writeIntAsStr(JsonString* str, void* value_prt, bool is_get) {
-	return str->printf("\"%d\"", *((int*)value_prt));
+int writeIntAsStr(transformCBArgumenrt) {
+	return str->printf("\"%d\"", valuePtr(int));
 }
 json specialTest{
 	{"v0",{writeIntAsStr,_ia6 + 0}},
@@ -102,8 +102,8 @@ json specialTest{
 };
 
 #undef _ia6
-int writeInt6(JsonString* str, void* value_prt, bool is_get) {
-	return difftest.get(str, value_prt);
+int writeInt6(transformCBArgumenrt) {
+	return difftest.get(str, valuePtr(void));
 }
 
 json specialTest2{
@@ -134,8 +134,48 @@ json testForStruct{
 	_cs_ms(lose_behavior)
 };
 #undef _cs_ms
-
+int Step = 0;
+#define PRINGSTEP(descripte)  printf("Step %d  Enter to\n%s", Step++, descripte );while('\n'!=getchar());
 int main(int argc, char *argv[]) {
+	int rev;
+	int value;
+	PRINGSTEP("Test for string to number");
+
+	char number[32] = "-12937  323";
+	JsonString numstr{ number,32 };
+
+	rev = numstr.outputNumber(&value);
+	printf("get num1_1   %d, rev = %d\n", value, rev);
+
+	rev = numstr.outputNumber(&value);
+	printf("get num1_2   %d, rev = %d\n", value, rev);
+
+	char number2[32] = "29929479876133474519";
+	JsonString numstr2{ number2,32 };
+	rev = numstr2.outputNumber(&value);
+	printf("get num2_1   %d, rev = %d\n", value, rev);
+
+	rev = numstr2.outputNumber(&value);
+	printf("get num2_2   %d, rev = %d\n", value, rev);
+
+	char number3[64] = "292 -1254  -223.6 1.646e1293487";
+	JsonString numstr3{ number3,64};
+	rev = numstr3.outputNumber(&value);
+	printf("get num3_1   %d, rev = %d\n", value, rev);
+	rev = numstr3.outputNumber(&value);
+	printf("get num3_2   %d, rev = %d\n", value, rev);
+	rev = numstr3.outputNumber(&value);
+	printf("get num3_3   %d, rev = %d\n", value, rev);
+	rev = numstr3.outputNumber(&value);
+	printf("get num3_4   %d, rev = %d\n", value, rev);
+	rev = numstr3.outputNumber(&value);
+	printf("get num3_5   %d, rev = %d\n", value, rev);
+
+
+
+
+
+	PRINGSTEP("print size for types");
 	JsonString str{ bank,4096 };
 #define print_size(t) printf("Size of %s is %d.\n",#t,sizeof(t))
 	print_size(uint8);
@@ -150,23 +190,27 @@ int main(int argc, char *argv[]) {
 	print_size(size_t);
 #undef print_size
 
-	printf("\n\nNow test for serialization:\n");
-	listtest.get(&str);	printf("%s\n", bank);str.reset();
+
+	PRINGSTEP("Now test for serialization:");
+	listtest.get(&str);	    printf("%s\n", bank);str.reset();
 	listtest2.get(&str);	printf("%s\n", bank);str.reset();
 	listtest3.get(&str);	printf("%s\n", bank);str.reset();
 	listtest4.get(&str);	printf("%s\n", bank);str.reset();
 
-	printf("\n\nNow test for 1 json transform many Objects:\n");
+
+	PRINGSTEP("Now test for 1 json transform many Objects:");
 	difftest.get(&str, c1);	printf("%s\n", bank);str.reset();
 	difftest.get(&str, c2);	printf("%s\n", bank);str.reset();
 	difftest.get(&str, c3);	printf("%s\n", bank);str.reset();
 
-	printf("\n\nNow test for special output:\n");
+
+	PRINGSTEP("Now test for special output:\n");
 	specialTest.get(&str, c1);	printf("%s\n", bank);str.reset();
 	specialTest.get(&str, c2);	printf("%s\n", bank);str.reset();
-	specialTest2.get(&str);	printf("%s\n", bank);str.reset();
+	specialTest2.get(&str); 	printf("%s\n", bank);str.reset();
 
-	printf("\n\nNow test for struct<csMotorSet>:\n");
+
+	PRINGSTEP("Now test for struct<csMotorSet>:");
 	testForStruct.get(&str, &motor_set_values);	printf("%s\n", bank);str.reset();
 	motor_set_values.min_pwm_a = 1229;
 	motor_set_values.min_pwm_b = 3242;
@@ -175,8 +219,11 @@ int main(int argc, char *argv[]) {
 	motor_set_values.lose_behavior = 1;
 	testForStruct.get(&str, &motor_set_values);	printf("%s\n", bank);str.reset();
 
-	printf("\n\nNow test a long long serialization:\n");
+
+	PRINGSTEP("Now test a long long serialization:");
 	listtest5.get(&str);	printf("%s\n", bank);str.reset();
-	while (1) {
-	}
+
+
+	PRINGSTEP("press any key to EXIT");
+	getchar();
 }

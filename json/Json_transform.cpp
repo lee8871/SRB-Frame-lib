@@ -3,28 +3,43 @@
 using namespace std;
 namespace lee8871_support {
 
-	int asError(JsonString* str, void* value_prt, bool is_get) {
-		return str->printf("error");
+#include "transform_define.in.h"
+	int asError(transformCBArgumenrt) {
+		if (is_get) {
+			LString err_str{ str->errorReport(1024),1024 };
+			err_str.printf("json lib error, no initialized json is serializing");
+			return fail;
+		}
+		else {
+			LString err_str{ str->errorReport(1024),1024 };
+			err_str.printf("json lib error, no initialized json is deserializing");
+			return fail;
+		}
 	}
 	json::json() :transform(asError) {}
 
-	int asInt(JsonString* str, void* value_prt, bool is_get) {
-		int temp = *((int*)value_prt);
+	int asInt(transformCBArgumenrt) {
+		if(is_get){
+			int temp = *valuePtr(int);
+			return str->inputNumber(temp);
+		}
+		else {
+			return str->outputNumber(valuePtr(int));
+		}
+	}
+
+	int asUint16(transformCBArgumenrt) {
+		unsigned int temp = *valuePtr(uint16);
 		return str->inputNumber(temp);
 	}
 
-	int asUint16(JsonString* str, void* value_prt, bool is_get) {
-		unsigned int temp = *((uint16*)value_prt);
+	int asUint8(transformCBArgumenrt) {
+		unsigned int temp = *valuePtr(uint8);
 		return str->inputNumber(temp);
 	}
 
-	int asUint8(JsonString* str, void* value_prt, bool is_get) {
-		unsigned int temp = *((uint8*)value_prt);
-		return str->inputNumber(temp);
-	}
-
-	int asInt8(JsonString* str, void* value_prt, bool is_get) {
-		int temp = *((int8*)value_prt);
+	int asInt8(transformCBArgumenrt) {
+		int temp = *valuePtr(int8);
 		return str->inputNumber(temp);
 	}
 
@@ -48,8 +63,8 @@ namespace lee8871_support {
 
 
 
-	int asCharString(JsonString* str, void* value_prt, bool is_get) {
-		return str->inputString((char *)value_prt);
+	int asCharString(transformCBArgumenrt) {
+		return str->inputString(valuePtr(char));
 	}
 	json jsonString(const char * value_prt) {
 		json rev{ asCharString, (void*)value_prt };
@@ -57,6 +72,12 @@ namespace lee8871_support {
 	}
 
 
+	int asArray(transformCBArgumenrt) {
+		return obj->getArray(str, diff);
+	}
+	int asObject(transformCBArgumenrt) {
+		return obj->getObject(str, diff);
+	}
 
 
 

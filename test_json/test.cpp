@@ -89,7 +89,7 @@ json difftest{
 };
 
 int writeIntAsStr(transformCBArgumenrt) {
-	return str->printf("\"%d\"", valuePtr(int));
+	return str->print("\"%d\"", valuePtr(int));
 }
 json specialTest{
 	{"v0",{writeIntAsStr,_ia6 + 0}},

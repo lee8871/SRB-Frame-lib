@@ -6,15 +6,17 @@
 #include <cmath>
 
 namespace lee8871_support {
-	#define addAndCheck(a) buf[ptr_i++] = (a);if (ptr_i == size) { buf[ptr_i - 1] = 0;return buf_use_up; }
-	#define endString() buf[ptr_i] = 0; return done;
+	#define addAndCheck(a) *(ptr++)= (a);if (ptr == end) { *(ptr - 1) = 0;return buf_use_up; }
+	#define endString() *ptr = 0; return done;
 	LString::LString(char *_buf, int _size) :
-		size(_size), buf(_buf) {
-	}
+		end(_buf + _size), buf(_buf), ptr(_buf) {}
 	
 	int LString::append(char a) {
 		addAndCheck(a);
 		endString();
+	}		
+	void LString::reset() {
+		ptr = buf;
 	}
 
 	int LString::append(const char* a) {
@@ -24,12 +26,19 @@ namespace lee8871_support {
 		}
 		endString();
 	}
-	int LString::printf(const char *format, ...) {
+	int LString::print(const char *format, ...) {
 		va_list args;
 		va_start(args, format);
-		int print_inc = vsnprintf(ptr(), rem(), format, args);
-		va_end(args);
-		return inc(print_inc);
+		int increase = vsnprintf(ptr, end - ptr, format, args);
+		va_end(args);		
+		if (increase < 0) {
+			return -210 + increase;
+		}
+		ptr += increase;
+		if (ptr == end) {
+			return buf_use_up;
+		}
+		return done;
 	}
 
 	int JsonString::inputString(const char * string)	{
@@ -71,20 +80,16 @@ namespace lee8871_support {
 	}
 
 	int JsonString::inputNumber(int value) {
-		int print_inc = snprintf(ptr(), rem(), "%d", value);
-		return JsonString::inc(print_inc);
+		return print("%d", value);
 	}	
 	int JsonString::inputNumber(unsigned int value) {
-		int print_inc = snprintf(ptr(), rem(), "%u", value);
-		return JsonString::inc(print_inc);
+		return print("%u", value);
 	}
 	int JsonString::inputNumber(double value) {
-		int print_inc = snprintf(ptr(), rem(), "%lf", value);
-		return JsonString::inc(print_inc);
+		return print("%lf", value);
 	}
 	int JsonString::inputNumber(float value) {
-		int print_inc = snprintf(ptr(), rem(), "%f", value);
-		return JsonString::inc(print_inc);
+		return print("%f", value);
 	}	
 	int JsonString::inputBool(bool value) {
 		if (value) {
@@ -153,19 +158,19 @@ namespace lee8871_support {
 
 	int JsonString::outputNumber(int* value){
 		char* p_end;
-		*value = strtol(buf + ptr_i, &p_end, 10);
-		if (p_end == buf + ptr_i){
+		*value = strtol(ptr, &p_end, 10);
+		if (p_end == ptr){
 			return (int)eJsonWarning::get_no_num;
 		}
 		else if ((*p_end == 'e') || (*p_end == '.')) {
-			auto d=strtold(buf + ptr_i, &p_end);
-			ptr_i = p_end - buf;
+			auto d=strtold(ptr, &p_end);
+			ptr = p_end;
 			*value = round(d);
 			//TODO maybe is integer like 23e3
 			return (int)eJsonWarning::get_float_to_int;
 		}
 		else {
-			ptr_i = p_end - buf;
+			ptr = p_end;
 			if ((*value == INT_MAX) || (*value == INT_MIN)) {
 				return (int)eJsonWarning::overflow;
 			}
@@ -184,8 +189,8 @@ namespace lee8871_support {
 	}
 	int JsonString::outputNumber(double* value) {
 		char* p_end;
-		*value = strtold(buf + ptr_i, &p_end);
-		if (p_end == buf + ptr_i){
+		*value = strtold(ptr, &p_end);
+		if (p_end == ptr){
 			return -202;
 		}
 		return done;

@@ -6,34 +6,17 @@
 namespace lee8871_support {
 
 	class LString {
+	private:
+		char* const buf;
 	protected:
-		char* buf;
-		const size_t size;
-		size_t ptr_i = 0;
+		char* const end;
+		char* ptr;
 	public:
 		LString(char *_buf, int _size);
-		inline char* ptr() {
-			return buf + ptr_i;
-		}
-		inline int inc(int increase) {
-			if (increase < 0) {
-				return -100 + increase;
-			}
-			ptr_i += increase;
-			if (ptr_i == size) {
-				return buf_use_up;
-			}
-			return done;
-		}
-		inline size_t rem() {
-			return (size - ptr_i);
-		}
-		inline void reset() {
-			ptr_i = 0;
-		}
+		void reset();
 		int append(const char* a);
 		int append(char append);
-		int printf(const char *format, ...);
+		int print(const char *format, ...);
 	};
 
 

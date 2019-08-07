@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
 	rev = numstr2.outputNumber(&value);
 	printf("get num2_2   %d, rev = %d\n", value, rev);
 
-	char number3[64] = "292 -1254  -223.6 1.646e1293487";
+	char number3[64] = "292e2 -1254  -223.6 1.646e1293487";
 	JsonString numstr3{ number3,64};
 	rev = numstr3.outputNumber(&value);
 	printf("get num3_1   %d, rev = %d\n", value, rev);

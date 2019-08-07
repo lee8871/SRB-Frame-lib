@@ -33,12 +33,19 @@ namespace lee8871_support {
 		}
 		int append(const char* a);
 		int append(char append);
-
 		int printf(const char *format, ...);
-
-
 	};
 
+
+
+	enum class eJsonWarning {
+		get_no_num = -201,
+		get_float_to_int = -202,
+		get_other_string = -203,
+		get_negative_to_unsigned = -204,
+		overflow = -204,
+
+	};
 	class JsonString : public LString {
 	protected:
 		int tab_level = 0;
@@ -61,13 +68,17 @@ namespace lee8871_support {
 
 		int inputString(const char * string);
 
+
 		int inputNumber(int value);
 		int inputNumber(unsigned int value);
 		int inputNumber(double value);
 		int inputNumber(float value);
 
 		int outputNumber(int* value);
-
+		int outputNumber(unsigned int * value);
+		int outputNumber(float* value);
+		int outputNumber(double* value);
+		
 		int inputBool(bool value);
 	};
 

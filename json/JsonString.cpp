@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <cmath>
 
 namespace lee8871_support {
 	#define addAndCheck(a) buf[ptr_i++] = (a);if (ptr_i == size) { buf[ptr_i - 1] = 0;return buf_use_up; }
@@ -149,18 +150,43 @@ namespace lee8871_support {
 #undef addAndCheck 
 #undef endString 
 
+
 	int JsonString::outputNumber(int* value){
-		char* p_end_l;
-		char* p_end_ld;
-		*value = strtol(buf+ ptr_i, &p_end_l,10);
-		strtold(buf + ptr_i, &p_end_ld);
-		if (p_end_ld == buf + ptr_i)
-		{
-			return - 202;
+		char* p_end;
+		*value = strtol(buf + ptr_i, &p_end, 10);
+		if (p_end == buf + ptr_i){
+			return (int)eJsonWarning::get_no_num;
 		}
-		ptr_i = p_end_ld - buf;
-		if (p_end_ld != p_end_l) {
-			return -201;
+		else if ((*p_end == 'e') || (*p_end == '.')) {
+			auto d=strtold(buf + ptr_i, &p_end);
+			ptr_i = p_end - buf;
+			*value = round(d);
+			//TODO maybe is integer like 23e3
+			return (int)eJsonWarning::get_float_to_int;
+		}
+		else {
+			ptr_i = p_end - buf;
+			if ((*value == INT_MAX) || (*value == INT_MIN)) {
+				return (int)eJsonWarning::overflow;
+			}
+			else {				
+				return done;
+			}
+		}
+	}
+	int JsonString::outputNumber(unsigned int * value) {
+
+		return done;
+	}
+	int JsonString::outputNumber(float* value) {
+
+		return done;
+	}
+	int JsonString::outputNumber(double* value) {
+		char* p_end;
+		*value = strtold(buf + ptr_i, &p_end);
+		if (p_end == buf + ptr_i){
+			return -202;
 		}
 		return done;
 	}

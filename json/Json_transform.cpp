@@ -6,13 +6,13 @@ namespace lee8871_support {
 #include "transform_define.in.h"
 	int asError(transformCBArgumenrt) {
 		if (is_get) {
-			LString err_str{ str->errorReport(1024),1024 };
-			err_str.printf("json lib error, no initialized json is serializing");
+			//LString err_str{ str->errorReport(1024),1024 };
+			//err_str.printf("json lib error, no initialized json is serializing");
 			return fail;
 		}
 		else {
-			LString err_str{ str->errorReport(1024),1024 };
-			err_str.printf("json lib error, no initialized json is deserializing");
+			//LString err_str{ str->errorReport(1024),1024 };
+			//err_str.printf("json lib error, no initialized json is deserializing");
 			return fail;
 		}
 	}

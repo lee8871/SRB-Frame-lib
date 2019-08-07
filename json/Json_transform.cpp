@@ -46,17 +46,10 @@ namespace lee8871_support {
 
 
 
-
 	json::json(int32* vp) : transform(asInt), value_prt(vp) {}
 	json::json(uint16 * value_prt) : transform(asUint16), value_prt(value_prt) {}
 	json::json(uint8 * value_prt) : transform(asUint8), value_prt(value_prt) {}
 	json::json(int8 * value_prt) : transform(asInt8), value_prt((void*)value_prt) {}
-
-
-
-
-
-
 
 
 

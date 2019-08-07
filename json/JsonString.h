@@ -61,6 +61,9 @@ namespace lee8871_support {
 		int outputNumber(unsigned int * value);
 		int outputNumber(float* value);
 		int outputNumber(double* value);
+
+		int outputRemoveSpace();
+
 		
 		int inputBool(bool value);
 	};

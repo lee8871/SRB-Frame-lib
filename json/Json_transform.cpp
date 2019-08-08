@@ -3,21 +3,19 @@
 using namespace std;
 namespace lee8871_support {
 
+
+
+	json::json(transformCB transform, void * value_prt) : transform(transform), value_prt(value_prt) {}
+
+
 #include "transform_define.in.h"
 	int asError(transformCBArgumenrt) {
-		if (is_get) {
-			//LString err_str{ str->errorReport(1024),1024 };
-			//err_str.printf("json lib error, no initialized json is serializing");
-			return fail;
-		}
-		else {
-			//LString err_str{ str->errorReport(1024),1024 };
-			//err_str.printf("json lib error, no initialized json is deserializing");
-			return fail;
-		}
+		str->get_errorString()->print(
+			"[LibError], No initialized json is %s, it is a bug in [jsonlib].", 
+			(is_get ? "serialized" : "deserialized"));
+		return eRevJson.no_init;
 	}
 	json::json() :transform(asError) {}
-
 	int asInt(transformCBArgumenrt) {
 		if(is_get){
 			int temp = *valuePtr(int);
@@ -65,12 +63,7 @@ namespace lee8871_support {
 	}
 
 
-	int asArray(transformCBArgumenrt) {
-		return obj->getArray(str, diff);
-	}
-	int asObject(transformCBArgumenrt) {
-		return obj->getObject(str, diff);
-	}
+
 
 
 

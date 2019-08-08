@@ -16,9 +16,9 @@ namespace srb {
 	}
 
 	int PerformanceTimer::endCheck(){
-		tUs  end = OsSupport::getTimesUs();
+		tUs  _end = OsSupport::getTimesUs();
 		_is_checking = false;
-		_last_time_cost = (int)(end - check_buf);
+		_last_time_cost = (int)(_end - check_buf);
 		return done;
 	}
 

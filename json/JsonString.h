@@ -1,42 +1,23 @@
 ﻿#pragma once
 #include "lee.h"
-#include <string>
+#include "LString.h"
 
 
 namespace lee8871_support {
 
-	class LString {
-	private:
-		char* const buf;
-	protected:
-		char* const end;
-		char* ptr;
-	public:
-		LString(char *_buf, int _size);
-		void reset();
-		int append(const char* a);
-		int append(char append);
-		int print(const char *format, ...);
-	};
-
-
-
-	enum class eJsonWarning {
-		get_no_num = -201,
-		get_float_to_int = -202,
-		get_other_string = -203,
-		get_negative_to_unsigned = -204,
-		overflow = -204,
-
-	};
 	class JsonString : public LString {
 	protected:
 		int tab_level = 0;
+		constexpr static int ERROR_CP_SIZE = 4096;
+		LString* error_str = nullptr;
 	public:
-
 		bool isExpanded = true;
 		char* tab_string = "  ";
 		JsonString(char *_buf,int _size);
+		~JsonString();
+
+
+		LString* get_errorString();
 
 		inline void reset() {
 			LString::reset();
@@ -63,7 +44,10 @@ namespace lee8871_support {
 		int outputNumber(double* value);
 
 		int outputRemoveSpace();
-
+		bool confirm(char c);
+		bool confirm(char c1, char c2);
+		bool confirm(char c1, char c2, char c3);
+		bool confirmNumber();
 		
 		int inputBool(bool value);
 	};

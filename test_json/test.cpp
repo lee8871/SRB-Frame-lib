@@ -136,7 +136,11 @@ json testForStruct{
 #undef _cs_ms
 int Step = 0;
 #define PRINGSTEP(descripte)  printf("Step %d  Enter to\n%s", Step++, descripte );while('\n'!=getchar());
-int main(int argc, char *argv[]) {
+
+
+
+int main(int argc, char *argv[]) {	
+
 	int rev;
 	int value;
 	PRINGSTEP("Test for string to number");
@@ -227,3 +231,5 @@ int main(int argc, char *argv[]) {
 	PRINGSTEP("press any key to EXIT");
 	getchar();
 }
+
+

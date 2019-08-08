@@ -3,6 +3,7 @@
 using namespace std;
 namespace lee8871_support {
 
+
 	void json::copyValueFrom(const json& from) {
 		size = from.size;
 		transform = from.transform;
@@ -36,8 +37,6 @@ namespace lee8871_support {
 			delete[]((json*)value_prt);
 		}
 	}
-
-
 	json json::operator= (const json & right)	{
 		copyFrom(right);
 		return right;
@@ -48,14 +47,6 @@ namespace lee8871_support {
 	json::json(json&& old) {
 		moveFrom(old);
 	}
-
-
-
-	   
-
-	json::json(transformCB transform, void * value_prt) : transform(transform), value_prt(value_prt) {}
-
-
 
 
 	json::json(initializer_list<json> v) : transform(asArray) {
@@ -69,11 +60,8 @@ namespace lee8871_support {
 			value_prt = table;
 		}
 	}
-
-
-
 	constexpr unsigned int NO_HASH = 0;
-	const int HASH_MOD = 1610612741;
+	constexpr int HASH_MOD = 1610612741;
 	unsigned int getHashString(const char * str) {
 		if (str == nullptr) {
 			return NO_HASH;
@@ -134,50 +122,61 @@ namespace lee8871_support {
 		}
 	}
 
+
 	int json::get(JsonString* str, void *diff) {
 		return transform(this,str, diff, true);
 	}
 
 	int json::set(JsonString * str, void * diff){
 		return transform(this, str, diff, false);
-		return 0;
 	}
 
-	int json::getArray(JsonString* str, void *diff)	{
-		auto table = (json*)value_prt;
-		int i = 0;
-		checkFailReturn(str->append('['));
-		while (1) {
-			if (i < size) {
+
+
+	int asArray(transformCBArgumenrt) {
+		if (is_get) {
+			auto table = (json*)obj->value_prt;
+			int i = 0;
+			if (0 == obj->size) { return str->append("[]"); }
+			checkFailReturn(str->arrayBgn());
+			while (1) {
 				checkFailReturn(table[i++].get(str, diff));
+				if (i < obj->size) {
+					checkFailReturn(str->arrayGasket());
+				}
+				else {
+					checkFailReturn(str->arrayEnd());
+					return done;
+				}
 			}
-			if (i < size) {
-				checkFailReturn(str->append(','));
-			}
-			else {
-				checkFailReturn(str->append(']'));
-				return done;
-			}
+		}
+		else {
+
+
 		}
 	}
 
-	int json::getObject(JsonString* str, void *diff) 	{
-		auto table = (json*)value_prt;
-		int i = 0;
-		checkFailReturn(str->objectBgn());
-		while (1) {
-			if (i < size) {
-				checkFailReturn(str->inputString(table[i].name));
+	int asObject(transformCBArgumenrt) {
+		if (is_get) {
+			auto table = (json*)obj->value_prt;
+			int i = 0;
+			if (0 == obj->size) { return str->append("{}"); }
+			checkFailReturn(str->objectBgn());
+			while (1) {
+				checkFailReturn(str->append(table[i].name));
 				checkFailReturn(str->append(':'));
 				checkFailReturn(table[i++].get(str, diff));
+				if (i < obj->size) {
+					checkFailReturn(str->objectGasket());
+				}
+				else {
+					checkFailReturn(str->objectEnd());
+					return done;
+				}
 			}
-			if (i < size) {
-				checkFailReturn(str->objectGasket());
-			}
-			else {
-				checkFailReturn(str->objectEnd());
-				return done;
-			}
+		}
+		else {
+
 		}
 	}
 };

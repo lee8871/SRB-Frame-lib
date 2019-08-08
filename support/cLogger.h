@@ -1,6 +1,23 @@
 ﻿#pragma once 
 
 namespace srb {
+
+
+	struct reportNum {
+		int rev;
+		const char * name;
+	};
+	class subSystem {
+	private:
+		bool isRecordOpen;
+		int id;
+		char* const name;
+		reportNum *rev_table;
+	};
+
+
+
+
 	class cLogger {
 	private:
 		static const int BUF_LEN = 4096;

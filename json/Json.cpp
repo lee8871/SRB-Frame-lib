@@ -7,8 +7,6 @@ namespace lee8871_support {
 	void json::copyValueFrom(const json& from) {
 		size = from.size;
 		transform = from.transform;
-		name = from.name;
-		hash = from.hash;
 
 	}
 	void json::moveFrom(json &from){
@@ -47,6 +45,10 @@ namespace lee8871_support {
 	json::json(json&& old) {
 		moveFrom(old);
 	}
+
+
+
+
 
 
 	json::json(initializer_list<json> v) : transform(asArray) {
@@ -105,17 +107,44 @@ namespace lee8871_support {
 		}
 		return NO_HASH;
 	}
+	struct named_json {
+		unsigned int hash;
+		const char* name;
+		json j;
+	};
 
 
+	int asObject(transformCBArgumenrt) {
+		if (is_get) {
+			auto table = (named_json*)obj->value_prt;
+			int i = 0;
+			if (0 == obj->size) { return str->append("{}"); }
+			checkFailReturn(str->objectBgn());
+			while (1) {
+				checkFailReturn(str->print("\"%s\":",table[i].name));
+				checkFailReturn(table[i++].j.get(str, diff));
+				if (i < obj->size) {
+					checkFailReturn(str->objectGasket());
+				}
+				else {
+					checkFailReturn(str->objectEnd());
+					return done;
+				}
+			}
+		}
+		else {
+
+		}
+	}
 	json::json(initializer_list<pair<const char*, json>> v) : transform(asObject) {
 		size = v.size();
 		if (size != 0) {
-			json* table = new json[size]();
+			auto table = new named_json[size]();
 			int i = 0;
 			for each (auto var in v) {
-				table[i].moveFrom(var.second);
+				table[i].j.moveFrom(var.second);
 				table[i].name = var.first;
-				table[i].hash = getHashString(name);
+				table[i].hash = getHashString(var.first);
 				i++;
 			}
 			value_prt = table;
@@ -134,9 +163,9 @@ namespace lee8871_support {
 
 
 	int asArray(transformCBArgumenrt) {
+		auto table = (json*)obj->value_prt;
+		int i = 0;
 		if (is_get) {
-			auto table = (json*)obj->value_prt;
-			int i = 0;
 			if (0 == obj->size) { return str->append("[]"); }
 			checkFailReturn(str->arrayBgn());
 			while (1) {
@@ -151,32 +180,43 @@ namespace lee8871_support {
 			}
 		}
 		else {
-
-
-		}
-	}
-
-	int asObject(transformCBArgumenrt) {
-		if (is_get) {
-			auto table = (json*)obj->value_prt;
-			int i = 0;
-			if (0 == obj->size) { return str->append("{}"); }
-			checkFailReturn(str->objectBgn());
-			while (1) {
-				checkFailReturn(str->append(table[i].name));
-				checkFailReturn(str->append(':'));
-				checkFailReturn(table[i++].get(str, diff));
-				if (i < obj->size) {
-					checkFailReturn(str->objectGasket());
+			if (str->confirm('[') == false) {
+				str->reportError("[ErrDse]")->print("need a '['\n");
+				return fail;
+			}
+			if (0 == obj->size) {
+				if (str->confirm(']') == false) {
+					str->reportError("[ErrDse]")->print("need a ']'\n");
+					return fail;
 				}
-				else {
-					checkFailReturn(str->objectEnd());
+				return done;
+			}
+			else{
+				while (1) {
+					checkFailReturn(table[i++].set(str, diff));
+					if (i < obj->size) {
+						if (str->confirm(',') == false) {
+							if (str->confirm(']') == false) {
+								str->reportError("[ErrDse]")->print("need a ','\n");
+								return fail;
+							}
+							str->reportError("[WarningDse]")->print("Array short than need\n");
+							return done;
+						}
+					}
+					else {
+						if (str->confirm(']') == false) {
+							if (str->confirm(',') == true) {
+								str->reportError("[ErrDse]")->print("Array Long than need, values are aborded.\n");
+								return fail;//TODO, aborded, other data and return done
+							}
+							str->reportError("[WarningDse]")->print("need a ']'\n");
+							return fail;
+						}
 					return done;
+					}
 				}
 			}
-		}
-		else {
-
 		}
 	}
 };

@@ -11,13 +11,14 @@ namespace lee8871_support {
 		constexpr static int ERROR_CP_SIZE = 4096;
 		LString* error_str = nullptr;
 	public:
+		LString* const& Error_str = error_str;
 		bool isExpanded = true;
 		char* tab_string = "  ";
-		JsonString(char *_buf,int _size);
+		JsonString(char *buf, int size);
+		JsonString(int size);
 		~JsonString();
 
 
-		LString* get_errorString();
 
 		inline void reset() {
 			LString::reset();
@@ -30,8 +31,10 @@ namespace lee8871_support {
 		int arrayGasket();
 		int arrayEnd();
 
-		int inputString(const char * string);
 
+		int inputString(const char * string);
+		int outputString(char * s, int size);
+		int abondonString();
 
 		int inputNumber(int value);
 		int inputNumber(unsigned int value);
@@ -43,13 +46,33 @@ namespace lee8871_support {
 		int outputNumber(float* value);
 		int outputNumber(double* value);
 
-		int outputRemoveSpace();
-		bool confirm(char c);
-		bool confirm(char c1, char c2);
-		bool confirm(char c1, char c2, char c3);
-		bool confirmNumber();
-		
+		void outputRemoveSpace();
+		bool confirm(char c);		
 		int inputBool(bool value);
+
+
+
+
+		LString* get_errorString();
+		LString*  reportError(const char * type) {
+			if (error_str == nullptr) {
+				error_str = new LString(ERROR_CP_SIZE);
+			}
+			error_str->append(type);
+			if (Ptr - 10 >= Buf) {
+				error_str->append(":...");
+				error_str->append(Ptr - 10, 20);
+				error_str->append("\n");
+			}
+			else{
+				error_str->append(":");
+				error_str->append(Buf, 20);
+				error_str->append("\n");
+			}
+			return error_str;
+		}
+
+
 	};
 
 

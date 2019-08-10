@@ -12,15 +12,21 @@ namespace lee8871_support {
 	using transformCB = int(*)(transformCBArgumenrt);
 	int asError(transformCBArgumenrt);
 
+	class JsonTransformer {
+		virtual int get(JsonString* str, void *diff = 0) = 0;
+		virtual int set(JsonString* str, void *diff = 0) = 0;
+		virtual void*  copy(const void * from) = 0;
+
+
+	};
+
+
 	class json{
 	private:
 
 
 		friend int asArray(transformCBArgumenrt);
 		friend int asObject(transformCBArgumenrt);
-
-		const char * name = nullptr;
-		unsigned int hash = 0;
 
 
 		void copyValueFrom(const json&);
@@ -31,6 +37,8 @@ namespace lee8871_support {
 	public:
 		void * value_prt = nullptr;
 		int size = 0;
+		JsonTransformer* jt = nullptr;
+
 		transformCB transform = asError;
 
 		json operator = (const json&);
@@ -68,15 +76,17 @@ namespace lee8871_support {
 		__ENUM(get_other_string, -203);
 		__ENUM(get_negative_to_unsigned, -204);
 		__ENUM(overflow, -205);
-		__ENUM(no_init, -206);
+		__ENUM(get_no_init, -206);
+		__ENUM(set_bad_json_str, -207);
+		__ENUM(get_not_string, -208);
 	}eRevJson;
 #undef __ENUM
 	inline const char * enumRevJsonGetString(int num) {
 		struct sIntCharPtr { int value; const char * p_name; };
-		sIntCharPtr * ptr = (sIntCharPtr *)(&eRevJson);
+		sIntCharPtr * _ptr = (sIntCharPtr *)(&eRevJson);
 		for (int i = 0;i < sizeof(eRevJson) / sizeof(sIntCharPtr);i++) {
-			if (ptr[i].value == num) {
-				return ptr[i].p_name;
+			if (_ptr[i].value == num) {
+				return _ptr[i].p_name;
 			}
 		}
 		return "bad_enum_value";

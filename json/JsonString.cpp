@@ -5,8 +5,8 @@
 #include "json.h"
 
 namespace lee8871_support {
-	#define addAndCheck(a) *(ptr++)= (a);if (ptr == End) { *(ptr - 1) = 0;return buf_use_up; }
-	#define endString() *ptr = 0; return done;
+	#define addAndCheck(a) *(_ptr++)= (a);if (_ptr == End) { *(_ptr - 1) = 0;return buf_use_up; }
+	#define endString() *_ptr = 0; return done;
 
 	int JsonString::inputString(const char * string)	{
 		addAndCheck('"');
@@ -45,6 +45,71 @@ namespace lee8871_support {
 		addAndCheck('"');
 		endString();
 	}
+	#define checkAppendString(ch)do{\
+		if (is_overflow == false){\
+			*str++ = ch;\
+			if (str >= str_end){\
+				(--str) = 0; \
+				is_overflow = true;\
+			}\
+		}\
+	}while(0)//eRevJson.overflow;
+
+	int JsonString::outputString(char * str, int size) {
+		bool is_overflow = (size == 0);
+
+		char * str_end = str + size;
+
+		if (confirm('"')==false) {
+			return eRevJson.get_not_string;
+		}
+		while (*str != 0) {
+			if (*_ptr == '\\'){
+				_ptr++;
+				switch (*_ptr) {
+				case '"':
+					checkAppendString('"');
+					break;
+				case '\\':
+					checkAppendString('\\');
+					break;
+				case '/':
+					checkAppendString('/');
+					break;
+				case 'b':
+					checkAppendString('\b');
+					break;
+				case 'f':
+					checkAppendString('\f');
+					break;
+				case 'n':
+					checkAppendString('\n');
+					break;
+				case 'r':
+					checkAppendString('\r');
+					break;
+				case 't':
+					checkAppendString('\t');
+					break;
+				default:	
+					break;
+				}
+				_ptr++;
+			}
+			else if (*_ptr == '"') {
+				_ptr++;
+				checkAppendString(0);
+				return done;
+			}
+			else {
+				checkAppendString(*_ptr);
+				_ptr++;
+			}
+		}	
+	}
+
+
+
 	int JsonString::inputNumber(int value) {
 		return print("%d", value);
 	}	
@@ -116,6 +181,11 @@ namespace lee8871_support {
 		tab_level = 0;
 	}
 
+	JsonString::JsonString(int size)
+		: LString(size) {
+		tab_level = 0;
+	}
+
 	JsonString::~JsonString(){
 		if (error_str != nullptr) {
 			delete error_str;
@@ -134,20 +204,21 @@ namespace lee8871_support {
 
 
 	int JsonString::outputNumber(int* value){
+		outputRemoveSpace();
 		char* p_end;
-		*value = strtol(ptr, &p_end, 10);
-		if (p_end == ptr){
+		*value = strtol(_ptr, &p_end, 10);
+		if (p_end == _ptr){
 			return eRevJson.get_no_num;
 		}
 		else if ((*p_end == 'e') || (*p_end == '.')) {
-			auto d=strtold(ptr, &p_end);
-			ptr = p_end;
-			*value = round(d);
+			auto d=strtold(_ptr, &p_end);
+			_ptr = p_end;
+			*value = (int)round(d);
 			//TODO maybe is integer like 23e3
 			return eRevJson.get_float_to_int;
 		}
 		else {
-			ptr = p_end;
+			_ptr = p_end;
 			if ((*value == INT_MAX) || (*value == INT_MIN)) {
 				return eRevJson.overflow;
 			}
@@ -166,12 +237,35 @@ namespace lee8871_support {
 	}
 	int JsonString::outputNumber(double* value) {
 		char* p_end;
-		*value = strtold(ptr, &p_end);
-		if (p_end == ptr){
+		*value = strtold(_ptr, &p_end);
+		if (p_end == _ptr){
 			return eRevJson.get_no_num;
 		}
 		return done;
 	}
+
+	void JsonString::outputRemoveSpace() {
+		while (_ptr != End) {
+			if ((*_ptr == ' ') || (*_ptr == '\r') ||
+				(*_ptr == '\t') || (*_ptr == '\n')) {
+				_ptr++;
+			}
+			else {
+				return;
+			}
+		}
+	}
+
+	bool JsonString::confirm(char c)	{
+			outputRemoveSpace();
+		if (*_ptr == c) {
+			_ptr++;
+			return true;
+		}
+		return false;
+	}
+
+	
 
 
 

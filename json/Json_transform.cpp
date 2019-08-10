@@ -13,7 +13,7 @@ namespace lee8871_support {
 		str->get_errorString()->print(
 			"[LibError], No initialized json is %s, it is a bug in [jsonlib].", 
 			(is_get ? "serialized" : "deserialized"));
-		return eRevJson.no_init;
+		return eRevJson.get_no_init;
 	}
 	json::json() :transform(asError) {}
 	int asInt(transformCBArgumenrt) {
@@ -22,7 +22,22 @@ namespace lee8871_support {
 			return str->inputNumber(temp);
 		}
 		else {
-			return str->outputNumber(valuePtr(int));
+			int rev = str->outputNumber(valuePtr(int));
+			switch(rev){
+			case done:
+				return done;
+			case eRevJson.get_no_num:
+				str->reportError("[ErrorDse]")->print("get number fail\n");
+				return eRevJson.get_no_num;
+			case eRevJson.get_float_to_int:
+				str->reportError("[WarningDse]")->print("get int from float\n");
+				return done;
+			case eRevJson.overflow:
+				str->reportError("[WarningDse]")->print("int num may big than int_max\n");
+				return done;
+			default:
+				str->reportError("[ErrorLIB]")->print("Unexpected case %d",rev);
+			}
 		}
 	}
 
@@ -55,8 +70,17 @@ namespace lee8871_support {
 
 
 	int asCharString(transformCBArgumenrt) {
-		return str->inputString(valuePtr(char));
+		if (is_get) {
+			return str->inputString(valuePtr(char));
+		}
+		else {
+			int rev = str->outputString(valuePtr(char),obj->size);
+			switch (rev) {
+			}
+		}
 	}
+
+
 	json jsonString(const char * value_prt) {
 		json rev{ asCharString, (void*)value_prt };
 		return rev;

@@ -11,16 +11,18 @@ namespace lee8871_support {
 		char* _buf = nullptr;
 		char* _end = nullptr;
 	protected:
-		char* ptr = nullptr;
+		char* _ptr = nullptr;
 	public:
 		char *const& Buf = _buf;
 		char *const& End = _end;
+		char *const& Ptr = _ptr;
 		LString(char *, int);
 		LString(int);
 		~LString();
 		void reset();
 		void clear();
 		int append(const char* a);
+		int append(const char* a,int length);
 		int append(char append);
 		int print(const char *format, ...);
 	};

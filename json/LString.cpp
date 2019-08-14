@@ -5,7 +5,7 @@
 
 
 namespace lee8871_support {
-#define addAndCheck(a) *(_ptr++)= (a);if (_ptr == _end) { *(_ptr - 1) = 0;return buf_use_up; }
+#define addAndCheck(a) *(_ptr++)= (a);if (_ptr == _end) { *(--_ptr) = 0;return buf_use_up; }
 #define endString() *_ptr = 0; return done;
 	LString::LString(char *buf, int size) :
 		_end(buf + size), _buf(buf), _ptr(buf) {}
@@ -60,12 +60,70 @@ namespace lee8871_support {
 		int increase = vsnprintf(_ptr, _end - _ptr, format, args);
 		va_end(args);
 		if (increase < 0) {
-			return -210 + increase;
+			return increase;
 		}
 		_ptr += increase;
-		if (_ptr == _end) {
+		return checkOverflow();
+	}
+	int LString::checkOverflow(){
+		if (_ptr == (_end - 1)) {
 			return buf_use_up;
+		}
+		else {
+			return done;
+		}
+	}
+
+	int LString::foward()	{
+		_ptr++;		
+		if (_ptr >= _end) {
+			_ptr = _end - 1;
+			return fail;
 		}
 		return done;
 	}
+
+	int LString::jump(int inc)	{
+		_ptr += inc;
+		if(_ptr >= _end){
+			_ptr = _end - 1;
+			return fail;
+		}
+		else if(_ptr<_buf){
+			_ptr = _buf;
+			return fail;
+		}
+	}
+
+	bool LString::checkCh(char c) {
+		outputRemoveSpace();
+		if (*_ptr == c) {
+			_ptr++;
+			return true;
+		}
+		return false;
+	}
+	char LString::nextChar(){
+		char rev = *_ptr;
+		_ptr++;
+		if (_ptr >= _end) {
+			_ptr= _end-1;
+			return 0;
+		}
+		else{
+			return rev;
+		}
+	}	
+	void LString::outputRemoveSpace() {
+		while (_ptr != End) {
+			if ((*_ptr == ' ') || (*_ptr == '\r') ||
+				(*_ptr == '\t') || (*_ptr == '\n')) {
+				_ptr++;
+			}
+			else {
+				return;
+			}
+		}
+	}
+
 };

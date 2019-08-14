@@ -7,8 +7,6 @@ using namespace lee8871_support;
 
 using namespace std;
 
-
-
 int a = 20;
 int b = -42;
 int c[] = { 1,2,34,567,-89,0 };
@@ -21,11 +19,10 @@ int c3[] = { 3001,3002,30034,300567,-30089,3000 };
 int8 i8value = 19;
 
 json listtest{ c,c + 1,c + 2,c + 3,c + 4,c + 5 };
-
 json listtest1{ {"c",listtest} };//the initializer_list copy listtest, than build listtest1 
 
 json listtest2{
-	{"name\t hello",jsonString("csMotorSet \t\n\t\b\f\r\\\'\'\'\"\"\"/// hello") },
+	{"name",buildJsonConstStr("csMotorSet") },
 	{"I8test", &i8value},
 	{"b",&b},
 	{"c",listtest}
@@ -35,6 +32,8 @@ json listtest3{
 	{"a", &a},
 	{"b",&b},
 	{"c",{c,c + 1,c + 2,c + 3,c + 4,c + 5}},
+
+
 	{"d",{
 		{"d",d},
 		{"d2",d + 1}
@@ -83,29 +82,37 @@ json difftest{
 		{"v5",_ia6 + 5}
 	}}
 };
-
-int writeIntAsStr(transformCBArgumenrt) {
-	return str->print("\"%d\"", valuePtr(int));
-}
+class writeIntAsStr : public JsonTransformer {
+public:
+	JsonTransformer* copy() override {
+		return new writeIntAsStr();
+	}
+	int get(JsonGenerateString* str, void* value)override {
+		return str->print("\"%d\"", *(int*) value);
+	}
+	int set(JsonParseString* str, void * value)override {
+		return fail;
+	};
+};
+writeIntAsStr common_intAsStr;
 json specialTest{
-	{"v0",{writeIntAsStr,_ia6 + 0}},
+	{"v0",{&common_intAsStr,_ia6 + 0}},
 	{"v1",_ia6 + 1},
-	{"array",{_ia6,_ia6 + 1,{writeIntAsStr,_ia6 + 2}, _ia6 + 3}},
+	{"array",{_ia6,_ia6 + 1,{&common_intAsStr,_ia6 + 2}, _ia6 + 3}},
 	{"object",{
 		{"v4",_ia6 + 4},
-		{"v5",{writeIntAsStr,_ia6 + 5}}
+		{"v5",{&common_intAsStr,_ia6 + 5}}
 	}}
 };
 
 #undef _ia6
-int writeInt6(transformCBArgumenrt) {
-	return difftest.get(str, valuePtr(void));
-}
+
+
 
 json specialTest2{
 	{"a", &a},
 	{"b",&b},
-	{"special-c",{writeInt6, c}},
+	{"special-c",{&difftest, c}},
 	{"d",{
 		{"d",d},
 		{"d2",d + 1},
@@ -131,22 +138,33 @@ json testForStruct{
 };
 #undef _cs_ms
 int Step = 0;
-#define PRINGSTEP(descripte)  printf("\n\nStep %d  Enter to -- %s", Step++, descripte );while('\n'!=getchar());
 
+#include "Windows.h"
+
+#define PRINGSTEP(descripte) do{\
+SetConsoleTextAttribute(handle, FOREGROUND_INTENSITY | FOREGROUND_GREEN);\
+printf("\n\nStep %d  Enter to -- %s", Step++, descripte );\
+SetConsoleTextAttribute(handle, 0x07);\
+while('\n'!=getchar());\
+}while(0)
+
+HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 int f = 12;
 json test_read(&f);
 
 int testRead(json* j_object, char* ptr, int len) {
-	auto serialze_jstr = std::make_unique<JsonString>(1024);
+	auto serialze_jstr = std::make_unique<JsonGenerateString>(1024);
 	j_object->get(serialze_jstr.get());
 	printf("before read -- %s\n", serialze_jstr->Buf);serialze_jstr->clear();
-	auto read_jstr = std::make_unique<JsonString>(ptr, len);
+	auto read_jstr = std::make_unique<JsonParseString>(ptr, len);
 	printf("read json string is -- %s\n", read_jstr->Buf);
 	j_object->set(read_jstr.get());
 
 	if (nullptr != read_jstr->Error_str) {
+		SetConsoleTextAttribute(handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
 		printf("%s\n", read_jstr->Error_str->Buf);
+		SetConsoleTextAttribute(handle, 0x07);
 	}
 	j_object->get(serialze_jstr.get());
 	printf("listtest after read is -- %s\n\n\n", serialze_jstr->Buf);serialze_jstr->clear();
@@ -154,33 +172,63 @@ int testRead(json* j_object, char* ptr, int len) {
 }
 
 
+
 int main(int argc, char *argv[]) {
 	char num[] = "128";
-	auto write_jstr = new JsonString(1024);
-	auto read_jstr = new JsonString(num,sizeof(num));
+	auto write_jstr = new JsonGenerateString(1024);
+	auto read_jstr = new JsonParseString(num, sizeof(num));	
+	
+	
+	
+	PRINGSTEP("test for read objec: "); {
+		char str[20] = "test for str";
+		int  i = 12;
+		json json_object =
+		{ {"num",&i },{"name", buildJsonStr(str, 20) }, {"fix",buildJsonConstStr("fix string")} };
+		char json_string[] = R"(     {"num":1,"name":"new string"}  )";
+		testRead(&json_object, json_string, sizeof(json_string));
+		char json_string2[] = R"(
+		{"name":"next string",
+"num":2345}   
+		 )";
+		testRead(&json_object, json_string2, sizeof(json_string2));
+		char json_string3[] = R"(     {"num":128,"name":"error test",   
+									"fix":"fix can not write", "lalala": 12  	}  )";
+		testRead(&json_object, json_string3, sizeof(json_string3));
+	}
+
+
+	PRINGSTEP("Test for json String and int "); {
+		char str[20] = "old string";
+		int  i = 12;
+		json json_object = { &i ,buildJsonStr(str,20),buildJsonConstStr("fix string") };
+		char json_string[] = R"([1,"new string",  "try overrid fix" ]   )";
+		testRead(&json_object, json_string, sizeof(json_string));
+		char json_string2[] = R"([1,"new long string so so so so so so so so so so so so so long",  "try overrid fix" ]   )";
+		testRead(&json_object, json_string2, sizeof(json_string2));
+	}
 
 
 
-
-	PRINGSTEP("Test for json read");
-
-	char num_array[] = R"(
+	PRINGSTEP("Test for json read"); {
+		char num_array[] = R"(
 				[500 ,11,32,
 				12,2,4  ])";
-	testRead(&listtest, num_array, sizeof(num_array));
+		testRead(&listtest, num_array, sizeof(num_array));
+	}{
+		char num_array[] = R"([1 ,2,3,12346  ])";
+		testRead(&listtest, num_array, sizeof(num_array));
+	}{
 
-	char num_array2[] = R"([1 ,2,3,12346  ])";
-	testRead(&listtest, num_array2, sizeof(num_array2));
-
-	char num_array3[] = R"([1 ,2,"8764","nihao",12346  ])";
-	testRead(&listtest, num_array3, sizeof(num_array3));
-
-
-	char num_array4[] = R"([12382387487547598,2.45,8764,"nihao",12346  ])";
-	testRead(&listtest, num_array4, sizeof(num_array4));
-
-
-
+		char num_array[] = R"([1 ,2,"8764","nihao",12346  ])";
+		testRead(&listtest, num_array, sizeof(num_array));
+	}{
+		char num_array[] = R"([12382387487547598,2.45,8764,"nihao",12346  ])";
+		testRead(&listtest, num_array, sizeof(num_array));
+	}{
+		char num_array[] = R"([12382387487547598,2.45,8764,"nihao",12346  ])";
+		testRead(&listtest, num_array, sizeof(num_array));
+	}
 	
 
 
@@ -192,33 +240,34 @@ int main(int argc, char *argv[]) {
 	int rev;
 	int value;
 	char number[32] = "-12937  323";
-	JsonString numstr{ number,32 };
-	rev = numstr.outputNumber(&value);
+	JsonParseString numstr{ number,32 };
+	rev = numstr.parseNumber(&value);
 	printf("get num1_1   %d, rev = %d\n", value, rev);
-	rev = numstr.outputNumber(&value);
+	rev = numstr.parseNumber(&value);
 	printf("get num1_2   %d, rev = %d\n", value, rev);
 	char number2[32] = "29929479876133474519";
-	JsonString numstr2{ number2,32 };
-	rev = numstr2.outputNumber(&value);
+	JsonParseString numstr2{ number2,32 };
+	rev = numstr2.parseNumber(&value);
 	printf("get num2_1   %d, rev = %d\n", value, rev);
-	rev = numstr2.outputNumber(&value);
+	rev = numstr2.parseNumber(&value);
 	printf("get num2_2   %d, rev = %d\n", value, rev);
+
 	char number3[64] = "292e2 -1254  -223.6 1.646e1293487";
-	JsonString numstr3{ number3,64};
-	rev = numstr3.outputNumber(&value);
+	JsonParseString numstr3{ number3,64};
+	rev = numstr3.parseNumber(&value);
 	printf("get num3_1   %d, rev = %d\n", value, rev);
-	rev = numstr3.outputNumber(&value);
+	rev = numstr3.parseNumber(&value);
 	printf("get num3_2   %d, rev = %d\n", value, rev);
-	rev = numstr3.outputNumber(&value);
+	rev = numstr3.parseNumber(&value);
 	printf("get num3_3   %d, rev = %d\n", value, rev);
-	rev = numstr3.outputNumber(&value);
+	rev = numstr3.parseNumber(&value);
 	printf("get num3_4   %d, rev = %d\n", value, rev);
-	rev = numstr3.outputNumber(&value);
+	rev = numstr3.parseNumber(&value);
 	printf("get num3_5   %d, rev = %d\n", value, rev);
 	
 
 
-	JsonString str{ 4096 };
+	JsonGenerateString str{ 4096 };
 	PRINGSTEP("Now test for serialization:");
 	str.isExpanded = false;
 	listtest.get(&str);	    printf("%s\n", str.Buf);str.clear();
@@ -250,17 +299,15 @@ int main(int argc, char *argv[]) {
 	motor_set_values.lose_behavior = 1;
 	testForStruct.get(&str, &motor_set_values);	printf("%s\n", str.Buf);str.clear();
 
-
 	PRINGSTEP("Now test a long long serialization:");
 	listtest5.get(&str);	printf("%s\n", str.Buf);str.clear();
 
-
-
-
-
-
 	PRINGSTEP("print size for types");
 #define print_size(t) printf("Size of %s is %d.\n",#t,sizeof(t))
+	print_size(writeIntAsStr);
+	print_size(json);
+
+
 	print_size(uint8);
 	print_size(uint16);
 	print_size(uint32);
@@ -270,7 +317,10 @@ int main(int argc, char *argv[]) {
 	print_size(int);
 	print_size(long int);
 	print_size(long long int);
+	print_size(long double);
+	print_size(double);
 	print_size(size_t);
+	print_size(bool);
 #undef print_size
 
 

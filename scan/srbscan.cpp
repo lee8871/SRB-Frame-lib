@@ -123,7 +123,7 @@ int defaultLogFile() {
 	case fail:
 		printf("Log file is nether set by -L, nor set by ENV.\n");
 		return fail;
-	case REDO:
+	case redo:
 		return done;
 	default:
 		throw "case error enalbeLogToEnv rev.\n";

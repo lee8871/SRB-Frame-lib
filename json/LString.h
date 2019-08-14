@@ -25,5 +25,25 @@ namespace lee8871_support {
 		int append(const char* a,int length);
 		int append(char append);
 		int print(const char *format, ...);
+		int checkOverflow();
+		
+		int foward();
+		int jump(int inc);
+		char nextChar();
+		bool checkCh(char c);
+		void outputRemoveSpace();
+
+		bool checkStr(char* check) {
+			outputRemoveSpace();
+			char* p = _ptr;
+			while (*p == *check) {
+				p++;check++;
+				if (check == 0) {
+					_ptr = p;
+					return true;
+				}
+			}
+			return false;
+		}
 	};
 };

@@ -1,91 +1,159 @@
-﻿#include "Json.h"
+﻿#define NOT_JSON_USER
+#include "Json.h"
 
 using namespace std;
 namespace lee8871_support {
-
-
-
-	json::json(transformCB transform, void * value_prt) : transform(transform), value_prt(value_prt) {}
-
-
-#include "transform_define.in.h"
-	int asError(transformCBArgumenrt) {
-		str->get_errorString()->print(
-			"[LibError], No initialized json is %s, it is a bug in [jsonlib].", 
-			(is_get ? "serialized" : "deserialized"));
-		return eRevJson.get_no_init;
-	}
-	json::json() :transform(asError) {}
-	int asInt(transformCBArgumenrt) {
-		if(is_get){
-			int temp = *valuePtr(int);
-			return str->inputNumber(temp);
+	class asUint16 : public JsonTransformer{
+	public:
+		JsonTransformer* copy() override {
+			return this;
 		}
-		else {
-			int rev = str->outputNumber(valuePtr(int));
-			switch(rev){
+		int get(JsonGenerateString* str, void* value)override {
+			int temp = *(int8*)value;
+			 str->inputNumber(temp);
+			 return str->checkOverflow();
+		};
+		int set(JsonParseString* str, void *value)override {
+			return fail;
+		};
+	};
+
+	class asUint8 : public JsonTransformer{
+	public:
+		JsonTransformer* copy() override {
+			return this;
+		}
+		int get(JsonGenerateString* str, void* value)override {
+			int temp = *(int8*)value;
+			str->inputNumber(temp);
+			return str->checkOverflow();
+		};
+		int set(JsonParseString* str, void *value)override {
+			return fail;
+		};
+	};
+	
+	class asInt8 : public JsonTransformer {
+	public:
+		JsonTransformer* copy() override {
+			return this;
+		}
+		int get(JsonGenerateString* str, void* value)override {
+			int temp = *(int8*)value;
+			str->inputNumber(temp);
+			return str->checkOverflow();
+		};
+		int set(JsonParseString* str, void *value)override {
+			return fail;
+		};
+	};
+
+	class asInt : public JsonTransformer {
+	public:
+		JsonTransformer* copy() override {
+			return this;
+		}
+		int get(JsonGenerateString* str, void* value)override {
+			int temp = *(int*)value;
+			str->inputNumber(temp);
+			return str->checkOverflow();
+		};
+		int set(JsonParseString* str, void *value)override {
+			int rev = str->parseNumber((int*)value);
+			switch (rev) {
 			case done:
 				return done;
-			case eRevJson.get_no_num:
-				str->reportError("[ErrorDse]")->print("get number fail\n");
-				return eRevJson.get_no_num;
-			case eRevJson.get_float_to_int:
-				str->reportError("[WarningDse]")->print("get int from float\n");
+			case eJsonParse.no_a_num:
+				str->get_errorString()->append("->Transform.");
+				return eJsonParse.no_a_num;
+			case eJsonParse.float_to_int:
+				str->get_errorString()->append("->Transform abonden.\n\n");
 				return done;
-			case eRevJson.overflow:
-				str->reportError("[WarningDse]")->print("int num may big than int_max\n");
+			case eJsonParse.overflow:
+				str->get_errorString()->append("->Transform abonden.\n\n");
 				return done;
 			default:
-				str->reportError("[ErrorLIB]")->print("Unexpected case %d",rev);
+				str->captureError("[Transform]")->print("Unexpected case %d", rev);
+				return fail;
 			}
+		};
+	};
+	static bool __is_inited__ = false;
+	static class asInt* casI32 = nullptr;
+	static class asUint16* casU16 = nullptr;
+	static class asUint8* casU8 = nullptr;
+	static class asInt8* casI8 = nullptr;
+
+	JSON_INITIELAZATION_CLASS::JSON_INITIELAZATION_CLASS()	{
+		if (__is_inited__){return;}
+		__is_inited__ = true;
+		casU16 = new asUint16;
+		casU8 = new asUint8;
+		casI8 = new asInt8;
+		casI32 = new asInt;
+	}
+	
+	json::json(int32* value_prt) : transform(casI32), value_prt(value_prt) {}
+	json::json(uint16 * value_prt) : transform(casU16), value_prt(value_prt) {}
+	json::json(uint8 * value_prt) : transform(casU8), value_prt(value_prt) {}
+	json::json(int8 * value_prt) : transform(casI8), value_prt(value_prt) {}
+
+
+
+
+	class asConstStr : public JsonTransformer {
+	private:
+		const char * _const_str;
+	public:
+		asConstStr(const char * const_str) {
+			isCommon = false;
+			_const_str = const_str;
 		}
-	}
-
-	int asUint16(transformCBArgumenrt) {
-		unsigned int temp = *valuePtr(uint16);
-		return str->inputNumber(temp);
-	}
-
-	int asUint8(transformCBArgumenrt) {
-		unsigned int temp = *valuePtr(uint8);
-		return str->inputNumber(temp);
-	}
-
-	int asInt8(transformCBArgumenrt) {
-		int temp = *valuePtr(int8);
-		return str->inputNumber(temp);
-	}
-
-
-
-
-	json::json(int32* vp) : transform(asInt), value_prt(vp) {}
-	json::json(uint16 * value_prt) : transform(asUint16), value_prt(value_prt) {}
-	json::json(uint8 * value_prt) : transform(asUint8), value_prt(value_prt) {}
-	json::json(int8 * value_prt) : transform(asInt8), value_prt((void*)value_prt) {}
-
-
-
-
-
-
-	int asCharString(transformCBArgumenrt) {
-		if (is_get) {
-			return str->inputString(valuePtr(char));
+		~asConstStr(){}
+		JsonTransformer* copy() override {
+			return new asConstStr(_const_str);
 		}
-		else {
-			int rev = str->outputString(valuePtr(char),obj->size);
-			switch (rev) {
-			}
+		int get(JsonGenerateString* str, void* value)override {
+			str->inputString(_const_str);
+			return str->checkOverflow();
 		}
-	}
+		int set(JsonParseString* str, void * value)override {
+			return str->parseString(0, 0);
+		};
+	};
 
 
-	json jsonString(const char * value_prt) {
-		json rev{ asCharString, (void*)value_prt };
+
+	json buildJsonConstStr(const char * value_prt) {
+		json rev{ new asConstStr(value_prt), 0 };
 		return rev;
 	}
 
+	class asStr : public JsonTransformer {
+	private:
+		int _str_size;
+	public:
+		asStr(int size) {
+			isCommon = false;
+			_str_size = size;
+		}
+		~asStr() {}
+		JsonTransformer* copy() override {
+			return new asStr(_str_size);
+		}
+		int get(JsonGenerateString* str, void* value)override {
+			str->inputString((char*)value);
+			return str->checkOverflow();
+		}
+		int set(JsonParseString* str, void * value)override {
+			return str->parseString((char*)value, _str_size);
+		};
+	};
+	   
+	json buildJsonStr(char * value_prt,int max_size) {
+		json rev{ new asStr(max_size), value_prt };
+		return rev;
+	}
 
 
 

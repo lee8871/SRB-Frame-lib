@@ -33,7 +33,6 @@ json listtest3{
 	{"b",&b},
 	{"c",{c,c + 1,c + 2,c + 3,c + 4,c + 5}},
 
-
 	{"d",{
 		{"d",d},
 		{"d2",d + 1}
@@ -104,7 +103,6 @@ json specialTest{
 		{"v5",{&common_intAsStr,_ia6 + 5}}
 	}}
 };
-
 #undef _ia6
 
 
@@ -124,23 +122,13 @@ json specialTest2{
 		}},
 	}},
 };
+
 using namespace srb::Du_Motor;
-struct csMotorSet motor_set_values={222,124,1600,100,128};
 
 
-#define _cs_ms(value) {#value,(&(((csMotorSet*)0)->value))}
-json testForStruct{
-	_cs_ms(min_pwm_a),
-	_cs_ms(min_pwm_b),
-	_cs_ms(period),
-	_cs_ms(lose_control_ms),
-	_cs_ms(lose_behavior)
-};
-#undef _cs_ms
+
 int Step = 0;
-
 #include "Windows.h"
-
 #define PRINGSTEP(descripte) do{\
 SetConsoleTextAttribute(handle, FOREGROUND_INTENSITY | FOREGROUND_GREEN);\
 printf("\n\nStep %d  Enter to -- %s", Step++, descripte );\
@@ -150,24 +138,29 @@ while('\n'!=getchar());\
 
 HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 
-int f = 12;
-json test_read(&f);
 
-int testRead(json* j_object, char* ptr, int len) {
+int testRead(json* j_object, char* ptr, int len,void* diff = 0) {
 	auto serialze_jstr = std::make_unique<JsonGenerateString>(1024);
-	j_object->get(serialze_jstr.get());
-	printf("before read -- %s\n", serialze_jstr->Buf);serialze_jstr->clear();
+	serialze_jstr->isExpanded = false;
+	j_object->get(serialze_jstr.get(), diff);
+	printf("Before read -- %s\n", serialze_jstr->Buf);serialze_jstr->clear();
 	auto read_jstr = std::make_unique<JsonParseString>(ptr, len);
-	printf("read json string is -- %s\n", read_jstr->Buf);
-	j_object->set(read_jstr.get());
-
+	printf("Read string -- %s\n", read_jstr->Buf);
+	int rev_set = j_object->set(read_jstr.get(), diff);
+	j_object->get(serialze_jstr.get(), diff);
+	printf("After read  -- %s\n", serialze_jstr->Buf);serialze_jstr->clear();
+	if (rev_set == done) {
+		printf("Parse success but error:\n");
+	}
+	else {
+		printf("Parse fail and error:\n");
+	}
 	if (nullptr != read_jstr->Error_str) {
 		SetConsoleTextAttribute(handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
 		printf("%s\n", read_jstr->Error_str->Buf);
 		SetConsoleTextAttribute(handle, 0x07);
 	}
-	j_object->get(serialze_jstr.get());
-	printf("listtest after read is -- %s\n\n\n", serialze_jstr->Buf);serialze_jstr->clear();
+	printf("\n\n");
 	return done;
 }
 
@@ -177,7 +170,26 @@ int main(int argc, char *argv[]) {
 	char num[] = "128";
 	auto write_jstr = new JsonGenerateString(1024);
 	auto read_jstr = new JsonParseString(num, sizeof(num));	
-	
+	PRINGSTEP("Now test for struct<csMotorSet>:"); {
+		struct csMotorSet motor_set_values = { 222,124,1600,100,128 };
+#define _cs_ms(value) {#value,(&(((csMotorSet*)0)->value))}
+		json testForStruct{
+			_cs_ms(min_pwm_a),
+			_cs_ms(min_pwm_b),
+			_cs_ms(period),
+			_cs_ms(lose_control_ms),
+			_cs_ms(lose_behavior)
+		};
+#undef _cs_ms
+		{
+			char json_string[] = R"({"min_pwm_a":144,"min_pwm_b":156,"period":252,"lose_control_ms":25,"lose_behavior":55})";
+			testRead(&testForStruct, json_string, sizeof(json_string), &motor_set_values);
+		} {
+			char json_string[] = R"({"min_pwm_a":90036,"min_pwm_b":9036,"period":-254,"lose_control_ms":455,"lose_behavior":22} )";
+			testRead(&testForStruct, json_string, sizeof(json_string), &motor_set_values);
+		}
+
+	}
 	
 	
 	PRINGSTEP("test for read objec: "); {
@@ -187,10 +199,7 @@ int main(int argc, char *argv[]) {
 		{ {"num",&i },{"name", buildJsonStr(str, 20) }, {"fix",buildJsonConstStr("fix string")} };
 		char json_string[] = R"(     {"num":1,"name":"new string"}  )";
 		testRead(&json_object, json_string, sizeof(json_string));
-		char json_string2[] = R"(
-		{"name":"next string",
-"num":2345}   
-		 )";
+		char json_string2[] = R"({"name":"next string","num":2345} )";
 		testRead(&json_object, json_string2, sizeof(json_string2));
 		char json_string3[] = R"(     {"num":128,"name":"error test",   
 									"fix":"fix can not write", "lalala": 12  	}  )";
@@ -236,39 +245,75 @@ int main(int argc, char *argv[]) {
 
 
 
-	PRINGSTEP("Test for string to number");
-	int rev;
-	int value;
-	char number[32] = "-12937  323";
-	JsonParseString numstr{ number,32 };
-	rev = numstr.parseNumber(&value);
-	printf("get num1_1   %d, rev = %d\n", value, rev);
-	rev = numstr.parseNumber(&value);
-	printf("get num1_2   %d, rev = %d\n", value, rev);
-	char number2[32] = "29929479876133474519";
-	JsonParseString numstr2{ number2,32 };
-	rev = numstr2.parseNumber(&value);
-	printf("get num2_1   %d, rev = %d\n", value, rev);
-	rev = numstr2.parseNumber(&value);
-	printf("get num2_2   %d, rev = %d\n", value, rev);
+	PRINGSTEP("Test for string to number"); {
+		printf("\nFor Int Value\n");
+		int rev;
+		int value;
+		char number[32] = "-12937  323";
+		JsonParseString numstr{ number,32 };
+		rev = numstr.parseNumber(&value);	printf("get num1_1   %d, rev = %d\n", value, rev);
+		rev = numstr.parseNumber(&value);	printf("get num1_2   %d, rev = %d\n", value, rev);
 
-	char number3[64] = "292e2 -1254  -223.6 1.646e1293487";
-	JsonParseString numstr3{ number3,64};
-	rev = numstr3.parseNumber(&value);
-	printf("get num3_1   %d, rev = %d\n", value, rev);
-	rev = numstr3.parseNumber(&value);
-	printf("get num3_2   %d, rev = %d\n", value, rev);
-	rev = numstr3.parseNumber(&value);
-	printf("get num3_3   %d, rev = %d\n", value, rev);
-	rev = numstr3.parseNumber(&value);
-	printf("get num3_4   %d, rev = %d\n", value, rev);
-	rev = numstr3.parseNumber(&value);
-	printf("get num3_5   %d, rev = %d\n", value, rev);
-	
+		char number2[32] = "29929479876133474519";
+		JsonParseString numstr2{ number2,32 };
+		rev = numstr2.parseNumber(&value);	printf("get num2_1   %d, rev = %d\n", value, rev);
+		rev = numstr2.parseNumber(&value);	printf("get num2_2   %d, rev = %d\n", value, rev);
+
+		char number3[64] = "292e2 -1254  -223.6 1.646e1293487";
+		JsonParseString numstr3{ number3,64 };
+		rev = numstr3.parseNumber(&value);	printf("get num3_1   %d, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_2   %d, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_3   %d, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_4   %d, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_5   %d, rev = %d\n", value, rev);
+	} {
+		printf("\nFor Unsigned Int Value\n");
+		int rev;
+		unsigned int value;
+		char number[32] = "-12937  323";
+		JsonParseString numstr{ number,32 };
+		rev = numstr.parseNumber(&value);	printf("get num1_1   %u, rev = %d\n", value, rev);
+		rev = numstr.parseNumber(&value);	printf("get num1_2   %u, rev = %d\n", value, rev);
+
+		char number2[32] = "29929479876133474519";
+		JsonParseString numstr2{ number2,32 };
+		rev = numstr2.parseNumber(&value);	printf("get num2_1   %u, rev = %d\n", value, rev);
+		rev = numstr2.parseNumber(&value);	printf("get num2_2   %u, rev = %d\n", value, rev);
+
+		char number3[64] = "292e2 -1254  -223.6 1.646e1293487";
+		JsonParseString numstr3{ number3,64 };
+		rev = numstr3.parseNumber(&value);	printf("get num3_1   %u, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_2   %u, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_3   %u, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_4   %u, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_5   %u, rev = %d\n", value, rev);
+	} {
+		printf("\nFor Double Value\n");
+		int rev;
+		double value;
+		char number[32] = "-12937  323";
+		JsonParseString numstr{ number,32 };
+		rev = numstr.parseNumber(&value);	printf("get num1_1   %lf, rev = %d\n", value, rev);
+		rev = numstr.parseNumber(&value);	printf("get num1_2   %lf, rev = %d\n", value, rev);
+
+		char number2[32] = "29929479876133474519 didi";
+		JsonParseString numstr2{ number2,32 };
+		rev = numstr2.parseNumber(&value);	printf("get num2_1   %lf, rev = %d\n", value, rev);
+		rev = numstr2.parseNumber(&value);	printf("get num2_2   %lf, rev = %d\n", value, rev);
+
+		char number3[64] = "292e2 -1254  -223.6 1.646e1293487";
+		JsonParseString numstr3{ number3,64 };
+		rev = numstr3.parseNumber(&value);	printf("get num3_1   %lf, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_2   %lf, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_3   %lf, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_4   %lf, rev = %d\n", value, rev);
+		rev = numstr3.parseNumber(&value);	printf("get num3_5   %lf, rev = %d\n", value, rev);
+	}
 
 
+
+	PRINGSTEP("Now test for serialization:");	
 	JsonGenerateString str{ 4096 };
-	PRINGSTEP("Now test for serialization:");
 	str.isExpanded = false;
 	listtest.get(&str);	    printf("%s\n", str.Buf);str.clear();
 	str.isExpanded = true;
@@ -290,14 +335,6 @@ int main(int argc, char *argv[]) {
 	specialTest2.get(&str); 	printf("%s\n", str.Buf);str.clear();
 
 
-	PRINGSTEP("Now test for struct<csMotorSet>:");
-	testForStruct.get(&str, &motor_set_values);	printf("%s\n", str.Buf);str.clear();
-	motor_set_values.min_pwm_a = 1229;
-	motor_set_values.min_pwm_b = 3242;
-	motor_set_values.period = 20;
-	motor_set_values.lose_control_ms = 20;
-	motor_set_values.lose_behavior = 1;
-	testForStruct.get(&str, &motor_set_values);	printf("%s\n", str.Buf);str.clear();
 
 	PRINGSTEP("Now test a long long serialization:");
 	listtest5.get(&str);	printf("%s\n", str.Buf);str.clear();

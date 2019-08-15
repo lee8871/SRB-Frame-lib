@@ -4,55 +4,35 @@
 
 
 namespace lee8871_support {
-#define __ENUM_lv3__(situation,num)int situation = (-num-__BASE_NUM__);	const char * __const_char_ptr##num = #situation;
-#define __ENUM_lv2__(situation,num) __ENUM_lv3__(situation,num)
-#define __ENUM(situation)  __ENUM_lv2__(situation,__LINE__)
-	constexpr int __BASE_NUM__ = 200- (__LINE__ + 2);
-	constexpr struct {
-		__ENUM(no_error);
-		__ENUM(no_a_num);
-		__ENUM(float_to_int);
-		__ENUM(float_to_int_overflow);
-		__ENUM(negative_to_unsigned);
-
-		__ENUM(overflow);
-		__ENUM(get_no_init);
-		__ENUM(set_bad_json_str);
-		__ENUM(get_not_string);
-		__ENUM(get_cc_unpaired_DQM);
-	}eJsonParse;
-#undef __ENUM
-#undef __ENUM_lv2__
-#undef __ENUM_lv3__
-	inline const char * enumRevJsonGetString(int num) {
-		struct sIntCharPtr { int value; const char * p_name; };
-		sIntCharPtr * _ptr = (sIntCharPtr *)(&eJsonParse);
-		for (int i = 0;i < sizeof(eJsonParse) / sizeof(sIntCharPtr);i++) {
-			if (_ptr[i].value == num) {
-				return _ptr[i].p_name;
-			}
-		}
-		return "bad_enum_value";
-	}	
-
-	class LError {
-		LString str;
-		int err_num;
-		int postError(char* poster, int erro);
-	};
 
 
+#define captureAndPrintError captureError(__FUNCTION__)->print
 
 	class JsonParseString : public LString {
+	public:
+		enum class eAlram {
+			no_error,
+			no_a_num,
+			float_to_int,
+			float_to_int_overflow,
+			negative_to_unsigned,
+			overflow,
+
+			no_begin_token,
+			no_gap_or_end_token,
+
+			not_str,
+			str_overflow,
+			str_token_unpair
+		};
 	protected:
+		eAlram _last_alram = eAlram::no_error;
 		int tab_level = 0;
 		constexpr static int ERROR_CP_SIZE = 4096;
 		LString* error_str = nullptr;
-		int error_code = eJsonParse.no_error;
 	public:
+		eAlram  const& Last_alram = _last_alram;
 		LString* const& Error_str = error_str;
-		bool isExpanded = true;
-		char* tab_string = "  ";
 		JsonParseString(char *buf, int size);
 		JsonParseString(int size);
 		~JsonParseString();
@@ -69,28 +49,35 @@ namespace lee8871_support {
 		int parseString(char * s, int size);
 
 
+		const char* sign_begin = 0;
+		void recordBeginPtr() {
+			sign_begin = Ptr;
+		}
 
-		int errorOccur(const char * type,int num);
-		int errorForwared();
-		int errorResolved();
+		constexpr static int CAPTURELEN = 80;
+		constexpr static int CAPTUREBACK = 30;
 
 		LString* get_errorString();
-		LString*  captureError(const char * type) {
+		LString* captureError(const char * type) {
 			if (error_str == nullptr) {
 				error_str = new LString(ERROR_CP_SIZE);
 			}
-			char* begin_ptr = error_str->Ptr;
-			error_str->print("<%s>-->", type);
-			char* cap_ptr;
-			if (Ptr - 20 >= Buf) {
+			const char* sign_end = Ptr;
+			error_str->print("[%s]->\n", type);
+			const char * error_str_begin = error_str->Ptr;
+			const char* cap_ptr;
+			if (Ptr - CAPTUREBACK >= Buf) {
 				error_str->append("...");
-				cap_ptr = Ptr - 20;
+				cap_ptr = Ptr - CAPTUREBACK;
 			}
 			else {
 				cap_ptr = Buf;
 			}
-			int error_diff = 0;
-			while (cap_ptr != cap_ptr+40) {
+			const char* cap_end_ptr = cap_ptr + CAPTURELEN;
+			int sign_to_sign_begin = 0;
+			int sign_to_sign_end = 0;
+
+			while (cap_ptr != cap_end_ptr) {
 				if ((*cap_ptr == ' ') || (*cap_ptr == '\r') ||
 					(*cap_ptr == '\t') || (*cap_ptr == '\n')) {
 					error_str->append(' ');
@@ -101,15 +88,34 @@ namespace lee8871_support {
 				else {
 					error_str->append(*cap_ptr);
 				}
-				if (Ptr == ++cap_ptr) {
-					error_diff = error_str->Ptr - begin_ptr;
+				cap_ptr++;
+				if (sign_begin == cap_ptr) {
+					sign_to_sign_begin = error_str->Ptr - error_str_begin;
+				}
+				if (sign_end == cap_ptr) {
+					sign_to_sign_end = error_str->Ptr - error_str_begin;
 				}
 			}
+			if (*cap_ptr != 0) {
+				error_str->append("...");
+			}
 			error_str->append('\n');
-			for (int i = 0;i < error_diff;i++) {
+			int i = 0;
+			for (;i < sign_to_sign_begin;i++) {
 				error_str->append(' ');
 			}
-			error_str->append("^\n");
+
+			for (;i < sign_to_sign_end;i++) {
+				error_str->append('^');
+			}
+			return error_str;
+		}
+		LString* followError() {
+			append("\t->");
+			return error_str;
+		}
+		LString* breakError() {
+			append("\t->");
 			return error_str;
 		}
 
@@ -127,7 +133,7 @@ namespace lee8871_support {
 
 			}
 			else {
-				captureError("JBP")->print("Json read an unknow char\n");
+				captureAndPrintError("Json read an unknow char\n");
 				return fail;
 			}
 		}
@@ -151,7 +157,8 @@ namespace lee8871_support {
 				return false;
 			}
 			else {
-				captureError("J2A")->append("Parse array need '%c' or \"null\"",bgn_ch);
+				_last_alram = eAlram::no_begin_token;
+				captureAndPrintError("Parse array need '%c' or \"null\"",bgn_ch);
 				return false;
 			}
 		}
@@ -172,7 +179,8 @@ namespace lee8871_support {
 				return false;
 			}
 			else {
-				captureError("J2A")->print("need ',' or '%c'to stop Array", end_ch);
+				_last_alram = eAlram::no_gap_or_end_token;
+				captureAndPrintError("need ',' or '%c'to stop Array", end_ch);
 				return false;
 			}
 		}

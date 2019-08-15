@@ -19,11 +19,13 @@ namespace lee8871_support {
 	}while(0)
 
 	int JsonParseString::parseString(char * str, int size) {
+		recordBeginPtr();
 		bool is_overflow = (size == 0);
 		char * str_end = str + size;
 		if (checkCh('"')==false) {
-			captureError("J2N")->append("String should start with '\"'.");
-			return eJsonParse.get_not_string;
+			captureAndPrintError("String should start with '\"'.\n");
+			_last_alram = eAlram::not_str;
+			return fail;
 		}
 		while (1) {
 			if (*_ptr == '\\'){
@@ -62,16 +64,18 @@ namespace lee8871_support {
 				_ptr++;
 				checkAppendString(0);
 				if ((is_overflow)&&(size!=0)) {
-					captureError("J2S")->append("String buffer is too small for string.");
-					return eJsonParse.overflow;
+					captureAndPrintError("String buffer is too small for string.\n");
+					_last_alram = eAlram::str_overflow;
+					return done;
 				}
 				else {
 					return done;
 				}
 			}	
 			else if ((*_ptr < 0x20)|| (*_ptr >=0x7f)) {
-				captureError("J2N")->print("Unknow control char 0x%x", *_ptr);
-				return eJsonParse.get_cc_unpaired_DQM;
+				captureAndPrintError("Unknow control char 0x%x\n", *_ptr);
+				_last_alram = eAlram::str_token_unpair;
+				return done;
 			}
 			else {
 				checkAppendString(*_ptr);
@@ -99,54 +103,118 @@ namespace lee8871_support {
 		return error_str;
 	}
 
-	int JsonParseString::parseNumber(int* value){
+	int JsonParseString::parseNumber(int* val){
+		recordBeginPtr();
 		outputRemoveSpace();
 		char* p_end;
-		*value = strtol(_ptr, &p_end, 10);
+		int temp = strtol(_ptr, &p_end, 10);
 		if (p_end == _ptr){
-			captureError("J2I")->append("Object is not a number.\n");
-			return eJsonParse.no_a_num;
+			captureAndPrintError("Jsonstring is not a number.\n");
+			_last_alram = eAlram::no_a_num;
+			return fail;
 		}
 		else if ((*p_end == 'e') || (*p_end == '.')) {
 			auto d=strtold(_ptr, &p_end);
 			_ptr = p_end;
-			*value = (int)round(d);
-			if ((*value == INT_MAX) || (*value == INT_MIN)) {
-				captureError("J2I")->append("Object is float but transport to int and may overflow.\n");
-				return eJsonParse.float_to_int_overflow;
+			if ((d < INT_MIN) || (d > INT_MAX)) {
+				captureAndPrintError("Number is float but transport to int and overflow.\n");
+				_last_alram = eAlram::float_to_int_overflow;
+				*val = (int)round(d);
+				return done;
 			}
 			else {
-				get_errorString()->append("Object may be longer than int. ");
-				return eJsonParse.float_to_int;
+				captureAndPrintError("Number is float but transport to int \n");
+				_last_alram = eAlram::float_to_int;
+				*val = (int)round(d);
+				return done;
 			}
 		}
 		else {
 			_ptr = p_end;
-			if ((*value == INT_MAX) || (*value == INT_MIN)) {
-				captureError("J2I")->append("Object may be longer than int.\n");
-				return eJsonParse.overflow;
+			if ((temp == INT_MAX) || (temp == INT_MIN)) {
+				captureAndPrintError("Number transport to int overflow.\n");
+				_last_alram = eAlram::overflow;
+				*val = temp;
+				return done;
 			}
-			else {				
+			else {
+				*val = temp;
 				return done;
 			}
 		}
 	}
 	int JsonParseString::parseNumber(unsigned int * value) {
-		return done;
+		recordBeginPtr();
+		outputRemoveSpace();
+		char* p_end;
+		if (checkCh('-')) {
+			auto d = strtold(_ptr, &p_end);
+			_ptr = p_end;
+			captureAndPrintError("Number is a negative but transform to unsigned. \n");
+			_last_alram = eAlram::negative_to_unsigned;
+			*value =0;
+			return done;
+
+		}
+		auto temp = strtoul(_ptr, &p_end, 10);
+		if (p_end == _ptr) {
+			captureAndPrintError("Jsonstring is not a number.\n");
+			_last_alram = eAlram::no_a_num;
+			return fail;
+		}
+		else if ((*p_end == 'e') || (*p_end == '.')) {
+			auto d = strtold(_ptr, &p_end);
+			_ptr = p_end;
+			if ((d < 0) || (d > UINT_MAX)) {
+				captureAndPrintError("Number is float but transform to unsigned int and overflow.\n");
+				_last_alram = eAlram::float_to_int_overflow;
+				*value = UINT_MAX;	return done;
+			}
+			else {
+				captureAndPrintError("Number is float but transform to unsigned int.\n");
+				_last_alram = eAlram::float_to_int;
+				*value = (unsigned int)round(d);	return done;
+			}
+		}
+		else {
+			_ptr = p_end;
+			if (*value == UINT_MAX) {
+				captureAndPrintError("Number transport to unsigned int overflow.\n");
+				_last_alram = eAlram::overflow;
+				*value = temp;	return done;
+			}
+			else {
+				*value = temp;	return done;
+			}
+		}
 	}
 	int JsonParseString::parseNumber(float* value) {
+		recordBeginPtr();
+		outputRemoveSpace();
+		char* p_end;
+		auto temp = strtof(_ptr, &p_end);
+		if (p_end == _ptr) {
+			captureAndPrintError("Object is not a number.\n");
+			_last_alram = eAlram::no_a_num;
+			return fail;
+		}
+		_ptr = p_end;
+		*value = temp;
 		return done;
 	}
 	int JsonParseString::parseNumber(double* value) {
+		recordBeginPtr();
+		outputRemoveSpace();
 		char* p_end;
-		*value = strtold(_ptr, &p_end);
+		auto temp = strtold(_ptr, &p_end);
 		if (p_end == _ptr){
-			return eJsonParse.no_a_num;
+			captureAndPrintError("Object is not a number.\n");
+			_last_alram = eAlram::no_a_num;
+			return fail;
 		}
+		_ptr = p_end;
+		*value = temp;
 		return done;
 	}
-	
-
-
 
 };

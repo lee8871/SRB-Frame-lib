@@ -3,6 +3,8 @@
 
 using namespace std;
 namespace lee8871_support {
+
+
 	class asError: public JsonTransformer {
 	public:
 		int get(JsonGenerateString* str, void *diff) {
@@ -114,6 +116,7 @@ namespace lee8871_support {
 			}
 		}
 		int set(JsonParseString* str, void *diff) {
+			str->recordBeginPtr();
 			int i = 0;
 			if (str->isBgnHasNext(true)) {
 				do {
@@ -121,14 +124,14 @@ namespace lee8871_support {
 						checkFailReturn(table[i].set(str, diff));
 					}
 					else {
-						str->captureError("EJ2A")->print("Json array too long");
+						str->captureAndPrintError("Json array too long");
 						return fail;
 					}
 					i++;
 				} while (str->isGapHasNext(true));
 			}
 			if (i != size) {
-				str->captureError("WJ2A")->print("Json array lengthno match  %d->%d",i,size);
+				str->captureAndPrintError("Json array lengthno match  %d->%d",i,size);
 			}
 			return done;
 		}
@@ -250,33 +253,36 @@ namespace lee8871_support {
 			}
 		}
 		int setOneAttribute(JsonParseString* str, void *diff) {
+			str->recordBeginPtr();
 			str->outputRemoveSpace();
 			unsigned int hash = getHashByDoubleQuotes(str);
 			if (str->checkCh(':') == false) {
-				str->captureError("J2O")->print("get '%c' need a ':'", *str->Ptr);
+				str->captureAndPrintError("get '%c' need a ':'", *str->Ptr);
 				return fail;
 			}
 			if (hash == NO_HASH) {
-				str->captureError("J2O")->print("get attribute hash fail.");
+				str->captureAndPrintError("get attribute hash fail.");
 				return fail;
 			}
 			int i = 0;
 			while (table[i].hash != hash) {
 				i++;
 				if (i >= size) {
-					str->captureError("J2O")->print("attribute no match.");
+					str->captureAndPrintError("attribute no match.");
 					return fail;
 				}
 			}
-			checkFailReturn(table[i++].j.set(str, diff));
+			return table[i].j.set(str, diff);
 		}
 		int set(JsonParseString* str, void *diff) {
+			str->recordBeginPtr();
 			if (str->isBgnHasNext(false)){
 				do {
 					checkFailReturn(setOneAttribute(str, diff));
 				}
 				while (str->isGapHasNext(false));
 			}
+			return done;
 		}
 	};
 

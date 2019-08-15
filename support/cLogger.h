@@ -15,9 +15,6 @@ namespace srb {
 		reportNum *rev_table;
 	};
 
-
-
-
 	class cLogger {
 	private:
 		static const int BUF_LEN = 4096;

@@ -93,6 +93,7 @@ namespace lee8871_support {
 			_ptr = _buf;
 			return fail;
 		}
+		return done;
 	}
 
 	bool LString::checkCh(char c) {

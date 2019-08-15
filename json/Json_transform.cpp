@@ -9,12 +9,19 @@ namespace lee8871_support {
 			return this;
 		}
 		int get(JsonGenerateString* str, void* value)override {
-			int temp = *(int8*)value;
-			 str->inputNumber(temp);
-			 return str->checkOverflow();
+			unsigned int temp = *(uint16*)value;
+			str->inputNumber(temp);
+			return str->checkOverflow();
 		};
 		int set(JsonParseString* str, void *value)override {
-			return fail;
+			unsigned int temp;
+			checkFailReturn(str->parseNumber(&temp));
+			if (temp > UINT16_MAX) {
+				temp = UINT16_MAX;
+				str->captureAndPrintError("value > uint16.max\n");
+			}
+			*(uint16*)value = temp;
+			return done;
 		};
 	};
 
@@ -24,12 +31,20 @@ namespace lee8871_support {
 			return this;
 		}
 		int get(JsonGenerateString* str, void* value)override {
-			int temp = *(int8*)value;
+			unsigned int temp = *(uint8*)value;
 			str->inputNumber(temp);
 			return str->checkOverflow();
 		};
 		int set(JsonParseString* str, void *value)override {
-			return fail;
+			unsigned int temp;
+
+			checkFailReturn(str->parseNumber(&temp));
+			if (temp > UINT8_MAX) {
+				temp = UINT8_MAX;
+				str->captureAndPrintError("value > uint8.max\n");
+			}
+			*(uint8*)value = temp;
+			return done;
 		};
 	};
 	
@@ -44,7 +59,18 @@ namespace lee8871_support {
 			return str->checkOverflow();
 		};
 		int set(JsonParseString* str, void *value)override {
-			return fail;
+			unsigned int temp;
+			checkFailReturn(str->parseNumber(&temp));
+			if (temp < INT8_MIN) {
+				temp = INT8_MIN;
+				str->captureAndPrintError("value < int8.min\n");
+			}
+			if (temp > INT8_MAX) {
+				temp = INT8_MAX;
+				str->captureAndPrintError("value > int8.max\n");
+			}
+			*(int8*)value = temp;
+			return done;
 		};
 	};
 
@@ -59,23 +85,7 @@ namespace lee8871_support {
 			return str->checkOverflow();
 		};
 		int set(JsonParseString* str, void *value)override {
-			int rev = str->parseNumber((int*)value);
-			switch (rev) {
-			case done:
-				return done;
-			case eJsonParse.no_a_num:
-				str->get_errorString()->append("->Transform.");
-				return eJsonParse.no_a_num;
-			case eJsonParse.float_to_int:
-				str->get_errorString()->append("->Transform abonden.\n\n");
-				return done;
-			case eJsonParse.overflow:
-				str->get_errorString()->append("->Transform abonden.\n\n");
-				return done;
-			default:
-				str->captureError("[Transform]")->print("Unexpected case %d", rev);
-				return fail;
-			}
+			return str->parseNumber((int*)value);
 		};
 	};
 	static bool __is_inited__ = false;
@@ -122,8 +132,6 @@ namespace lee8871_support {
 		};
 	};
 
-
-
 	json buildJsonConstStr(const char * value_prt) {
 		json rev{ new asConstStr(value_prt), 0 };
 		return rev;
@@ -149,14 +157,10 @@ namespace lee8871_support {
 			return str->parseString((char*)value, _str_size);
 		};
 	};
-	   
+
 	json buildJsonStr(char * value_prt,int max_size) {
 		json rev{ new asStr(max_size), value_prt };
 		return rev;
 	}
-
-
-
-
 
 };

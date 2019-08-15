@@ -7,17 +7,24 @@
 
 
 namespace lee8871_support {
-
-	class json;
-
 	class JsonTransformer {
+	private:
+		int quote_counter = 1;
 	protected:
+		virtual~JsonTransformer() {
+		}
 	public:
-		bool isCommon = true;
+		JsonTransformer*  quote() {
+			quote_counter++;
+			return this;
+		}
+		void freeQuote() {
+			if(--quote_counter == 0){
+				delete this;
+			}
+		}
 		virtual int get(JsonGenerateString* str, void *value) = 0;
 		virtual int set(JsonParseString* str, void *value) = 0;
-		virtual JsonTransformer* copy() = 0;
-		virtual~JsonTransformer() {}
 	};
 
 	class json:public JsonTransformer {
@@ -27,11 +34,10 @@ namespace lee8871_support {
 		void * value_prt = nullptr;
 		JsonTransformer* transform = nullptr;
 
-
 		void moveFrom(json&);
 		void copyFrom(const json&);
 		JsonTransformer* copy() {
-			return new json(*this);
+			return this;
 		}
 		json operator = (const json&);
 		json(json&&);

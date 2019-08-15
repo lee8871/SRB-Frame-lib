@@ -2,10 +2,13 @@
 #include <memory>
 #include "json.h"
 
+
 using namespace lee8871_support;
 #include "../readonly/SRB-app-dumotor-share.h"
 
 using namespace std;
+
+
 
 int a = 20;
 int b = -42;
@@ -83,9 +86,6 @@ json difftest{
 };
 class writeIntAsStr : public JsonTransformer {
 public:
-	JsonTransformer* copy() override {
-		return new writeIntAsStr();
-	}
 	int get(JsonGenerateString* str, void* value)override {
 		return str->print("\"%d\"", *(int*) value);
 	}

@@ -16,9 +16,6 @@ namespace lee8871_support {
 			return fail;
 		};
 		~asError() {};
-		JsonTransformer* copy() {
-			return new asError();
-		}
 	};
 
 	json::json() :transform(new asError) {}
@@ -26,24 +23,18 @@ namespace lee8871_support {
 	void json::moveFrom(json &from){
 		value_prt = from.value_prt;
 		transform = from.transform;
-		from.transform = new asError();
+		from.transform = nullptr;
 		from.value_prt = nullptr;
-		if (value_prt == nullptr)
-		{
-			value_prt = (void*)0;
-		}
+
 	}
 	void json::copyFrom(const json &from) {
 		value_prt = from.value_prt;
-		transform = from.transform->copy();
-		if (value_prt == nullptr)
-		{
-			value_prt = (void*)0;
-		}
+		transform = from.transform;
+		transform->quote();
 	}
 	json::~json() {
-		if (transform->isCommon == false) {
-			delete transform;
+		if (transform != nullptr) {
+			transform->freeQuote();
 		}
 	}
 	json json::operator= (const json & right)	{
@@ -65,7 +56,6 @@ namespace lee8871_support {
 
 	public:
 		asArray(initializer_list<json> v){
-			isCommon = false;
 			size = v.size();
 			if (size != 0) {
 				table = new json[size]();
@@ -79,7 +69,6 @@ namespace lee8871_support {
 			}
 		}	
 		asArray(const asArray& form) {
-			isCommon = false;
 			size = form.size;
 			if (size != 0) {
 				table = new json[size]();
@@ -92,9 +81,7 @@ namespace lee8871_support {
 			}
 		}
 		asArray(asArray&& form) = delete;
-		JsonTransformer*  copy() {
-			return new asArray(*this);
-		}
+
 		~asArray() {
 			if (table != nullptr) {
 				delete[] table;
@@ -131,14 +118,14 @@ namespace lee8871_support {
 				} while (str->isGapHasNext(true));
 			}
 			if (i != size) {
-				str->captureAndPrintError("Json array lengthno match  %d->%d",i,size);
+				str->captureAndPrintError("Json array length no match  %d->%d",i,size);
 			}
 			return done;
 		}
 	};
-	json::json(initializer_list<json> v) : transform(new asArray(v)) {
-		value_prt = nullptr;
-	}
+	json::json(initializer_list<json> v) : 
+		transform((new asArray(v))),
+		value_prt(nullptr){}
 
 	class asObject:public JsonTransformer {
 	private:
@@ -195,7 +182,6 @@ namespace lee8871_support {
 		}
 	public :
 		asObject(initializer_list<pair<const char*, json>> v) {
-			isCommon = false;
 			size = v.size();
 			if (size != 0) {
 				table = new named_json[size]();
@@ -212,7 +198,6 @@ namespace lee8871_support {
 			}
 		}
 		asObject(const asObject& form) {
-			isCommon = false;
 			size = form.size;			
 			if (size != 0) {
 				table = new named_json[size]();
@@ -231,10 +216,6 @@ namespace lee8871_support {
 			if (table != nullptr) {
 				delete[] table;
 			}
-		}
-
-		JsonTransformer* copy() {
-			return new asObject(*this);
 		}
 		int get(JsonGenerateString* str, void *diff) {
 			int i = 0;
@@ -286,12 +267,13 @@ namespace lee8871_support {
 		}
 	};
 
-	json::json(initializer_list<pair<const char*, json>> v) 
-		: transform(new asObject(v)) {
-		value_prt = nullptr;
-	}
+	json::json(initializer_list<pair<const char*, json>> v) :
+		transform(new asObject(v)) ,
+		value_prt(nullptr) {}
 
-	json::json(JsonTransformer* transform, void * value_prt) : transform(transform), value_prt(value_prt) {}
+	json::json(JsonTransformer* transform, void * value_prt) : 
+		transform(transform->quote()), 
+		value_prt(value_prt) {}
 
 	int json::get(JsonGenerateString* str, void *diff) {
 		return transform->get(str, (void*)((size_t)diff+ (size_t)value_prt));

@@ -1,5 +1,6 @@
 #include "UsbAccess.h"
 
+using namespace lee8871_support;
 namespace srb {
 	namespace usb_bus {
 

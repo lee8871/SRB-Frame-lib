@@ -1,7 +1,9 @@
 #pragma once
 #include "lee.h"
 #include "cLogger.h"
-using namespace lee8871_support;
+namespace lee8871_support {
+	class iJsonWriter;
+}
 namespace srb {
 	class Node;
 	class Broadcaster;
@@ -12,5 +14,4 @@ namespace srb {
 	class SrbMaster;
 
 	class iCluster;
-	class iJsonWriter;
 };

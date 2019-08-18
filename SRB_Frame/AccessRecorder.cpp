@@ -8,6 +8,7 @@
 #include "iAccess.h"
 
 using namespace std;
+using namespace lee8871_support;
 namespace srb {
 	class AccessRecorder::Impl{
 	private:

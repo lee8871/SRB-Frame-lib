@@ -3,7 +3,7 @@
 #include "stringHash.h"
 
 using namespace std;
-using namespace srb;
+using namespace lee8871_support;
 int main(int argc, char *argv[]) {
 	char cmd[20];
 	char argument_str[256];

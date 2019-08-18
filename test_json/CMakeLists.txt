@@ -13,8 +13,10 @@ include_directories(../support)
 
 aux_source_directory(. DIR_SRCS)
 aux_source_directory(../json DIR_JSON)
+aux_source_directory(../support				DIR_SPPORT)
 
 
-add_executable (test_json ${DIR_SRCS} ${DIR_JSON})
+add_executable (test_json ${DIR_SRCS} ${DIR_JSON} ${DIR_SPPORT}
+	)
 
 

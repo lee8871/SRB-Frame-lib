@@ -1,6 +1,6 @@
 ﻿#pragma once 
 
-namespace srb {
+namespace lee8871_support {
 
 
 	struct reportNum {

@@ -2,6 +2,7 @@
 #include "Json.h"
 
 using namespace std;
+using namespace srb;
 namespace lee8871_support {
 	class asUint16 : public JsonTransformer{
 	public:

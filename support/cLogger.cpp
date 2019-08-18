@@ -1,14 +1,13 @@
 ﻿#include <iostream> 
 #include <stdio.h>
 #include <stdarg.h>
-
 #include "cLogger.h"
 #include "lee.h"
 #include "transform.h"
 #include "OsSupport.h"
 
 using namespace std;
-namespace srb {
+namespace lee8871_support {
 	int cLogger::setLogHead(const char* head,int type){	
 		int str_len_inc = 0;
 		switch(type){

@@ -3,6 +3,7 @@
 #include "SrbMaster.h"
 #include "BaseCluster.h"
 
+using namespace lee8871_support;
 namespace srb {
 	Broadcaster::Broadcaster(SrbMaster * m)	{
 		this->master = m;

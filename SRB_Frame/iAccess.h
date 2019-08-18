@@ -1,7 +1,10 @@
 #pragma once
 #include "srb_heads.h"
 #include "SRB-share-const.h"
-
+#include "OsSupport.h"
+namespace lee8871_support {
+	class iJsonWriter;
+}
 namespace srb {
 	class Node;
 /***********************************************************************
@@ -23,7 +26,6 @@ namespace srb {
 	class Node;
 	class iAccesser;
 	class ostream;
-	class iJsonWriter;
 	using accessDeleteCB_t = int (*)(iAccess*);
 	class iAccess {
 	protected:
@@ -38,7 +40,7 @@ namespace srb {
 		sSrbPkg* const& Send_pkg = _send_pkg;
 		sSrbPkg* const& Recv_pkg = _recv_pkg;
 		eAccessStatus const& Status = _status;
-		tUs const& Send_time = _send_time;
+		lee8871_support::tUs const& Send_time = _send_time;
 
 		iAccess(const iAccess&) = delete;
 		iAccess& operator=(const iAccess&)=delete;

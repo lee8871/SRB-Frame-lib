@@ -2,7 +2,8 @@
 #include <iostream>   
 #include "cLogger.h"
 using namespace std;
-namespace srb {
+using namespace srb;
+namespace lee8871_support {
 	namespace trans {
 		extern char u8ToLow(uint8 u8);
 	}
@@ -17,7 +18,7 @@ namespace srb {
 	}
 
 
-	int srb::StreamJsonWriter::preWrite(const char * name)
+	int StreamJsonWriter::preWrite(const char * name)
 	{
 		if (iteration != -1) {//if not root object
 			if (is_first[iteration] == false) {//may need comma if not first object
@@ -43,19 +44,19 @@ namespace srb {
 		return done;
 	}
 
-	int srb::StreamJsonWriter::writeNum(const char * name, int value)	{
+	int StreamJsonWriter::writeNum(const char * name, int value)	{
 		preWrite(name);
 		*record << value;
 		return done;
 	}	
-	int srb::StreamJsonWriter::writeLongLongNum(const char * name, long long value) {
+	int StreamJsonWriter::writeLongLongNum(const char * name, long long value) {
 		preWrite(name);
 		*record << value;
 		return done;
 	}
 
 
-	int srb::StreamJsonWriter::writeU8Str(const char * name, uint8 value)	{
+	int StreamJsonWriter::writeU8Str(const char * name, uint8 value)	{
 		preWrite(name);
 		*record << '"' << trans::u8ToLow(value >> 4) << trans::u8ToLow(value) << '"';
 		return done;
@@ -112,7 +113,7 @@ namespace srb {
 		return done;
 	}
 
-	int srb::StreamJsonWriter::writeU8ArrayStr(const char * name, const uint8 * data, int len )	{
+	int StreamJsonWriter::writeU8ArrayStr(const char * name, const uint8 * data, int len )	{
 		preWrite(name);			
 		*record << '"';
 		for (int i = 0;i < len; i++) {
@@ -122,12 +123,12 @@ namespace srb {
 		return done;
 	}
 
-	int srb::StreamJsonWriter::writeEndLine()	{
+	int StreamJsonWriter::writeEndLine()	{
 		is_next_obj_in_new_line = true;
 		return done;
 	}
 
-	int srb::StreamJsonWriter::beginObj(const char * name)	{
+	int StreamJsonWriter::beginObj(const char * name)	{
 		preWrite(name);
 		iteration++;
 		if (iteration >= MAX_ITERATION_NUM) {
@@ -139,7 +140,7 @@ namespace srb {
 		return done;
 	}
 
-	int srb::StreamJsonWriter::endObj() {
+	int StreamJsonWriter::endObj() {
 		iteration--;				
 		if (is_expand_mode) {
 			*record << '\n';

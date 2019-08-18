@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "lee.h"
-using namespace lee8871_support;
-namespace srb {
+namespace lee8871_support {
+	using tUs = long long int;
 	class OsSupport {
 	public :
 		static tUs getTimesUs();

@@ -2,6 +2,7 @@
 #include "iJsonWriter.h"
 #include "OsSupport.h"
 
+using namespace lee8871_support;
 namespace srb {
 	static inline int srbPkgToJson(const sSrbPkg* pkg, const char* name, iJsonWriter &recordJW) {
 		if (pkg != nullptr) {

@@ -1,8 +1,7 @@
 ﻿#pragma once
 #include "lee.h"
 #include "OsSupport.h"
-using namespace lee8871_support;
-namespace srb {
+namespace lee8871_support {
 	class PerformanceTimer {
 	private:
 		int cpu_freq = -1;	

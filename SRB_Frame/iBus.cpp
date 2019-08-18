@@ -2,6 +2,7 @@
 #include "iAccess.h"
 #include "AccessRecorder.h"
 
+using namespace lee8871_support;
 namespace srb {
 	int iBus::accessDone(iAccess* acs){
 		if(access_recoeder!=nullptr){

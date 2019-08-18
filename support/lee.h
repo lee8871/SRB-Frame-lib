@@ -22,7 +22,6 @@
 #define bit7 bit(7)
 */
 namespace lee8871_support {
-
 	enum eYesNo {
 		no = 0,
 		yes = 1,
@@ -37,9 +36,9 @@ namespace lee8871_support {
 		node_exsist = -100,
 		node_no_exsist = -101,
 	};
-
-
-
+}
+namespace srb{
+	using namespace lee8871_support;
 	typedef unsigned char uint8;
 	typedef unsigned short int uint16;
 	typedef unsigned int uint32;
@@ -47,7 +46,6 @@ namespace lee8871_support {
 	typedef signed short int int16;
 	typedef signed int int32;
 
-	using tUs = long long int;
 
 	typedef union
 	{
@@ -70,12 +68,13 @@ namespace lee8871_support {
 		uint8 u8[2];
 	}u16to8;
 	constexpr size_t UNDEF_LENGTH=1;
+}
+
+
+
 
 #define checkFailReturn(value) do{\
 		int rev = (value);\
 		if (done != rev){return rev;}\
 	}while(0)
-
-}
-
 #endif// _lee_type_and_common_define_h

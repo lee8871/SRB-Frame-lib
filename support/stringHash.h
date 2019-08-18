@@ -1,5 +1,5 @@
 ﻿#pragma once
-namespace srb {
+namespace lee8871_support {
 	constexpr unsigned int getHashCmd(const char * str) {
 		int i = 0;
 		unsigned int id = 0;

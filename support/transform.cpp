@@ -1,11 +1,11 @@
-﻿
-#include <iostream>
+﻿#include <iostream>
 #include <time.h> 
 #include "lee.h"
 #include "transform.h"
-namespace srb {
+
+namespace lee8871_support {
 	namespace trans {
-		char u8ToLow(uint8 u8) {
+		char u8ToLow(srb::uint8  u8) {
 			char c = '0' + (u8 & 0x0f);
 			if (c > '9') { c = c - '9' - 1 + 'A'; }
 			return c;

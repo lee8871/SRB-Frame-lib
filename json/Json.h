@@ -46,10 +46,10 @@ namespace lee8871_support {
 		json();
 
 		json(JsonTransformer* transform, void* value_prt);
-		json(int32* value_prt);
-		json(uint16* value_prt);
-		json(uint8* value_prt);
-		json(int8 * value_prt);
+		json(srb::int32* value_prt);
+		json(srb::uint16* value_prt);
+		json(srb::uint8* value_prt);
+		json(srb::int8 * value_prt);
 
 		json(std::initializer_list<json> v);//to json array
 		json(std::initializer_list<std::pair<const char*, json>> v);//to json object

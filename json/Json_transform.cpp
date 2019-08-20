@@ -1,6 +1,12 @@
 ﻿#define NOT_JSON_USER
 #include "Json.h"
 
+
+#include "cLogger.h"
+namespace lee8871_support {
+	extern ModuleLog JsonLog;
+};
+
 using namespace std;
 using namespace srb;
 namespace lee8871_support {
@@ -76,6 +82,12 @@ namespace lee8871_support {
 			return str->parseNumber((int*)value);
 		};
 	};
+
+
+
+
+
+
 	static bool __is_inited__ = false;
 	static class asInt* casI32 = nullptr;
 	static class asUint16* casU16 = nullptr;

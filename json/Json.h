@@ -11,8 +11,8 @@ namespace lee8871_support {
 	private:
 		int quote_counter = 1;
 	protected:
-		virtual~JsonTransformer() {
-		}
+		JsonTransformer() {	}
+		virtual~JsonTransformer() {	}
 	public:
 		JsonTransformer*  quote() {
 			quote_counter++;

@@ -1,25 +1,36 @@
 ﻿#define NOT_JSON_USER
 #include "Json.h"
 
+#include "cLogger.h"
+namespace lee8871_support {
+	ModuleLog JsonLog = { &logger,"json",eLogLevel::info };
+};
 using namespace std;
 namespace lee8871_support {
-
-
-	ModuleLog UsbBusLog = { &logger,"usb_bus",eLogLevel::info };
-	class asError: public JsonTransformer {
+	static class asError* as_error = nullptr;
+	class asError : public JsonTransformer {
+	private:
+		asError() {
+		}
 	public:
+		static asError* create() {
+			if (as_error == nullptr) {
+				as_error = new asError();
+			}
+			return as_error;
+		}
 		int get(JsonGenerateString* str, void *diff) {
-			//TODO add errorLog report
+			JsonLog.addLog(eLogLevel::erro, "get() call by an uninitialized json object");
 			return fail;
 		};
 		int set(JsonParseString* str, void *diff) {
-			//TODO add errorLog report
+			JsonLog.addLog(eLogLevel::erro, "set() call by an uninitialized json object");
 			return fail;
 		};
 		~asError() {};
 	};
 
-	json::json() :transform(new asError) {}
+	json::json() :transform(asError::create()) {}
 
 	void json::moveFrom(json &from){
 		value_prt = from.value_prt;

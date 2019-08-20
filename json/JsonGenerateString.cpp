@@ -5,6 +5,11 @@
 #define NOT_JSON_USER
 #include "json.h"
 
+
+#include "cLogger.h"
+namespace lee8871_support {
+	extern ModuleLog JsonLog;
+};
 namespace lee8871_support {
 
 	void JsonGenerateString::inputString(const char * string)	{

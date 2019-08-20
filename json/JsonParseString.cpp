@@ -5,6 +5,11 @@
 #define NOT_JSON_USER
 #include "json.h"
 
+
+#include "cLogger.h"
+namespace lee8871_support {
+	extern ModuleLog JsonLog;
+};
 namespace lee8871_support {
 
 
@@ -56,6 +61,7 @@ namespace lee8871_support {
 					checkAppendString('\t');
 					break;
 				default:	
+					JsonLog.addLog(eLogLevel::erro, "\\u or other escape is not support.");
 					break;
 				}
 				_ptr++;

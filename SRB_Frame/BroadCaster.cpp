@@ -18,7 +18,7 @@ namespace srb {
 		return 0xff;
 	}
 	void Broadcaster::accessDoneReply(iAccess * acs) {
-		
+		delete acs;
 	}
 
 	int Broadcaster::setLedAddress(uint8 cmd) {

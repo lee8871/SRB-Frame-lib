@@ -34,9 +34,9 @@ namespace srb {
 		sSrbPkg* _recv_pkg = nullptr;
 		tUs _send_time = 0;
 		iAccess() = default;
-		~iAccess() = default;
 
 	public:
+		virtual ~iAccess() = default;
 		sSrbPkg* const& Send_pkg = _send_pkg;
 		sSrbPkg* const& Recv_pkg = _recv_pkg;
 		eAccessStatus const& Status = _status;
@@ -56,7 +56,6 @@ namespace srb {
 		int timeoutAccess();
 
 		int sendJson(iJsonWriter & record);
-		virtual const char* getType();
 		
 	};
 	//不需要让节点的Mapping或者cluster等实际的接收者成为iAccesser

@@ -351,7 +351,7 @@ namespace srb {
 							access_lock.unlock();
 							parent->accessDone(acs);
 							//TODO acs应该可以在访问后不被销毁，由访问的发起者销毁，但是发起者不知道访问对应的接口类型。
-							delete acs;
+							//delete acs;
 							access_lock.lock();
 							if (point_out == point_in) {
 								access_lock.unlock();return done;

@@ -120,20 +120,21 @@ namespace srb {
 			_exsist = true;
 			if (acs->Recv_pkg->bfc.error == yes) {
 				logger.errPrint("access recv bfc.error IS yes, may node error or send data error.");
-				return;
 			}
-			switch (acs->Send_pkg->bfc.port) {
-			case SC_PORT_D0:
-			case SC_PORT_D1:
-			case SC_PORT_D2:
-			case SC_PORT_D3:
-				break;
-			case SC_PORT_CFG:
-				//TODO Note this if cluster is not exsist
-				clusters[acs->Send_pkg->data[0]]->readDone(acs);
-				break;
-			default:
-				break;
+			else {
+				switch (acs->Send_pkg->bfc.port) {
+				case SC_PORT_D0:
+				case SC_PORT_D1:
+				case SC_PORT_D2:
+				case SC_PORT_D3:
+					break;
+				case SC_PORT_CFG:
+					//TODO Note this if cluster is not exsist
+					clusters[acs->Send_pkg->data[0]]->readDone(acs);
+					break;
+				default:
+					break;
+				}
 			}
 		}
 		else if (acs->Status == eAccessStatus::BusTimeOut) {
@@ -142,6 +143,7 @@ namespace srb {
 		else {
 			logger.errPrint("accessDoneReply shold call when status is ReceiveDone or BusTimeOut ");
 		}
+		delete acs;
 	}
 	int Node::toJsonAll(iJsonWriter & json_printer)	{
 		json_printer.beginObj("untyped_node");

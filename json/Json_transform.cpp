@@ -22,7 +22,6 @@ namespace lee8871_support {
 			return done;
 		};
 	};
-
 	class asUint8 : public JsonTransformer{
 	public:
 		int get(JsonGenerateString* str, void* value)override {

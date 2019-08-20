@@ -30,10 +30,6 @@ namespace srb {
 			acs->_send_pkg = &(acs->usb_send_pkg->pkg);
 			return acs;
 		}
-
-		const char * UsbAccess::getType()		{
-			return "usbToSrb-V1.x";
-		}
 		
 		int UsbAccess::getUsbSendPkg(sUsbToSrbPkg** pkg, int* len) {
 			if (_status != eAccessStatus::WaitSend) {

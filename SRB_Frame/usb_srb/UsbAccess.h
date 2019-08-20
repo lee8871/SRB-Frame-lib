@@ -13,7 +13,6 @@ namespace srb {
 			int getUsbSendPkg(sUsbToSrbPkg** pkg, int* len);
 			int setUsbRecvPkg(sUsbToSrbPkg* pkg, int len);
 			static UsbAccess* newAccess(iAccesser*);
-			virtual const char* getType() override;
 		};
 	}
 }

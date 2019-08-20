@@ -1,18 +1,19 @@
 ﻿#pragma once 
 
 namespace lee8871_support {
+	class 
 
+	class ILog;
+	class ILog {
+	protected:
 
-	struct reportNum {
-		int rev;
-		const char * name;
-	};
-	class subSystem {
-	private:
-		bool isRecordOpen;
-		int id;
-		char* const name;
-		reportNum *rev_table;
+	public:
+		const char* name;
+		virtual ILog& operator << (const char* str) = 0;
+		virtual ILog& operator << (int str) = 0;
+		virtual ILog& operator << (long int str) = 0;
+		virtual ILog& operator << (float str) = 0;
+		virtual ILog& operator << (double str) = 0;
 	};
 
 	class cLogger {

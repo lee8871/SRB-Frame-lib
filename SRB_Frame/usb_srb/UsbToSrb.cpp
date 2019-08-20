@@ -17,7 +17,7 @@
 using namespace std;
 namespace srb {
 	namespace usb_bus {
-
+		ModuleLog UsbBusLog = { &logger,"usb_bus",eLogLevel::info };
 
 		class UsbToSrb::Impl{
 		private:
@@ -41,15 +41,15 @@ namespace srb {
 				a->getUsbSendPkg(&pkg, &length);
 				pkg->sno = point;
 				if (LIBUSB_SUCCESS != (rev=libusb_bulk_transfer(mainDH, (2), pkg->u8, length, &sent_len, 10))) {
-					logger.infoPrint('u',"Send pkg error %d",rev);
+					UsbBusLog.addLog(eLogLevel::info,"Send pkg error %d",rev);
 					return fail;
 				}
 				if (sent_len != length) {
-					logger.infoPrint('u', "USB pkg length is %d but send %d", length, sent_len);
+					UsbBusLog.addLog(eLogLevel::info, "USB pkg length is %d but send %d", length, sent_len);
 					return fail;
 				}
 				a->recordSendTime();
-				logger.infoPrint('U',"send Pkg len %d", sent_len);
+				UsbBusLog.addLog(eLogLevel::debug, "send Pkg len %d", sent_len);
 				return done;
 			}
 			int accessRecv() {
@@ -57,28 +57,28 @@ namespace srb {
 				int rcvd_len;
 				int rev;
 				if (LIBUSB_SUCCESS != (rev = libusb_bulk_transfer(mainDH, (1 + 0x80), pkg->u8, 31 + 3, &rcvd_len, 10))) {
-					logger.infoPrint('u',"receive pkg error %d",rev);
+					UsbBusLog.addLog(eLogLevel::info, "receive pkg error %d",rev);
 					delete pkg;
 					return fail;
 				}
 				if (rcvd_len <= 1) {
 					if (rcvd_len == 1) {
-						logger.infoPrint('u', "recv Pkg length=1(%d)", pkg->u8[0]);
+						UsbBusLog.addLog(eLogLevel::info, "recv Pkg length=1(%d)", pkg->u8[0]);
 					}
 					else {
-						logger.infoPrint('u', "recv Pkg length=%d", rcvd_len);
+						UsbBusLog.addLog(eLogLevel::info, "recv Pkg length=%d", rcvd_len);
 					}
 					delete pkg;
 					return fail;
 				}
 				uint8 point = pkg->sno;
 				if (acs_queue[point] == nullptr) {
-					logger.infoPrint('u', "recv a package to nonexistent node.(addr:%d,sno:%d,len:%d); ",pkg->addr,pkg->sno, rcvd_len);
+					UsbBusLog.addLog(eLogLevel::info, "recv a package to nonexistent node.(addr:%d,sno:%d,len:%d); ",pkg->addr,pkg->sno, rcvd_len);
 					delete pkg;
 					return fail;
 				}
 				acs_queue[point]->setUsbRecvPkg(pkg, rcvd_len);
-				logger.infoPrint('U',"recv Pkg ");
+				UsbBusLog.addLog(eLogLevel::debug ,"recv Pkg ");
 				return done;
 			}
 			//----------------------------private method-------------------------------------------
@@ -105,7 +105,7 @@ namespace srb {
 				}
 				if(mainCTX!=nullptr){
 					libusb_exit(mainCTX);					
-					logger.infoPrint('U',"close mainCTX!");
+					UsbBusLog.addLog(eLogLevel::debug, "close mainCTX!");
 					OsSupport::msSleep(50);
 					mainCTX=nullptr;
 				}				
@@ -117,22 +117,22 @@ namespace srb {
 				int rev;
 				rev = libusb_open(mainDEV, &mainDH);
 				if (LIBUSB_SUCCESS != rev) {
-					logger.errPrint("libusb device open fail, libusb_err=%d.", rev);	
+					UsbBusLog.addLog(eLogLevel::erro, "libusb device open fail, libusb_err=%d.", rev);
 					libusb_close(mainDH);
 					closeUsb();	return fail;
 				}
 				rev = libusb_reset_device(mainDH);
 				if (LIBUSB_SUCCESS != rev) {
-					logger.errPrint("libusb device reset fail, libusb_err=%d.", rev);
+					UsbBusLog.addLog(eLogLevel::erro, "libusb device reset fail, libusb_err=%d.", rev);
 				}
 				rev = libusb_set_configuration(mainDH, 1);
-				if (LIBUSB_SUCCESS != rev) {					
-					logger.errPrint("libusb_set_configuration fail, libusb_err=%d.",rev);
+				if (LIBUSB_SUCCESS != rev) {
+					UsbBusLog.addLog(eLogLevel::erro, "libusb_set_configuration fail, libusb_err=%d.",rev);
 					closeUsb();	return fail;
 				}
 				rev = libusb_claim_interface(mainDH, 0);
 				if (LIBUSB_SUCCESS != rev) {
-					logger.errPrint("libusb_claim_interface fail, libusb_err=%d.",rev);
+					UsbBusLog.addLog(eLogLevel::erro, "libusb_claim_interface fail, libusb_err=%d.",rev);
 					closeUsb();	return fail;
 				}
 				return done;
@@ -149,22 +149,22 @@ namespace srb {
 				libusb_device_handle *device_handle = nullptr;
 				int rev = libusb_open(device, &device_handle);
 				if (LIBUSB_SUCCESS != rev) {
-					logger.errPrint("libusb device open fail, libusb_err=%d.", rev);	
+					UsbBusLog.addLog(eLogLevel::erro, "libusb device open fail, libusb_err=%d.", rev);
 					libusb_close(device_handle);
 					return false;
 				}
 				char str[256];
 				rev = libusb_get_string_descriptor_ascii(device_handle, dev_desc.iProduct, (unsigned char*)str, sizeof(str));
-				if(rev < 0){					
-					logger.errPrint("libusb get string_descriptor.iProduct(%d) fail, libusb_err=%d.", dev_desc.iProduct, rev);						
+				if(rev < 0){
+					UsbBusLog.addLog(eLogLevel::erro, "libusb get string_descriptor.iProduct(%d) fail, libusb_err=%d.", dev_desc.iProduct, rev);
 					libusb_close(device_handle);return false;
 				}
 				if (0 != strcmp(str, "SRB-USB")){								
 					libusb_close(device_handle);return false;
 				}
 				rev =libusb_get_string_descriptor_ascii(device_handle, dev_desc.iSerialNumber, (unsigned char*)str, sizeof(str));
-				if(rev < 0){							
-					logger.errPrint("libusb get string_descriptor.iSerialNumber(%d) fail, libusb_err=%d.", dev_desc.iSerialNumber,rev);	
+				if(rev < 0){
+					UsbBusLog.addLog(eLogLevel::erro,"libusb get string_descriptor.iSerialNumber(%d) fail, libusb_err=%d.", dev_desc.iSerialNumber,rev);	
 					libusb_close(device_handle);return false;
 				}
 				if (0 != strcmp(str, name)) {	
@@ -182,7 +182,7 @@ namespace srb {
 				int usb_device_num;
 				usb_device_num = libusb_get_device_list(mainCTX, &devices);
 				if (usb_device_num < 0) {
-					logger.errPrint("Get device list fail, libusb_err=%d.",usb_device_num);
+					UsbBusLog.addLog(eLogLevel::erro, "Get device list fail, libusb_err=%d.",usb_device_num);
 					return fail;
 				}				
 				for (int i = 0;i < usb_device_num;i++){
@@ -202,7 +202,7 @@ namespace srb {
 				closeUsb();
 				int usb_status_flag = libusb_init(&mainCTX);
 				if (usb_status_flag < 0){
-					logger.errPrint("libusb can not init! rev:%d",usb_status_flag);
+					UsbBusLog.addLog(eLogLevel::erro, "libusb can not init! rev:%d",usb_status_flag);
 				}				
 				libusb_device * selected_device = nullptr;
 				if(fail == selectUsbByName(name, &selected_device))	{
@@ -226,22 +226,22 @@ namespace srb {
 				}
 				rev = libusb_open(mainDEV, &mainDH);
 				if (LIBUSB_SUCCESS != rev) {
-					logger.errPrint("libusb device open fail, libusb_err=%d.", rev);	
+					UsbBusLog.addLog(eLogLevel::erro, "libusb device open fail, libusb_err=%d.", rev);
 					libusb_close(mainDH);
 					closeUsb();	return fail;
 				}
 				rev = libusb_reset_device(mainDH);
 				if (LIBUSB_SUCCESS != rev) {
-					logger.errPrint("libusb device reset fail, libusb_err=%d.", rev);
+					UsbBusLog.addLog(eLogLevel::erro, "libusb device reset fail, libusb_err=%d.", rev);
 				}
 				rev = libusb_set_configuration(mainDH, 1);
-				if (LIBUSB_SUCCESS != rev) {					
-					logger.errPrint("libusb_set_configuration fail, libusb_err=%d.",rev);
+				if (LIBUSB_SUCCESS != rev) {
+					UsbBusLog.addLog(eLogLevel::erro, "libusb_set_configuration fail, libusb_err=%d.",rev);
 					closeUsb();	return fail;
 				}
 				rev = libusb_claim_interface(mainDH, 0);
 				if (LIBUSB_SUCCESS != rev) {
-					logger.errPrint("libusb_claim_interface fail, libusb_err=%d.",rev);
+					UsbBusLog.addLog(eLogLevel::erro, "libusb_claim_interface fail, libusb_err=%d.",rev);
 					closeUsb();	return fail;
 				}
 				return done;
@@ -314,7 +314,7 @@ namespace srb {
 				int send_error_counter = 0;
 				int recv_error_counter = 0;
 				if (isOpen() == false) {
-					logger.errPrint("Do access before open port.");
+					UsbBusLog.addLog(eLogLevel::erro, "Do access before open port.");
 					return fail;
 				}
 				uint8 point_send = 0;
@@ -337,7 +337,7 @@ namespace srb {
 						else {
 							//如果包的类型奇怪则发布一个错误。
 							if (acs_queue[point_send]->Status != eAccessStatus::Cancel) {
-								logger.errPrint("An access in queue[%d] status %d is sending.", point_send, acs_queue[point_send]->Status );
+								UsbBusLog.addLog(eLogLevel::erro, "An access in queue[%d] status %d is sending.", point_send, acs_queue[point_send]->Status );
 							}
 							point_send++;
 						}
@@ -371,17 +371,17 @@ namespace srb {
 						//TODO: if fail exit ,we shold do some thing.
 						access_lock.unlock();		
 						if(access_reset_counter == ACCESS_RESET_MAX){
-							logger.crashPrint("Access timeover too many times!");
+							UsbBusLog.addLog(eLogLevel::fatal, "Access timeover too many times!");
 							return fail;
 						}
 						else{
 							int rev = openUsbByName(last_name);
-							if(rev == done){     
-								logger.errPrint("Access timeover reset all USB%d done(recv:%d,send:%d), portname is %s"
+							if(rev == done){
+								UsbBusLog.addLog(eLogLevel::erro, "Access timeover reset all USB%d done(recv:%d,send:%d), portname is %s"
 								,access_reset_counter,recv_error_counter,send_error_counter, last_name);				
 							}
 							else{
-								logger.errPrint("Access timeover reset all USB%d fail(recv:%d,send:%d), portname is %s "
+								UsbBusLog.addLog(eLogLevel::erro, "Access timeover reset all USB%d fail(recv:%d,send:%d), portname is %s "
 								,access_reset_counter,recv_error_counter,send_error_counter, last_name);
 								return fail;
 							}

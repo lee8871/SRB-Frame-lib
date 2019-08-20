@@ -132,7 +132,7 @@ namespace lee8871_support {
 		preWrite(name);
 		iteration++;
 		if (iteration >= MAX_ITERATION_NUM) {
-			logger.errPrint("Json maker enter too much object.");
+			logger.print("Json maker enter too much object.");
 			return fail;
 		}
 		is_first[iteration] = true;
@@ -153,7 +153,7 @@ namespace lee8871_support {
 			*record  << endl;
 		}
 		else if (iteration < -1) {
-			logger.errPrint("Json maker endding more object than begining");
+			logger.print("Json maker endding more object than begining");
 			return fail;
 		}
 		return done;

@@ -5,6 +5,7 @@ using namespace std;
 namespace lee8871_support {
 
 
+	ModuleLog UsbBusLog = { &logger,"usb_bus",eLogLevel::info };
 	class asError: public JsonTransformer {
 	public:
 		int get(JsonGenerateString* str, void *diff) {

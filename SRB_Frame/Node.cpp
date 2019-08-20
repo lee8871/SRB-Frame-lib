@@ -119,7 +119,7 @@ namespace srb {
 		if (acs->Status == eAccessStatus::RecvedDone) {
 			_exsist = true;
 			if (acs->Recv_pkg->bfc.error == yes) {
-				logger.errPrint("access recv bfc.error IS yes, may node error or send data error.");
+				logger.print("access recv bfc.error IS yes, may node error or send data error.");
 			}
 			else {
 				switch (acs->Send_pkg->bfc.port) {
@@ -141,7 +141,7 @@ namespace srb {
 			_exsist = false;
 		}
 		else {
-			logger.errPrint("accessDoneReply shold call when status is ReceiveDone or BusTimeOut ");
+			logger.print("accessDoneReply shold call when status is ReceiveDone or BusTimeOut ");
 		}
 		delete acs;
 	}

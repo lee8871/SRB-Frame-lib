@@ -6,6 +6,7 @@
 
 
 #include "json.h"
+#include "OsSupport.h"
 
 
 using namespace lee8871_support;
@@ -137,13 +138,12 @@ using namespace srb::Du_Motor;
 int Step = 0;
 #include "Windows.h"
 #define PRINGSTEP(descripte) do{\
-SetConsoleTextAttribute(handle, FOREGROUND_INTENSITY | FOREGROUND_GREEN);\
+setTerminalColor(eTerminalColor::highlight);\
 printf("\n\nStep %d  Enter to -- %s", Step++, descripte );\
-SetConsoleTextAttribute(handle, 0x07);\
+setTerminalColor(eTerminalColor::normal);\
 while('\n'!=getchar());\
 }while(0)
 
-HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 
 int testRead(json* j_object, char* ptr, int len,void* diff = 0) {
@@ -156,16 +156,16 @@ int testRead(json* j_object, char* ptr, int len,void* diff = 0) {
 	int rev_set = j_object->set(read_jstr.get(), diff);
 	j_object->get(serialze_jstr.get(), diff);
 	printf("After read  -- %s\n", serialze_jstr->Buf);serialze_jstr->clear();
-	if (rev_set == done) {
-		printf("Parse success but error:\n");
-	}
-	else {
-		printf("Parse fail and error:\n");
-	}
+
 	if (nullptr != read_jstr->Error_str) {
-		SetConsoleTextAttribute(handle, FOREGROUND_INTENSITY | FOREGROUND_RED);
+		if (rev_set == done) {
+			setTerminalColor(eTerminalColor::warning);
+		}
+		else {
+			setTerminalColor(eTerminalColor::error);
+		}
 		printf("%s\n", read_jstr->Error_str->Buf);
-		SetConsoleTextAttribute(handle, 0x07);
+		setTerminalColor(eTerminalColor::normal);
 	}
 	printf("\n\n");
 	return done;

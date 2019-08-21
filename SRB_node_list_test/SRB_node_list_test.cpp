@@ -50,7 +50,7 @@ int listNode(){
 		printf("test bus name should set by -B<bus_name>\n");
 		return -1;			
 	}
-	OsSupport::setPriority();	
+	setPriority();	
 	auto mainbusUB(std::make_unique<UsbToSrb>());
 	auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
 

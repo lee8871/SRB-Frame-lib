@@ -22,7 +22,7 @@ using namespace lee8871_support;
 int readCmd();
 int readArgument(char* arg);
 int main(int argc, char *argv[]) {
-	OsSupport::setPriority();
+	setPriority();
 	for(int i = 0;i<argc; i++){
 		readArgument(argv[i]);
 	}

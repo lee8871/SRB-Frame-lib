@@ -44,7 +44,7 @@ namespace srb {
 		if (_status != eAccessStatus::WaitSend) {
 			return fail;
 		}
-		_send_time = OsSupport::getTimesUs();
+		_send_time = getTimesUs();
 		_status = eAccessStatus::SendWaitRecv;
 		return done;
 	}

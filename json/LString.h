@@ -33,17 +33,6 @@ namespace lee8871_support {
 		bool checkCh(char c);
 		void outputRemoveSpace();
 
-		bool checkStr(char* check) {
-			outputRemoveSpace();
-			char* p = _ptr;
-			while (*p == *check) {
-				p++;check++;
-				if (check == 0) {
-					_ptr = p;
-					return true;
-				}
-			}
-			return false;
-		}
+		bool checkStr(char* check);
 	};
 };

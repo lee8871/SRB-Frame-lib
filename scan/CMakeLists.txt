@@ -21,9 +21,11 @@ include_directories(../SRB_Frame)
 include_directories(../SRB_Frame/usb_srb)
 include_directories(../SRB_Frame/common_cluster)
 include_directories(../support)
+include_directories(../cLogger)
 
 aux_source_directory(. DIR_SRCS)
 
 add_executable (srbscan ${DIR_SRCS})
 target_link_libraries (srbscan SRB_Frame_lib)
+target_link_libraries (srbscan cLogger_lib)
 

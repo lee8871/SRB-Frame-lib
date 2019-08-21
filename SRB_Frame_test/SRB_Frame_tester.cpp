@@ -87,7 +87,7 @@ int testNode(){
 			printf("test bus name should set by -B<bus_name>\n");
 			return -1;
 		}
-		OsSupport::setPriority();
+		setPriority();
 		auto mainbusUB(std::make_unique<UsbToSrb>());
 		auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
 		DumotorNode * key_ctrl_DUMOTOR;
@@ -101,7 +101,7 @@ int testNode(){
 		}
 
 		printf("Open port: [%s].\n", usb_port_name);
-		trans::usTotimestr(time_str_temp,64, OsSupport::getTimesUs());
+		trans::usTotimestr(time_str_temp,64, getTimesUs());
 		printf("Test send begin at %s .\n", time_str_temp);
 
 		printf("Close address LED.\n");
@@ -158,7 +158,7 @@ int testNode(){
 					return -1;
 				}
 			}
-			//OsSupport::msSleep(1);
+			//msSleep(1);
 
 			access_group_counter++;
 
@@ -172,7 +172,7 @@ int testNode(){
 			}
 		}
 		printf("\n");
-		trans::usTotimestr(time_str_temp, 64, OsSupport::getTimesUs());
+		trans::usTotimestr(time_str_temp, 64, getTimesUs());
 		printf("Test end at %s\n", time_str_temp);
 		//getchar();
 		return 0;
@@ -190,7 +190,7 @@ int testOneNodeDUMOTOR(){
 			printf("test bus name should set by -B<bus_name>\n");
 			return -1;
 		}
-		OsSupport::setPriority();
+		setPriority();
 		auto mainbusUB(std::make_unique<UsbToSrb>());
 		auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
 		DumotorNode * node_DUMOTOR;
@@ -204,7 +204,7 @@ int testOneNodeDUMOTOR(){
 
 		printf("Open port: [%s].\n", usb_port_name);
 		char time_str_temp[64];
-		trans::usTotimestr(time_str_temp,64, OsSupport::getTimesUs());
+		trans::usTotimestr(time_str_temp,64, getTimesUs());
 		printf("Test send begin at %s .\n", time_str_temp);
 
 		printf("Close address LED.\n");
@@ -242,7 +242,7 @@ int testOneNodeDUMOTOR(){
 				node_DUMOTOR->sendAccess(0);
 				mainbusUB->doAccess();
 			}
-			//OsSupport::msSleep(1);
+			//msSleep(1);
 			access_group_counter++;
 			totle_send_time_us += access_PT.Last_time_cost;
 			report_counter++;
@@ -254,7 +254,7 @@ int testOneNodeDUMOTOR(){
 			}
 		}
 		printf("\n");
-		trans::usTotimestr(time_str_temp, 64, OsSupport::getTimesUs());
+		trans::usTotimestr(time_str_temp, 64, getTimesUs());
 		printf("Test end at %s\n", time_str_temp);
 		//getchar();
 		return 0;

@@ -28,6 +28,7 @@ include_directories(
 	./common_cluster/
 	../support/
 	)
+include_directories(../cLogger)
 
 
 aux_source_directory(.						DIR_SRCS)
@@ -43,4 +44,5 @@ add_library (SRB_Frame_lib
 	${DIR_DUMOTOR} 
 	)
 
+target_link_libraries (SRB_Frame_lib cLogger_lib)
 

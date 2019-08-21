@@ -106,7 +106,7 @@ namespace srb {
 				if(mainCTX!=nullptr){
 					libusb_exit(mainCTX);					
 					UsbBusLog.addLog(eLogLevel::debug, "close mainCTX!");
-					OsSupport::msSleep(50);
+					msSleep(50);
 					mainCTX=nullptr;
 				}				
 				return done;

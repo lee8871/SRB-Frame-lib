@@ -10,6 +10,7 @@ project (proj_test_hash)
 
 include_directories(./)
 include_directories(../support)
+include_directories(../cLogger)
 
 
 

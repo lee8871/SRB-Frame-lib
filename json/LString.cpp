@@ -127,4 +127,17 @@ namespace lee8871_support {
 		}
 	}
 
+	bool LString::checkStr(char * check) {
+		outputRemoveSpace();
+		char* p = _ptr;
+		while (*p == *check) {
+			p++;check++;
+			if (check == 0) {
+				_ptr = p;
+				return true;
+			}
+		}
+		return false;
+	}
+
 };

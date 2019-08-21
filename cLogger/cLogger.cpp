@@ -22,7 +22,7 @@ namespace lee8871_support {
 
 	int cLogger::appendTime() {
 		append('[');
-		size_t inc = trans::usTotimestr(_ptr, _end - _ptr, OsSupport::getTimesUs());
+		size_t inc = trans::usTotimestr(_ptr, _end - _ptr, getTimesUs());
 		if (inc < 0) {
 			*_ptr = 0;
 			return fail;
@@ -101,7 +101,7 @@ namespace lee8871_support {
 			return fail;
 		}
 		str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, "%s/log", srb_base_ENV);
-		str_len_inc += trans::usTotimestr((expandedPathName + str_len_inc), 256 - str_len_inc, OsSupport::getTimesUs());
+		str_len_inc += trans::usTotimestr((expandedPathName + str_len_inc), 256 - str_len_inc, getTimesUs());
 		str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, ".log");
 		fp = fopen(expandedPathName, "a");
 		if (fp == nullptr) {

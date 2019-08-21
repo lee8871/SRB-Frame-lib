@@ -2,10 +2,13 @@
 #include "lee.h"
 namespace lee8871_support {
 	using tUs = long long int;
-	class OsSupport {
-	public :
-		static tUs getTimesUs();
-		static void msSleep(int ms);
-		static void setPriority(void);
+	tUs getTimesUs();
+	void msSleep(int ms);
+	void setPriority(void);	
+	
+	enum class eTerminalColor {
+		normal, highlight, warning, error
 	};
+	void setTerminalColor(eTerminalColor color);
+
 };

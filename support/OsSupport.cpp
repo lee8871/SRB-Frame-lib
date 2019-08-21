@@ -15,42 +15,52 @@ namespace lee8871_support {
 	#else
 	#define DELTA_EPOCH_IN_US  11644473600000000ULL
 	#endif
-	tUs OsSupport::getTimesUs() {
+	tUs getTimesUs() {
 		FILETIME t;
 		GetSystemTimeAsFileTime(&t);
 		tUs rev;
-		/* rev = t.dwHighDateTime;
-		rev <<= 32;
-		rev += t.dwLowDateTime;*/
 		rev = *((tUs*)(&t));
 		rev /= 10;
 		rev -= DELTA_EPOCH_IN_US;
 		return rev;
 	}
-	void OsSupport::msSleep(int ms) {
+	void msSleep(int ms) {
 		Sleep(ms);
 	}
-	void OsSupport::setPriority() {
+	void setPriority() {
 		return;
 	}
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	static int color_argument_table[4] = {
+		0x07,
+		FOREGROUND_INTENSITY | FOREGROUND_GREEN,
+		FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED,
+		FOREGROUND_INTENSITY | FOREGROUND_RED
+	};
+
+	void setTerminalColor(eTerminalColor color) {
+		SetConsoleTextAttribute(handle, color_argument_table[(int)color]);
+	}
+
+
 #endif
 
 #if UNIX
 #include <sys/time.h> 
 #include <sched.h>
 #include <unistd.h>
-	tUs OsSupport::getTimesUs() {
+	tUs getTimesUs() {
 		struct timeval time;
 		while (0 != gettimeofday(&time, nullptr));
 		tUs rev = time.tv_usec + time.tv_sec * (1000 * 1000);
 		return rev;
 	}
 
-	void OsSupport::msSleep(int ms) {
+	void msSleep(int ms) {
 		usleep(ms * 1000);
 	}
 
-	void OsSupport::setPriority() {
+	void setPriority() {
 		struct sched_param param;
 		int maxpri;
 		maxpri = sched_get_priority_max(SCHED_FIFO);

@@ -11,6 +11,7 @@
 #include "./Nodes/dumotor/DumotorNode.h"
 #include <string.h>
 
+
 using namespace lee8871_support;
 namespace srb {
 
@@ -119,7 +120,7 @@ namespace srb {
 		if (acs->Status == eAccessStatus::RecvedDone) {
 			_exsist = true;
 			if (acs->Recv_pkg->bfc.error == yes) {
-				logger.print("access recv bfc.error IS yes, may node error or send data error.");
+				Srb_log.addLog(eLogLevel::erro, "access recv bfc.error IS yes, may node error or send data error.");
 			}
 			else {
 				switch (acs->Send_pkg->bfc.port) {
@@ -141,7 +142,7 @@ namespace srb {
 			_exsist = false;
 		}
 		else {
-			logger.print("accessDoneReply shold call when status is ReceiveDone or BusTimeOut ");
+			Srb_log.addLog(eLogLevel::erro, "accessDoneReply shold call when status is ReceiveDone or BusTimeOut ");
 		}
 		delete acs;
 	}

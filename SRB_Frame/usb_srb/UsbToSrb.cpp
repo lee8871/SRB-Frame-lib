@@ -17,7 +17,7 @@
 using namespace std;
 namespace srb {
 	namespace usb_bus {
-		ModuleLog UsbBusLog = { &logger,"usb_bus",eLogLevel::info };
+		ModuleLog UsbBusLog = { logger,"usb_bus",__DATE__,__TIME__,eLogLevel::info };
 
 		class UsbToSrb::Impl{
 		private:

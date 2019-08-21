@@ -14,7 +14,7 @@ namespace srb {
 	int iExpandNode::addCluster(iCluster* cluster)	{
 		if (base_node->clusters[cluster->Cluster_id] != nullptr)
 		{
-			logger.print("Cluster[ID=%d] is existence",cluster->Cluster_id);
+			Srb_log.addLog(eLogLevel::erro, "Cluster[ID=%d] is existence",cluster->Cluster_id);
 			return fail;
 		}
 		base_node->clusters[cluster->Cluster_id] = cluster;

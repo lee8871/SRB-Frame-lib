@@ -5,7 +5,7 @@
 
 using namespace lee8871_support;
 namespace srb {
-
+	lee8871_support::ModuleLog Srb_log = { logger,"srb",__DATE__,__TIME__,eLogLevel::info };
 	SrbMaster::SrbMaster(iBus* b) {
 		_bus = b;
 		commonBC = new Broadcaster(this);

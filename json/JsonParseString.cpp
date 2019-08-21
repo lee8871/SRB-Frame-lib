@@ -2,11 +2,8 @@
 #include <cmath>
 
 #include "JsonParseString.h"
-#define NOT_JSON_USER
-#include "json.h"
+#include "Json.in.h"
 
-
-#include "cLogger.h"
 namespace lee8871_support {
 	extern ModuleLog JsonLog;
 };

@@ -1,9 +1,10 @@
 ﻿#define NOT_JSON_USER
-#include "Json.h"
+#include "Json.in.h"
 
-#include "cLogger.h"
 namespace lee8871_support {
-	ModuleLog JsonLog = { &logger,"json",eLogLevel::info };
+	ModuleLog JsonLog = { 
+		logger,"json",
+		__DATE__,__TIME__,eLogLevel::info };
 };
 using namespace std;
 namespace lee8871_support {

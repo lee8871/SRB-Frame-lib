@@ -48,11 +48,6 @@ int main(int argc, char *argv[]) {
 				case 'E':
 				return lsBus();
 				break;
-				case 'L':
-					if(enalbeLog(argv[i]+2)!=done){
-						printf("Log file open fail <%s>",argv[i]);
-					}
-				break;
 				case 'S':
 				strcpy(node_name,argv[i]+2);
 				break;

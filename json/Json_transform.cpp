@@ -1,11 +1,5 @@
 ﻿#define NOT_JSON_USER
-#include "Json.h"
-
-
-#include "cLogger.h"
-namespace lee8871_support {
-	extern ModuleLog JsonLog;
-};
+#include "Json.in.h"
 
 using namespace std;
 using namespace srb;
@@ -93,14 +87,26 @@ namespace lee8871_support {
 	static class asUint16* casU16 = nullptr;
 	static class asUint8* casU8 = nullptr;
 	static class asInt8* casI8 = nullptr;
-
 	JSON_INITIELAZATION_CLASS::JSON_INITIELAZATION_CLASS()	{
-		if (__is_inited__){return;}
+		if (__is_inited__){
+			return;
+		}
 		__is_inited__ = true;
 		casU16 = new asUint16;
 		casU8 = new asUint8;
 		casI8 = new asInt8;
 		casI32 = new asInt;
+	}
+
+	JSON_INITIELAZATION_CLASS::~JSON_INITIELAZATION_CLASS(){
+		if (__is_inited__) {
+			__is_inited__ = true;
+			delete casU16;
+			delete casU8;
+			delete casI8;
+			delete casI32;
+			return; 
+		}
 	}
 	
 	json::json(int32* value_prt) : transform(casI32->quote()), value_prt(value_prt) {}
@@ -117,8 +123,11 @@ namespace lee8871_support {
 	public:
 		asConstStr(const char * const_str) {
 			_const_str = const_str;
+			INFO("new asConstStr(%s)", _const_str);
 		}
-		~asConstStr(){}
+		~asConstStr()		{
+			INFO("delete asConstStr(%s)", _const_str);
+		}
 		int get(JsonGenerateString* str, void* value)override {
 			str->inputString(_const_str);
 			return str->checkOverflow();
@@ -142,8 +151,11 @@ namespace lee8871_support {
 	public:
 		asStr(int size) {
 			_str_size = size;
+			INFO("new asStr(%d)", _str_size);
 		}
-		~asStr() {}
+		~asStr() {
+			INFO("delete asStr(%d)", _str_size);
+		}
 		int get(JsonGenerateString* str, void* value)override {
 			str->inputString((char*)value);
 			return str->checkOverflow();

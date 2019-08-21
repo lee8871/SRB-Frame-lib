@@ -7,6 +7,9 @@ namespace lee8871_support {
 	namespace trans {
 		extern char u8ToLow(uint8 u8);
 	}
+
+	extern lee8871_support::ModuleLog stream_json_writer_log = { logger,"stream_json",__DATE__,__TIME__,eLogLevel::info };
+
 	StreamJsonWriter::StreamJsonWriter(std::ostream * record_ostream) {
 		setStream(record_ostream);
 		iteration = -1;
@@ -132,7 +135,7 @@ namespace lee8871_support {
 		preWrite(name);
 		iteration++;
 		if (iteration >= MAX_ITERATION_NUM) {
-			logger.print("Json maker enter too much object.");
+			stream_json_writer_log.addLog(eLogLevel::erro, "Json maker enter too much object.");
 			return fail;
 		}
 		is_first[iteration] = true;
@@ -153,7 +156,7 @@ namespace lee8871_support {
 			*record  << endl;
 		}
 		else if (iteration < -1) {
-			logger.print("Json maker endding more object than begining");
+			stream_json_writer_log.addLog(eLogLevel::erro, "Json maker endding more object than begining");
 			return fail;
 		}
 		return done;

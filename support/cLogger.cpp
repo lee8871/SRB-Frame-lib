@@ -10,8 +10,13 @@ namespace lee8871_support {
 
 
 	static const char* enum_log_level_name[] = {
-		"fatal","erro","warn","info","debug"
+		"fatal","error","warn ","info ","debug"
 	};
+
+
+
+
+
 #define addAndCheck(a) *(_ptr++)= (a);if (_ptr >= _end) { *(--_ptr) = 0;return buf_use_up; }
 #define endString() *_ptr = 0; return done;
 
@@ -56,13 +61,12 @@ namespace lee8871_support {
 			return done;
 		}
 	}
-	inline int cLogger::sendFileHead() {
-		append("\n\n\n\n=============================== SRB LOG ===============================\n");
+	int cLogger::sendFileHead() {
+		clear();
 		appendTime();
-		appendName("logger");
 		appendLevel(eLogLevel::info);
-		append("Log ReportCallback is set.\n");
-		srbErrorReportCB(_buf);
+		appendName("logger");
+		print("cLogger module built at %s %s",__DATE__,__TIME__);
 		return checkOverflow();
 	}
 	int cLogger::append(const char * a) {
@@ -73,9 +77,54 @@ namespace lee8871_support {
 		endString();
 	}
 	
-	inline cLogger::cLogger() {
+	cLogger::cLogger() {
+
 		_ptr = _buf;
 		_end = _buf + BUF_LEN;
+		if (done == openLogToEnv()) {
+			sendFileHead();
+		}
+	}
+
+	cLogger::~cLogger()	{
+		closeLog();
+	}
+
+	inline int cLogger::openLogToEnv() {
+		if (fp != nullptr) {
+			return redo;
+		}
+		char expandedPathName[256];
+		int str_len_inc = 0;
+		char * srb_base_ENV = getenv("SRB_BASE");
+		if (srb_base_ENV == nullptr) {
+			return fail;
+		}
+		str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, "%s/log", srb_base_ENV);
+		str_len_inc += trans::usTotimestr((expandedPathName + str_len_inc), 256 - str_len_inc, OsSupport::getTimesUs());
+		str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, ".log");
+		fp = fopen(expandedPathName, "a");
+		if (fp == nullptr) {
+			return fail;
+		}
+		return done;
+	}
+
+	int cLogger::closeLog()
+	{
+		if (fp != nullptr) {
+			fclose(fp);
+			return done;
+		}
+		else {
+			return redo;
+		}
+	}
+
+	inline int cLogger::writeToLog() {
+		fprintf(fp, "%s", _buf);
+		fflush(fp);
+		return done;
 	}
 
 	int cLogger::addLog(ModuleLog * m, eLogLevel l, const char * format, va_list args){
@@ -89,10 +138,12 @@ namespace lee8871_support {
 			}
 		}
 		appendTime();
-		appendName(m->Name);
 		appendLevel(l);
+		appendName(m->Name);
 		return vprint(format, args);
 	}
+
+
 
 
 	int cLogger::print(const char *format, ...) {
@@ -110,29 +161,65 @@ namespace lee8871_support {
 			return fail;
 		}
 		_ptr += inc;
-		srbErrorReportCB(_buf);
+		writeToLog();
 		return checkOverflow();
 	}
 
-	int cLogger::setReportCallback(int(*srbErrorReportCB)(char *)) {
-		this->srbErrorReportCB = srbErrorReportCB;
-		if (nullptr != srbErrorReportCB) {
-			sendFileHead();
+
+	ModuleLog::ModuleLog(iLog* log, const char * name, 
+		const char * date, const char * time, 
+		eLogLevel lv
+	
+	){
+		_name = name;
+		_log = log;
+		level = lv;
+		addLogFocue(eLogLevel::info, "Module %s loaded, log level %s, built at %s %s.", name,enum_log_level_name[(int)lv], date,time);
+
+	}
+	int ModuleLog::addLog(eLogLevel l, const char * format, ...) {
+		if (l <= level) {
+			va_list args;
+			va_start(args, format);
+
+			int rev = _log->addLog(this, l, format, args);
+			va_end(args);
+			return rev;
 		}
-		return 0;
+	}
+	int ModuleLog::addLogFocue(eLogLevel l, const char * format, ...) {
+		va_list args;
+		va_start(args, format);
+		int rev = _log->addLog(this, l, format, args);
+		va_end(args);
+		return rev;
 	}
 
-	cLogger logger;
 
 
 
-#define checkFailReturn(value) do{\
-		int rev = (value);\
-		if (done != rev){return rev;}\
-	}while(0)
 
+	static bool is_inited = false;
+	cLogger* logger = nullptr;
 
-	FILE *fp = nullptr;
+	cLoggerInit::cLoggerInit(){
+		if (is_inited == false) {
+			is_inited = true;
+			logger = new cLogger();
+		}
+	}
+
+	cLoggerInit::~cLoggerInit()	{
+		if (is_inited == true) {
+			is_inited = false;
+			
+
+			//	delete logger;
+		}
+	}
+
+}
+/*
 	int writeToLog(char* str);
 	int enalbeLog(const char* pathname) {
 		if (fp != nullptr) {
@@ -150,46 +237,4 @@ namespace lee8871_support {
 		logger.setReportCallback(writeToLog);
 		return done;
 		//TODO:: close file
-	}
-	int enalbeLogToEnv() {
-		if (fp != nullptr) {
-			return redo;
-		}
-		char expandedPathName[256];
-		int str_len_inc = 0;
-		char * srb_base_ENV = getenv("SRB_BASE");
-		if (srb_base_ENV == nullptr) {
-			return fail;
-		}
-		str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, "%s/log", srb_base_ENV);
-		str_len_inc += trans::usTotimestr((expandedPathName + str_len_inc), 256 - str_len_inc, OsSupport::getTimesUs());
-		str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, ".log");
-		fp = fopen(expandedPathName, "a");
-		if (fp == nullptr) {
-			return fail;
-		}
-		else {
-			logger.setReportCallback(writeToLog);
-		}
-		return done;
-	}
-	int writeToLog(char* str) {
-		fprintf(fp, "%s", str);
-		fflush(fp);
-		return done;
-	}
-	ModuleLog::ModuleLog(iLog * log, const char * name, eLogLevel lv) {
-		_name = name;
-		_log = log;
-		level = lv;
-	}
-	int ModuleLog::addLog(eLogLevel l, const char * format, ...) {
-		if (l <= level) {
-			va_list args;
-			va_start(args, format);
-			int rev = _log->addLog(this, l, format, args);
-			va_end(args);
-			return rev;
-		}
-	}
-}
+	}*/

@@ -1,6 +1,7 @@
 ﻿#pragma once 
 
 #include <cstdio>
+#include <memory>
 namespace lee8871_support {
 	class ModuleLog;
 	enum class eLogLevel {
@@ -23,9 +24,10 @@ namespace lee8871_support {
 	private :
 		const char* _name;
 		iLog* _log;
+		int addLogFocue(eLogLevel l, const char * format, ...);
 	public :
 		eLogLevel level;
-		ModuleLog(iLog* log, const char * name, eLogLevel lv = eLogLevel::erro);
+		ModuleLog(iLog* log, const char * name, const char * date, const char * time, eLogLevel lv = eLogLevel::erro);
 		iLog* const &  Log = _log;
 		const char* const & Name = _name;
 		int addLog(eLogLevel l, const char* format, ...);
@@ -52,25 +54,27 @@ namespace lee8871_support {
 		void reset();
 		void clear();
 		int checkOverflow();
-		
+
+		FILE *fp = nullptr;
 		int sendFileHead();
-		int(*srbErrorReportCB)(char *) = nullptr;
-	public:
-		const char * const& Last_error_str = _buf;
-		cLogger();
-		int addLog(ModuleLog *m, eLogLevel l, const char *format, va_list args);
+		int openLogToEnv();
+		int closeLog();
+		int writeToLog();
 		int print(const char *format, ...);
 		int vprint(const char *format, va_list args);
-		int setReportCallback(int(*srbErrorReportCB)(char *));
+	public:
+		cLogger();
+		~cLogger();
+		const char * const& Last_error_str = _buf;
+		int addLog(ModuleLog *m, eLogLevel l, const char *format, va_list args);
 		void end() {}
-
-
-
 	};
 
+	static class cLoggerInit {
+	public:
+		cLoggerInit();
+		~cLoggerInit();
+	}_init;
 
-	extern cLogger logger;
-	int enalbeLog(const char* pathname);
-	int enalbeLogToEnv();
-
+	extern cLogger* logger;
 }

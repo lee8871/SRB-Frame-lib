@@ -5,6 +5,7 @@ namespace lee8871_support {
 	class iJsonWriter;
 }
 namespace srb {
+	extern lee8871_support::ModuleLog Srb_log;
 	class Node;
 	class Broadcaster;
 	class iExpandNode;

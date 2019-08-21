@@ -23,13 +23,13 @@ namespace srb {
 		int access_counter = 0;
 		int setNextFile(){
 			if (is_base_pathname_ready == false) {
-				logger.print("Pathname is not set.");
+				Srb_log.addLog(eLogLevel::erro, "Pathname is not set.");
 				is_open = false;
 				return fail;
 			}
 			int len = snprintf(pathname, 256, base_pathname, file_name_counter);	
 			if (len >= 256) {
-				logger.print("Pathname is too long <%s> ",pathname);
+				Srb_log.addLog(eLogLevel::erro, "Pathname is too long <%s> ",pathname);
 				is_open = false;
 				return fail;
 			}
@@ -39,7 +39,7 @@ namespace srb {
 			}
 			recordSTM.open(pathname, ios::out | ios::trunc);
 			if (recordSTM.is_open() == false) {
-				logger.print("<%s> opening fail.", pathname);
+				Srb_log.addLog(eLogLevel::erro, "<%s> opening fail.", pathname);
 				is_open = false;
 				return fail;
 			}
@@ -86,14 +86,14 @@ namespace srb {
 					break;
 				}
 				if (point_write > 240) {
-					logger.print("Pathname too long (>240).");
+					Srb_log.addLog(eLogLevel::erro, "Pathname too long (>240).");
 					is_base_pathname_ready = false;
 					return fail;
 				}
 			}
 			if (point_sno ==-1) {
 				//TODO add %d auto
-				logger.print("There is no @d for sno in str.");
+				Srb_log.addLog(eLogLevel::erro, "There is no @d for sno in str.");
 				is_base_pathname_ready = false;
 				return fail;
 			}

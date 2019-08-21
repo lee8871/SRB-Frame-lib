@@ -92,6 +92,8 @@ namespace lee8871_support {
 			return;
 		}
 		__is_inited__ = true;
+		JsonLog = new ModuleLog(logger, "json",
+			__DATE__, __TIME__, eLogLevel::info	);
 		casU16 = new asUint16;
 		casU8 = new asUint8;
 		casI8 = new asInt8;
@@ -105,6 +107,7 @@ namespace lee8871_support {
 			delete casU8;
 			delete casI8;
 			delete casI32;
+			delete JsonLog;
 			return; 
 		}
 	}

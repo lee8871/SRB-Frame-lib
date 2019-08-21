@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include <initializer_list>
 #include <utility>
-
 #include "lee.h"
 #include "JsonParseString.h"
 #include "JsonGenerateString.h"
@@ -13,8 +12,6 @@ namespace lee8871_support {
 		int quote_counter = 1;
 	protected:
 		JsonTransformer() {	}
-		JsonTransformer(JsonTransformer&) = delete;
-		JsonTransformer(JsonTransformer&&) = delete;
 		virtual~JsonTransformer() {	}
 	public:
 		JsonTransformer*  quote() {

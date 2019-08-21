@@ -2,9 +2,7 @@
 #include "Json.in.h"
 
 namespace lee8871_support {
-	ModuleLog JsonLog = { 
-		logger,"json",
-		__DATE__,__TIME__,eLogLevel::info };
+	ModuleLog* JsonLog = nullptr; 
 };
 using namespace std;
 namespace lee8871_support {
@@ -21,11 +19,11 @@ namespace lee8871_support {
 			return as_error;
 		}
 		int get(JsonGenerateString* str, void *diff) {
-			JsonLog.addLog(eLogLevel::erro, "get() call by an uninitialized json object");
+			ERROR("get() call by an uninitialized json object");
 			return fail;
 		};
 		int set(JsonParseString* str, void *diff) {
-			JsonLog.addLog(eLogLevel::erro, "set() call by an uninitialized json object");
+			ERROR("set() call by an uninitialized json object");
 			return fail;
 		};
 		~asError() {};
@@ -76,29 +74,36 @@ namespace lee8871_support {
 				for each (auto var in v) {
 					table[i++].moveFrom(var);
 				}
+				INFO("Json array with %d length is create - %x.", size, (size_t)this);
 			}
 			else {
 				table = nullptr;
+				WARNING("Json array with 0 length is create.");
 			}
 		}	
-		asArray(const asArray& form) {
+		asArray(const asArray& form) = delete; 
+		/*{
 			size = form.size;
 			if (size != 0) {
 				table = new json[size]();
 				for (int i = 0;i < size;i++) {
 					table[i].copyFrom(form.table[i]);
 				}
+				INFO("Json array with %d length is copy - %x.", size, (size_t)this);
 			}
 			else {
 				table = nullptr;
+				WARNING("Json array with 0 length is copy - %x.", (size_t)this);
 			}
-		}
+		}*/
 		asArray(asArray&& form) = delete;
 
 		~asArray() {
+
 			if (table != nullptr) {
 				delete[] table;
 			}
+			INFO("Json array with %d length is delete - %x.", size, (size_t)this);
 		}
 		int get(JsonGenerateString* str, void *diff) {
 			int i = 0;
@@ -205,12 +210,14 @@ namespace lee8871_support {
 					table[i].hash = getHashString(var.first);
 					i++;
 				}
+				INFO("Json object with %d length is create - %x.", size, (size_t)this);
 			}
 			else {
 				table = nullptr;
+				WARNING("Json object with 0 length is create.");
 			}
 		}
-		asObject(const asObject& form) {
+		asObject(const asObject& form) = delete;/* {
 			size = form.size;			
 			if (size != 0) {
 				table = new named_json[size]();
@@ -219,16 +226,19 @@ namespace lee8871_support {
 					table[i].name = form.table[i].name;
 					table[i].hash = form.table[i].hash;
 				}
+				INFO("Json object with %d length is copy - %x.", size, (size_t)this);
 			}
 			else {
 				table = nullptr;
+				WARNING("Json object with 0 length is copy - %x.", (size_t)this);
 			}
-		}
+		}*/
 		asObject(asObject&& from) = delete;
 		~asObject() {
 			if (table != nullptr) {
 				delete[] table;
 			}
+			INFO("Json object with %d length is delete - %x.", size, (size_t)this);
 		}
 		int get(JsonGenerateString* str, void *diff) {
 			int i = 0;

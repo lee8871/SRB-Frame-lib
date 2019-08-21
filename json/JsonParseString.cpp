@@ -5,9 +5,6 @@
 #include "Json.in.h"
 
 namespace lee8871_support {
-	extern ModuleLog JsonLog;
-};
-namespace lee8871_support {
 
 
 	#define checkAppendString(ch)do{\
@@ -58,7 +55,7 @@ namespace lee8871_support {
 					checkAppendString('\t');
 					break;
 				default:	
-					JsonLog.addLog(eLogLevel::erro, "\\u or other escape is not support.");
+					ERROR("\\u or other escape is not support.");
 					break;
 				}
 				_ptr++;

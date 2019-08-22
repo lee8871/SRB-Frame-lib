@@ -12,6 +12,5 @@ namespace lee8871_support {
 #define INFO(args...)
 #endif
 
-
 #define ERROR( args...) JsonLog->addLog(eLogLevel::erro,  args )
 #define WARNING( args...) JsonLog->addLog(eLogLevel::warn,  args )

@@ -1,5 +1,7 @@
 ﻿#include <cstdio> 
 #include <stdarg.h>
+#include <unistd.h>
+
 #include "cLogger.h"
 #include "lee.h"
 #include "transform.h"
@@ -90,20 +92,49 @@ namespace lee8871_support {
 		closeLog();
 	}
 
+
+
+
+
+
+
+
+
 	inline int cLogger::openLogToEnv() {
 		if (fp != nullptr) {
 			return redo;
 		}
-		char expandedPathName[256];
-		int str_len_inc = 0;
+		char exe_path[FILENAME_MAX];
+		char log_path[FILENAME_MAX];
+		char * exe_name = exe_path;		
+		char * log_ptr = log_path;
+		readlink("/proc/self/exe", exe_path , FILENAME_MAX);
+
+		for(char * ptr = exe_name; ptr < (exe_name+FILENAME_MAX);ptr++){
+			if(*ptr == '/'){
+				exe_name = ptr+1;
+			}
+			else if(*ptr == 0){
+				break;
+			}
+		}	
+		
 		char * srb_base_ENV = getenv("SRB_BASE");
 		if (srb_base_ENV == nullptr) {
-			return fail;
+			log_ptr += snprintf(log_ptr, log_path + FILENAME_MAX - log_ptr, "./log");
+		}		
+		else{	
+			if (srb_base_ENV[0] == '~') {
+				log_ptr += snprintf(log_ptr, log_path + FILENAME_MAX - log_ptr,"%s%s/log", getenv("HOME"), srb_base_ENV+1);
+			}
+			else{		
+				log_ptr += snprintf(log_ptr, log_path + FILENAME_MAX - log_ptr, "%s/log", srb_base_ENV);
+			}
 		}
-		str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, "%s/log", srb_base_ENV);
-		str_len_inc += trans::usTotimestr((expandedPathName + str_len_inc), 256 - str_len_inc, getTimesUs());
-		str_len_inc += snprintf((expandedPathName + str_len_inc), 256 - str_len_inc, ".log");
-		fp = fopen(expandedPathName, "a");
+		log_ptr += snprintf(log_ptr, log_path + FILENAME_MAX - log_ptr,"-%s-",exe_name);
+		log_ptr += trans::usTotimestr(log_ptr, log_path + FILENAME_MAX - log_ptr, getTimesUs());
+		log_ptr += snprintf(log_ptr, log_path + FILENAME_MAX - log_ptr,".log");
+		fp = fopen(log_path, "a");
 		if (fp == nullptr) {
 			return fail;
 		}

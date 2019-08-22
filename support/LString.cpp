@@ -7,6 +7,8 @@
 namespace lee8871_support {
 #define addAndCheck(a) *(_ptr++)= (a);if (_ptr == _end) { *(--_ptr) = 0;return buf_use_up; }
 #define endString() *_ptr = 0; return done;
+
+
 	LString::LString(char *buf, int size) :
 		_end(buf + size), _buf(buf), _ptr(buf) {}
 

@@ -25,6 +25,10 @@ namespace lee8871_support {
 		int append(const char* a,int length);
 		int append(char append);
 		int print(const char *format, ...);
+
+		int remainder(){
+			return _end-_ptr;
+		}
 		int checkOverflow();
 		
 		int foward();

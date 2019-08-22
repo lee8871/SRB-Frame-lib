@@ -1,5 +1,6 @@
 ﻿#include <cstdlib>
 #include <cmath>
+#include <limits.h>
 
 #include "JsonParseString.h"
 #include "Json.in.h"

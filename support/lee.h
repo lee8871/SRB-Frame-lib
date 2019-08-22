@@ -1,6 +1,6 @@
 #ifndef _lee_type_and_common_define_h
 #define _lee_type_and_common_define_h
-
+#include <stddef.h>
 /*
 //
 #define set |=
@@ -67,6 +67,7 @@ namespace srb{
 		void* v;
 		uint8 u8[2];
 	}u16to8;
+	
 	constexpr size_t UNDEF_LENGTH=1;
 }
 

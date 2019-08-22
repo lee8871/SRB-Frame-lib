@@ -7,11 +7,11 @@ namespace lee8871_support {
 	extern ModuleLog* JsonLog;
 };
 #ifdef _DEBUG
-#define INFO(format, ...) JsonLog->addLog(eLogLevel::info, format,__VA_ARGS__)
+#define INFO(args...) JsonLog->addLog(eLogLevel::info, args)
 #else
-#define INFO(format, ...)
+#define INFO(args...)
 #endif
 
 
-#define ERROR(format, ...) JsonLog->addLog(eLogLevel::erro, format,__VA_ARGS__)
-#define WARNING(format, ...) JsonLog->addLog(eLogLevel::warn, format,__VA_ARGS__)
+#define ERROR( args...) JsonLog->addLog(eLogLevel::erro,  args )
+#define WARNING( args...) JsonLog->addLog(eLogLevel::warn,  args )

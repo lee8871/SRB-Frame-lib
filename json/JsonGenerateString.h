@@ -12,7 +12,7 @@ namespace lee8871_support {
 
 	public:
 		bool isExpanded = true;
-		char* tab_string = "  ";
+		const char* tab_string = "  ";
 		JsonGenerateString(char *buf, int size);
 		JsonGenerateString(int size);
 		~JsonGenerateString();

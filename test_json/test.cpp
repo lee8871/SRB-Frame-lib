@@ -5,7 +5,7 @@
 
 
 
-#include "json.h"
+#include "Json.h"
 #include "OsSupport.h"
 
 
@@ -136,7 +136,6 @@ using namespace srb::Du_Motor;
 
 
 int Step = 0;
-#include "Windows.h"
 #define PRINGSTEP(descripte) do{\
 setTerminalColor(eTerminalColor::highlight);\
 printf("\n\nStep %d  Enter to -- %s", Step++, descripte );\
@@ -347,7 +346,7 @@ int main(int argc, char *argv[]) {
 	listtest5.get(&str);	printf("%s\n", str.Buf);str.clear();
 
 	PRINGSTEP("print size for types");
-#define print_size(t) printf("Size of %s is %d.\n",#t,sizeof(t))
+#define print_size(t) printf("Size of %s is %d.\n",#t,(int)sizeof(t))
 	print_size(writeIntAsStr);
 	print_size(json);
 

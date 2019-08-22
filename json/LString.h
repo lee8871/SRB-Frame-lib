@@ -33,6 +33,6 @@ namespace lee8871_support {
 		bool checkCh(char c);
 		void outputRemoveSpace();
 
-		bool checkStr(char* check);
+		bool checkStr(const char* check);
 	};
 };

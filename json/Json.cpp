@@ -71,7 +71,7 @@ namespace lee8871_support {
 			if (size != 0) {
 				table = new json[size]();
 				int i = 0;
-				for each (auto var in v) {
+				for (auto var : v) {
 					table[i++].moveFrom(var);
 				}
 				INFO("Json array with %d length is create - %x.", size, (size_t)this);
@@ -204,7 +204,7 @@ namespace lee8871_support {
 			if (size != 0) {
 				table = new named_json[size]();
 				int i = 0;
-				for each (auto var in v) {
+				for(auto var : v) {
 					table[i].j.moveFrom(var.second);
 					table[i].name = var.first;
 					table[i].hash = getHashString(var.first);

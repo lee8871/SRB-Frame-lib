@@ -280,7 +280,7 @@ namespace srb {
 					}
 					libusb_get_string_descriptor_ascii(tempDH, dev_desc.iSerialNumber, (unsigned char*)str, 64);
 					libusb_close(tempDH);
-					strcpy_s<64>((name_len_64[scan_counter]),str);
+					strcpy((name_len_64[scan_counter]),str);
 					scan_counter++;
 					if(scan_counter == len)
 					{

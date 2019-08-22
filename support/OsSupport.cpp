@@ -71,6 +71,16 @@ namespace lee8871_support {
 		else {
 			printf("Set priority done\n");
 		}
-	}
+	}	
+	static const char* color_argument_table[4] = {
+		"\033[0m",
+		"\033[32m",
+		"\033[33m",
+		"\033[31m"
+	};
+
+	void setTerminalColor(eTerminalColor color) {
+		printf(color_argument_table[(int)color]);
+		}
 #endif
 };

@@ -14,7 +14,7 @@ namespace srb {
 
 
 	const csMotorSet * MotorSetCluster::Data(){
-		return (const csMotorSet* )Data_u8;
+		return (const csMotorSet* )Data_u8();
 	}
 	csMotorSet * MotorSetCluster::Buffer()	{
 		return (csMotorSet*)buffer_u8;

@@ -13,17 +13,14 @@ namespace srb {
 	BaseCluster::~BaseCluster(){	}
 
 	const csBase * BaseCluster::Data(){
-		return (const csBase* )Data_u8;
+		return (const csBase* )Data_u8();
 	}
 	csBase * BaseCluster::Buffer()	{
 		return (csBase*)buffer_u8;
 	}
-#define rel_csBase(value) {#value,(&(((csBase*)0)->value))}
-	json BaseCluster::to_json{
-		rel_csBase(addr),
-		{"name",buildJsonStr((char*)(((csBase*)0)->name),27)},
-		rel_csBase(error_behavior)
-	};
+
+
+
 	int BaseCluster::toJson(iJsonWriter & json_printer) {
 		json_printer.beginObj("Base_clu");
 		json_printer.writeNum("Id", Cluster_id);

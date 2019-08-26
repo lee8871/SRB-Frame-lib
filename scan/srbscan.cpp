@@ -12,6 +12,8 @@
 
 #include "stringHash.h"
 #include "BaseCluster.h"
+#include "ErrorCluster.h"
+#include "infoCluster.h"
 
 using namespace std;
 using namespace lee8871_support;
@@ -54,7 +56,7 @@ int listNode(char* sarg) {
 		if (node != nullptr) {
 			printf("Addr:%-3d  Name:%-18s  Type:%s\n", node->Addr(), node->Node_name(), node->Node_type());
 			jg->clear();
-			BaseCluster::to_json.get(jg, node->baseCLU->Data());
+			Node::to_json.get(jg, node);
 			snprintf(file_name, 64, "%s.json", node->Node_name());
 			jg->writeToFile(file_name);
 			puts(jg->Buf);

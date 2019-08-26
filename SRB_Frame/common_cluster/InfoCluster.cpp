@@ -12,7 +12,7 @@ namespace srb {
 
 
 	const csInfo * InfoCluster::Data(){
-		return (const csInfo* )(Data_u8);
+		return (const csInfo* )Data_u8();
 	}
 	csInfo * InfoCluster::Buffer()	{
 		return (csInfo*)buffer_u8;

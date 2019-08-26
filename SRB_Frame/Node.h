@@ -1,6 +1,7 @@
 #pragma once
 #include "srb_heads.h"
 #include "iAccess.h"
+#include "Json.h"
 
 namespace srb {
 	class BaseCluster;
@@ -41,5 +42,6 @@ namespace srb {
 		int sendAccess(int port);
 		void accessDoneReply(iAccess*) override;
 		int toJsonAll(iJsonWriter & json_printer);
+		static json to_json;
 	};	
 }

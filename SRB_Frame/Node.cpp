@@ -176,9 +176,33 @@ namespace srb {
 		return (const char *)this->infoCLU->Data()->node_type;
 	}
 
-	//const json* Node::getJson() {
+	json ErrorCluster::to_json{
+#define relTo(value) (((csError*)((ErrorCluster*)0)->_data_u8)->value)
 
-	//}
-
+		{"file",&relTo(file)},
+		{"line",&relTo(line)},
+		{"description",buildJsonStr((char*)relTo(description),24)},
+	};
+	json InfoCluster::to_json{
+#define relTo(value) (((csInfo*)((InfoCluster*)0)->_data_u8)->value)
+		{"node_version",{&relTo(node_version_BCD[0]),&relTo(node_version_BCD[1])}},
+		{"srb_version",{&relTo(srb_version_BCD[0]),&relTo(srb_version_BCD[1])}},
+		{"time_stamp",&relTo(time_stamp)},
+		{"node_type",buildJsonStr((char*)relTo(node_type),17)},
+	};
+	json BaseCluster::to_json{
+#define relTo(value) (((csBase*)((BaseCluster*)0)->_data_u8)->value)
+		{"addr",&relTo(addr)},
+		{"name",buildJsonStr((char*)relTo(name),27)},
+		{"error_behavior",&relTo(error_behavior)}
+	};
+#define relTo(value) (((Node*)0)->value)
+	json Node::to_json{ 
+		{"base",{&BaseCluster::to_json, relTo(baseCLU)}},		
+		{"error",{&ErrorCluster::to_json,relTo(errorCLU)}},
+		{"info",{&InfoCluster::to_json,relTo(infoCLU)}}
+	};
 
 }
+
+

@@ -3,7 +3,6 @@
 #include "iCluster.h"
 #include "iAccess.h"
 #include "SRB-base-cluster-share.h"
-#include "json.h"
 
 namespace srb {
 	class BaseCluster: public iCluster {
@@ -18,3 +17,4 @@ namespace srb {
 		static json to_json;
 	};
 };
+

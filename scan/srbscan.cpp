@@ -11,6 +11,7 @@
 
 
 #include "stringHash.h"
+#include "BaseCluster.h"
 
 using namespace std;
 using namespace lee8871_support;
@@ -46,12 +47,21 @@ int connectToBus(const char * usb_port_name) {
 	return done;
 }
 int listNode(char* sarg) {
+	char* file_name = new char[64];
+	JsonGenerateString* jg = new JsonGenerateString(4096);
 	for (int i = 0;i < mainSRBM->MAX_NODE_NUM;i++) {
 		auto node = mainSRBM->getNode(i);
 		if (node != nullptr) {
 			printf("Addr:%-3d  Name:%-18s  Type:%s\n", node->Addr(), node->Node_name(), node->Node_type());
+			jg->clear();
+			BaseCluster::to_json.get(jg, node->baseCLU->Data());
+			snprintf(file_name, 64, "%s.json", node->Node_name());
+			jg->writeToFile(file_name);
+			puts(jg->Buf);
 		}
 	}
+	delete jg;
+	delete[] file_name;
 	return done;
 }
 int addrLed(char* sarg) {

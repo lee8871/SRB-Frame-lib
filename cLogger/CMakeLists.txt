@@ -7,7 +7,7 @@ include_directories(
 	)
 
 aux_source_directory(. DIR_SRCS)
-add_library (cLogger_lib
+add_library (libclogger
 	${DIR_SRCS}
 	)
 

@@ -21,9 +21,6 @@ namespace srb {
 			}
 		}
 	}
-	const uint8 * iCluster::Data_u8() {
-		return _data_u8;
-	}
 
 	int iCluster::toJson(iJsonWriter & json_printer) {
 		json_printer.beginObj("unknow_clu");

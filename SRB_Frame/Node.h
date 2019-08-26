@@ -11,7 +11,7 @@ namespace srb {
 	class Node:public iAccesser {
 	private:
 		friend class iExpandNode;
-	protected:
+	public://protected:
 		sMapping* mapping[4] = {nullptr};
 		iCluster* clusters[MAX_CLUSTER_NUMBER] = { nullptr };
 		SrbMaster* master = nullptr;

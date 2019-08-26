@@ -9,7 +9,6 @@ include_directories(../cLogger)
 
 
 
-aux_source_directory(../json				DIR_JSON)
 aux_source_directory(../support				DIR_SPPORT)
 
 
@@ -19,8 +18,9 @@ add_executable (json_test
 	${DIR_SPPORT}
 	)
 
-
-target_link_libraries (json_test cLogger_lib)
+	
+target_link_libraries (json_test libclogger)
+target_link_libraries (json_test libjson)
 
 add_executable (json_test2 
 	./test2.cpp
@@ -28,9 +28,9 @@ add_executable (json_test2
 	${DIR_SPPORT}
 	)
 
-
-target_link_libraries (json_test2 cLogger_lib)
-
+	
+target_link_libraries (json_test2 libclogger)
+target_link_libraries (json_test2 libjson)
 
 
 

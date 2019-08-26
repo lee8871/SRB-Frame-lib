@@ -13,7 +13,7 @@ namespace srb {
 
 
 	const csMapping * MappingCluster::Data(){
-		return ((const csMapping* )(Data_u8()));
+		return (const csMapping* )Data_u8;
 	}
 	csMapping * MappingCluster::Buffer()	{
 		return (csMapping*)buffer_u8;

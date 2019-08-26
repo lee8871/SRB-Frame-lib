@@ -6,7 +6,7 @@ using namespace srb;
 namespace lee8871_support {
 	class asUint16 : public JsonTransformer{
 	public:
-		int get(JsonGenerateString* str, void* value)override {
+		int get(JsonGenerateString* str, const void* value)override {
 			unsigned int temp = *(uint16*)value;
 			str->inputNumber(temp);
 			return str->checkOverflow();
@@ -24,7 +24,7 @@ namespace lee8871_support {
 	};
 	class asUint8 : public JsonTransformer{
 	public:
-		int get(JsonGenerateString* str, void* value)override {
+		int get(JsonGenerateString* str, const void* value)override {
 			unsigned int temp = *(uint8*)value;
 			str->inputNumber(temp);
 			return str->checkOverflow();
@@ -41,10 +41,10 @@ namespace lee8871_support {
 			return done;
 		};
 	};
-	
+
 	class asInt8 : public JsonTransformer {
 	public:
-		int get(JsonGenerateString* str, void* value)override {
+		int get(JsonGenerateString* str, const void* value)override {
 			int temp = *(int8*)value;
 			str->inputNumber(temp);
 			return str->checkOverflow();
@@ -67,7 +67,7 @@ namespace lee8871_support {
 
 	class asInt : public JsonTransformer {
 	public:
-		int get(JsonGenerateString* str, void* value)override {
+		int get(JsonGenerateString* str, const void* value)override {
 			int temp = *(int*)value;
 			str->inputNumber(temp);
 			return str->checkOverflow();
@@ -82,36 +82,39 @@ namespace lee8871_support {
 
 
 
-	static bool __is_inited__ = false;
+	static int is_init_counter = 0;
 	static class asInt* casI32 = nullptr;
 	static class asUint16* casU16 = nullptr;
 	static class asUint8* casU8 = nullptr;
 	static class asInt8* casI8 = nullptr;
 	JSON_INITIELAZATION_CLASS::JSON_INITIELAZATION_CLASS()	{
-		if (__is_inited__){
-			return;
+
+		if (is_init_counter == 0) {
+
+			JsonLog = new ModuleLog("json",	eLogLevel::info ,
+				__DATE__, __TIME__);
+			casU16 = new asUint16;
+			casU8 = new asUint8;
+			casI8 = new asInt8;
+
+			casI32 = new asInt;
 		}
-		__is_inited__ = true;
-		JsonLog = new ModuleLog(logger, "json",
-			__DATE__, __TIME__, eLogLevel::info	);
-		casU16 = new asUint16;
-		casU8 = new asUint8;
-		casI8 = new asInt8;
-		casI32 = new asInt;
+		is_init_counter++;
 	}
 
 	JSON_INITIELAZATION_CLASS::~JSON_INITIELAZATION_CLASS(){
-		if (__is_inited__) {
-			__is_inited__ = true;
+		is_init_counter--;
+		if (is_init_counter == 0) {
+
 			delete casU16;
 			delete casU8;
 			delete casI8;
 			delete casI32;
 			delete JsonLog;
-			return; 
+
 		}
 	}
-	
+
 	json::json(int32* value_prt) : transform(casI32->quote()), value_prt(value_prt) {}
 	json::json(uint16 * value_prt) : transform(casU16->quote()), value_prt(value_prt) {}
 	json::json(uint8 * value_prt) : transform(casU8->quote()), value_prt(value_prt) {}
@@ -131,7 +134,7 @@ namespace lee8871_support {
 		~asConstStr()		{
 			INFO("delete asConstStr(%s)", _const_str);
 		}
-		int get(JsonGenerateString* str, void* value)override {
+		int get(JsonGenerateString* str, const void* value)override {
 			str->inputString(_const_str);
 			return str->checkOverflow();
 		}
@@ -159,7 +162,7 @@ namespace lee8871_support {
 		~asStr() {
 			INFO("delete asStr(%d)", _str_size);
 		}
-		int get(JsonGenerateString* str, void* value)override {
+		int get(JsonGenerateString* str, const void* value)override {
 			str->inputString((char*)value);
 			return str->checkOverflow();
 		}

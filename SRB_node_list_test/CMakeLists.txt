@@ -17,5 +17,5 @@ aux_source_directory(. DIR_SRCS)
 
 add_executable (SRB_node_list_test ${DIR_SRCS})
 target_link_libraries (SRB_node_list_test SRB_Frame_lib)
-target_link_libraries (SRB_node_list_test cLogger_lib)
+target_link_libraries (SRB_node_list_test libclogger)
 

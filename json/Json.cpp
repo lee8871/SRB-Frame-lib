@@ -2,7 +2,7 @@
 #include "Json.in.h"
 
 namespace lee8871_support {
-	ModuleLog* JsonLog = nullptr; 
+	ModuleLog* JsonLog = nullptr;
 };
 using namespace std;
 namespace lee8871_support {
@@ -18,7 +18,7 @@ namespace lee8871_support {
 			}
 			return as_error;
 		}
-		int get(JsonGenerateString* str, void *diff) {
+		int get(JsonGenerateString* str, const void *diff) {
 			ERROR("get() call by an uninitialized json object");
 			return fail;
 		};
@@ -63,7 +63,7 @@ namespace lee8871_support {
 	class asArray :public JsonTransformer {
 	private:
 		json * table;
-		int size;	
+		int size;
 
 	public:
 		asArray(initializer_list<json> v){
@@ -80,8 +80,8 @@ namespace lee8871_support {
 				table = nullptr;
 				WARNING("Json array with 0 length is create.");
 			}
-		}	
-		asArray(const asArray& form) = delete; 
+		}
+		asArray(const asArray& form) = delete;
 		/*{
 			size = form.size;
 			if (size != 0) {
@@ -105,7 +105,7 @@ namespace lee8871_support {
 			}
 			INFO("Json array with %d length is delete - %x.", size, (size_t)this);
 		}
-		int get(JsonGenerateString* str, void *diff) {
+		int get(JsonGenerateString* str, const void *diff) {
 			int i = 0;
 			if (0 == size) { return str->append("[]"); }
 			str->arrayBgn();
@@ -141,7 +141,7 @@ namespace lee8871_support {
 			return done;
 		}
 	};
-	json::json(initializer_list<json> v) : 
+	json::json(initializer_list<json> v) :
 		transform((new asArray(v))),
 		value_prt(nullptr){}
 
@@ -218,7 +218,7 @@ namespace lee8871_support {
 			}
 		}
 		asObject(const asObject& form) = delete;/* {
-			size = form.size;			
+			size = form.size;
 			if (size != 0) {
 				table = new named_json[size]();
 				for (int i = 0;i < size;i++) {
@@ -240,7 +240,7 @@ namespace lee8871_support {
 			}
 			INFO("Json object with %d length is delete - %x.", size, (size_t)this);
 		}
-		int get(JsonGenerateString* str, void *diff) {
+		int get(JsonGenerateString* str, const void *diff) {
 			int i = 0;
 			if (0 == size) { return str->append("{}"); }
 			str->addBgn();
@@ -294,11 +294,11 @@ namespace lee8871_support {
 		transform(new asObject(v)) ,
 		value_prt(nullptr) {}
 
-	json::json(JsonTransformer* transform, void * value_prt) : 
-		transform(transform->quote()), 
+	json::json(JsonTransformer* transform, void * value_prt) :
+		transform(transform->quote()),
 		value_prt(value_prt) {}
 
-	int json::get(JsonGenerateString* str, void *diff) {
+	int json::get(JsonGenerateString* str, const void *diff) {
 		return transform->get(str, (void*)((size_t)diff+ (size_t)value_prt));
 	}
 
@@ -307,5 +307,3 @@ namespace lee8871_support {
 	}
 
 };
-
-

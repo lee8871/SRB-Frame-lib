@@ -29,6 +29,7 @@ include_directories(
 	../support/
 	)
 include_directories(../cLogger)
+include_directories(../json)
 
 
 aux_source_directory(.						DIR_SRCS)
@@ -43,6 +44,7 @@ add_library (SRB_Frame_lib
 	${DIR_SPPORT} 
 	${DIR_DUMOTOR} 
 	)
-
-target_link_libraries (SRB_Frame_lib cLogger_lib)
+	
+target_link_libraries (SRB_Frame_lib libclogger)
+target_link_libraries (SRB_Frame_lib libjson)
 

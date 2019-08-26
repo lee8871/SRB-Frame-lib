@@ -172,9 +172,13 @@ namespace srb {
 		return (const char *)this->baseCLU->Data()->name;
 	}
 
-	const char * Node::Node_type()
-	{
+	const char * Node::Node_type()	{
 		return (const char *)this->infoCLU->Data()->node_type;
 	}
+
+	//const json* Node::getJson() {
+
+	//}
+
 
 }

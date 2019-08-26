@@ -14,7 +14,7 @@ namespace srb {
 		Node* const& Parent_node = _parent_node;
 		uint8 const& Cluster_id = _cluster_id;
 	public:
-		const uint8* Data_u8();
+		const uint8* const & Data_u8 = _data_u8;
 		uint8 buffer_u8[30];
 
 		iCluster(Node* n);

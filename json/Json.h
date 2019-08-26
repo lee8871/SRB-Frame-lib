@@ -23,7 +23,7 @@ namespace lee8871_support {
 				delete this;
 			}
 		}
-		virtual int get(JsonGenerateString* str, void *value) = 0;
+		virtual int get(JsonGenerateString* str, const void *value) = 0;
 		virtual int set(JsonParseString* str, void *value) = 0;
 	};
 
@@ -55,10 +55,10 @@ namespace lee8871_support {
 		json(std::initializer_list<std::pair<const char*, json>> v);//to json object
 
 		~json();
-		int get(JsonGenerateString* str, void *diff = 0)override;
+		int get(JsonGenerateString* str, const void *diff = 0)override;
 		int set(JsonParseString* str, void *diff = 0)override;
 	};
-	   	 
+
 	json buildJsonConstStr(const char * value_prt);
 	json buildJsonStr(char * value_prt, int max_size);
 
@@ -68,7 +68,5 @@ namespace lee8871_support {
 		JSON_INITIELAZATION_CLASS();
 		~JSON_INITIELAZATION_CLASS();
 	};
-	#ifndef NOT_JSON_USER
-	static JSON_INITIELAZATION_CLASS __JSON_INITIELAZATION_OBJECT__;
-	#endif
+	static JSON_INITIELAZATION_CLASS __JSON_INITIELAZATION_OBJECT;
 };

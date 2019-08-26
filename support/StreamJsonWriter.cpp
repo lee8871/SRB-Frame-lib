@@ -8,7 +8,7 @@ namespace lee8871_support {
 		extern char u8ToLow(uint8 u8);
 	}
 
-	lee8871_support::ModuleLog stream_json_writer_log = { logger,"stream_json",__DATE__,__TIME__,eLogLevel::info };
+	lee8871_support::ModuleLog stream_json_writer_log = { "stream_json",eLogLevel::info ,__DATE__,__TIME__ };
 
 	StreamJsonWriter::StreamJsonWriter(std::ostream * record_ostream) {
 		setStream(record_ostream);

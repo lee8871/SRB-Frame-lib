@@ -42,6 +42,41 @@ namespace lee8871_support {
 		SetConsoleTextAttribute(handle, color_argument_table[(int)color]);
 	}
 
+	int getProcessName(char* ptr, int length) {
+		char * exe_path = new char[FILENAME_MAX];
+		if (exe_path == nullptr) {
+			return new_fail;
+		}
+		GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+
+		char *exe_path_end = (exe_path + FILENAME_MAX);
+		char * name = nullptr;
+		for (char * scan = exe_path; scan < exe_path_end;scan++) {
+			if (*scan == '\\') {
+				name = scan + 1;
+			}
+			else if (*scan == '.') {
+				*scan = '_';
+			}
+			else if (*scan == 0) {
+				break;
+			}
+		}
+		if (name == nullptr) {
+			return fail;
+		}
+		char * ptr_base = ptr;
+		int i = 0;
+		for(; i<(length-1); i++) {
+			ptr[i] = name[i];
+			if ((name[i] == 0)) {
+				break;
+			}
+		}
+		ptr[i] = 0;
+		return i;
+	}
+
 
 #endif
 
@@ -82,5 +117,47 @@ namespace lee8871_support {
 	void setTerminalColor(eTerminalColor color) {
 		printf(color_argument_table[(int)color]);
 		}
+
+
+
+	int getProcessName(char* ptr, int length) {
+
+		char * exe_path = new char[FILENAME_MAX];
+		if (exe_path == nullptr) {
+			return new_fail;
+		}
+		readlink("/proc/self/exe", exe_path, FILENAME_MAX);
+		for (char * ptr = exe_name; ptr < (exe_name + FILENAME_MAX);ptr++) {
+			if (*ptr == '/') {
+				exe_name = ptr + 1;
+			}
+			else if (*ptr == 0) {
+				break;
+			}
+		}
+		char *exe_path_end = (exe_path + FILENAME_MAX);
+		char * name = nullptr;
+		for (char * scan = exe_path; scan < exe_path_end; scan++) {
+			if (*scan == '/') {
+				name = scan + 1;
+			}
+			else if (*scan == 0) {
+				break;
+			}
+		}
+		if (name == nullptr) {
+			return fail;
+		}
+		char * ptr_base = ptr;
+		int i = 0;
+		for (; i < (length - 1); i++) {
+			ptr[i] = name[i];
+			if ((name[i] == 0)) {
+				break;
+			}
+		}
+		ptr[i] = 0;
+		return i;
+	}
 #endif
 };

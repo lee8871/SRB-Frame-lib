@@ -6,11 +6,24 @@
 namespace lee8871_support {
 	extern ModuleLog* JsonLog;
 };
+#ifdef WIN32
 #ifdef _DEBUG
-#define INFO(args...) JsonLog->addLog(eLogLevel::info, args)
+#define INFO(...) JsonLog->addLog(eLogLevel::info, __VA_ARGS__)
 #else
-#define INFO(args...)
+#define INFO(...)
 #endif
 
-#define ERROR( args...) JsonLog->addLog(eLogLevel::erro,  args )
-#define WARNING( args...) JsonLog->addLog(eLogLevel::warn,  args )
+#define ERROR(...) JsonLog->addLog(eLogLevel::erro,  __VA_ARGS__ )
+#define WARNING(...) JsonLog->addLog(eLogLevel::warn,  __VA_ARGS__ )
+#endif
+
+#ifdef UNIX
+#ifdef _DEBUG
+#define INFO(__VA_ARGS__...) JsonLog->addLog(eLogLevel::info, __VA_ARGS__)
+#else
+#define INFO(__VA_ARGS__...)
+#endif
+
+#define ERROR(__VA_ARGS__...) JsonLog->addLog(eLogLevel::erro,  __VA_ARGS__ )
+#define WARNING(__VA_ARGS__...) JsonLog->addLog(eLogLevel::warn,  __VA_ARGS__ )
+#endif

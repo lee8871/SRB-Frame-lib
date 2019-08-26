@@ -18,6 +18,7 @@ namespace lee8871_support {
 		char *const& Ptr = _ptr;
 		LString(char *, int);
 		LString(int);
+		LString(const char * path);
 		~LString();
 		void reset();
 		void clear();
@@ -38,5 +39,7 @@ namespace lee8871_support {
 		void outputRemoveSpace();
 
 		bool checkStr(const char* check);
+
+		int writeToFile(const char * path);
 	};
 };

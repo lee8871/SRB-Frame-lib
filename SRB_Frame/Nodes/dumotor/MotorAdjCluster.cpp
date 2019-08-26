@@ -13,7 +13,7 @@ namespace srb {
 
 
 	const csMotorAdj * MotorAdjCluster::Data(){
-		return ((const csMotorAdj* )(Data_u8()));
+		return (const csMotorAdj* )Data_u8;
 	}
 	csMotorAdj * MotorAdjCluster::Buffer()	{
 		return (csMotorAdj*)buffer_u8;

@@ -13,7 +13,7 @@ namespace lee8871_support {
 		_end(buf + size), _buf(buf), _ptr(buf) {}
 
 	LString::LString(int size){
-		_buf = _owned_buf = new char[size];
+		_buf = _owned_buf = new(std::nothrow) char[size];
 		if (_owned_buf == nullptr) {
 			_ptr = _end = _buf;
 		}
@@ -22,6 +22,37 @@ namespace lee8871_support {
 			_ptr = _buf;
 		}
 	}
+
+	LString::LString(const char * path) {
+		FILE *fp = fopen(path,"r");
+		fseek(fp, 0, SEEK_END);
+		int len = ftell(fp);
+		_buf = _owned_buf = new(std::nothrow) char[len];
+		if (_owned_buf == nullptr) {
+			_ptr = _end = _buf;
+		}
+		else {
+			_end = _buf + len;
+			_ptr = _buf;
+			//TODO read file
+		}
+	}
+	int LString::writeToFile(const char * path) {
+		FILE *fp = fopen(path, "w");
+		if (fp == nullptr) {
+			return fail;
+		}
+		fputs(_buf, fp);
+		if (fclose(fp) != 0) {
+			printf("fclose return error");
+			exit(-1);
+		}
+		return done;
+	}
+
+
+
+
 
 	LString::~LString(){
 		if (_owned_buf != nullptr) {
@@ -141,5 +172,8 @@ namespace lee8871_support {
 		}
 		return false;
 	}
+
+
+
 
 };

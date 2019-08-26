@@ -2,6 +2,7 @@
 #include <mutex> 
 #include <fstream>
 #include <time.h>  
+
 #include "UsbToSrb.h"
 #include "string.h"
 #include "StreamJsonWriter.h"
@@ -14,10 +15,13 @@
 
 
 
+
+
 using namespace std;
 namespace srb {
 	namespace usb_bus {
-		ModuleLog UsbBusLog = { logger,"usb_bus",__DATE__,__TIME__,eLogLevel::info };
+		ModuleLog UsbBusLog = {"usb_bus",eLogLevel::info,
+			__DATE__,__TIME__ };
 
 		class UsbToSrb::Impl{
 		private:
@@ -280,7 +284,7 @@ namespace srb {
 					}
 					libusb_get_string_descriptor_ascii(tempDH, dev_desc.iSerialNumber, (unsigned char*)str, 64);
 					libusb_close(tempDH);
-					strcpy((name_len_64[scan_counter]),str);
+					strcpy_s((name_len_64[scan_counter]),64, str);
 					scan_counter++;
 					if(scan_counter == len)
 					{

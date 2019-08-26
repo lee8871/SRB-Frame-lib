@@ -94,7 +94,7 @@ json difftest{
 };
 class writeIntAsStr : public JsonTransformer {
 public:
-	int get(JsonGenerateString* str, void* value)override {
+	int get(JsonGenerateString* str, const void* value)override {
 		return str->print("\"%d\"", *(int*) value);
 	}
 	int set(JsonParseString* str, void * value)override {

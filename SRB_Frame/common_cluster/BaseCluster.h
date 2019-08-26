@@ -3,6 +3,7 @@
 #include "iCluster.h"
 #include "iAccess.h"
 #include "SRB-base-cluster-share.h"
+#include "json.h"
 
 namespace srb {
 	class BaseCluster: public iCluster {
@@ -14,5 +15,6 @@ namespace srb {
 		csBase* Buffer();
 		int addressLedSet(iAccess* acs, uint8 cmd);
 		virtual int toJson(iJsonWriter & json_printer)override;
+		static json to_json;
 	};
 };

@@ -10,5 +10,5 @@ namespace lee8871_support {
 		normal, highlight, warning, error
 	};
 	void setTerminalColor(eTerminalColor color);
-
+	int getProcessName(char* ptr, int length);
 };

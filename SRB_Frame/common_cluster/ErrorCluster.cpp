@@ -13,7 +13,7 @@ namespace srb {
 
 
 	const csError * ErrorCluster::Data(){
-		return ((const csError* )(Data_u8()));
+		return (const csError* )Data_u8;
 	}
 	csError * ErrorCluster::Buffer()	{
 		return (csError*)buffer_u8;

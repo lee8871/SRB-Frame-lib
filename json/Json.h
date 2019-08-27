@@ -7,14 +7,14 @@
 
 
 namespace lee8871_support {
-	class JsonTransformer {
+	class iJsonTransformer {
 	private:
 		int quote_counter = 1;
 	protected:
-		JsonTransformer() {	}
-		virtual~JsonTransformer() {	}
+		iJsonTransformer() {	}
+		virtual~iJsonTransformer() {	}
 	public:
-		JsonTransformer*  quote() {
+		iJsonTransformer*  quote() {
 			quote_counter++;
 			return this;
 		}
@@ -27,40 +27,48 @@ namespace lee8871_support {
 		virtual int set(JsonParseString* str, void *value) = 0;
 	};
 
-	class json:public JsonTransformer {
+	class Json {
 	private:
-
-	public:
 		void * value_prt = nullptr;
-		JsonTransformer* transform = nullptr;
+		iJsonTransformer* _transform = nullptr;
 
-		void moveFrom(json&);
-		void copyFrom(const json&);
-		JsonTransformer* copy() {
-			return this;
+		void moveFrom(Json&);
+		void copyFrom(const Json&);
+		friend class asArray;
+		friend class asObject;
+		friend class JsonPtr;
+		Json operator = (const Json&);
+	public:
+		inline iJsonTransformer* Transform() {
+			return _transform;
 		}
-		json operator = (const json&);
-		json(json&&);
-		json(const json&);
+		Json(Json&&);
+		Json(const Json&);
 
-		json();
+		Json();
 
-		json(JsonTransformer* transform, void* value_prt);
-		json(srb::int32* value_prt);
-		json(srb::uint16* value_prt);
-		json(srb::uint8* value_prt);
-		json(srb::int8 * value_prt);
+		Json(iJsonTransformer* _transform, void* value_prt);
+		Json(srb::int32* value_prt);
+		Json(srb::uint16* value_prt);
+		Json(srb::uint8* value_prt);
+		Json(srb::int8 * value_prt);
 
-		json(std::initializer_list<json> v);//to json array
-		json(std::initializer_list<std::pair<const char*, json>> v);//to json object
+		Json(std::initializer_list<Json> v);//to json array
+		Json(std::initializer_list<std::pair<const char*, Json>> v);//to json object
 
-		~json();
-		int get(JsonGenerateString* str, const void *diff = 0)override;
-		int set(JsonParseString* str, void *diff = 0)override;
+		~Json();
+		int get(JsonGenerateString* str, const void *diff = 0);
+		int set(JsonParseString* str, void *diff = 0);
 	};
 
-	json buildJsonConstStr(const char * value_prt);
-	json buildJsonStr(char * value_prt, int max_size);
+	Json buildJsonConstStr(const char * value_prt);
+	Json buildJsonStr(char * value_prt, int max_size);
+	Json buildJsonPtr(const Json& json, void* Value_pp);
+	
+
+
+
+
 
 
 	class JSON_INITIELAZATION_CLASS {

@@ -7,7 +7,7 @@ namespace lee8871_support {
 using namespace std;
 namespace lee8871_support {
 	static class asError* as_error = nullptr;
-	class asError : public JsonTransformer {
+	class asError : public iJsonTransformer {
 	private:
 		asError() {
 		}
@@ -29,47 +29,47 @@ namespace lee8871_support {
 		~asError() {};
 	};
 
-	json::json() :transform(asError::create()) {}
+	Json::Json() :_transform(asError::create()) {}
 
-	void json::moveFrom(json &from){
+	void Json::moveFrom(Json &from){
 		value_prt = from.value_prt;
-		transform = from.transform;
-		from.transform = nullptr;
+		_transform = from._transform;
+		from._transform = nullptr;
 		from.value_prt = nullptr;
 
 	}
-	void json::copyFrom(const json &from) {
+	void Json::copyFrom(const Json &from) {
 		value_prt = from.value_prt;
-		transform = from.transform;
-		transform->quote();
+		_transform = from._transform;
+		_transform->quote();
 	}
-	json::~json() {
-		if (transform != nullptr) {
-			transform->freeQuote();
+	Json::~Json() {
+		if (_transform != nullptr) {
+			_transform->freeQuote();
 		}
 	}
-	json json::operator= (const json & right)	{
+	Json Json::operator= (const Json & right)	{
 		copyFrom(right);
 		return right;
 	}
-	json::json(const json& old) {
+	Json::Json(const Json& old) {
 		copyFrom(old);
 	}
-	json::json(json&& old) {
+	Json::Json(Json&& old) {
 		moveFrom(old);
 	}
 
 
-	class asArray :public JsonTransformer {
+	class asArray :public iJsonTransformer {
 	private:
-		json * table;
+		Json * table;
 		int size;
 
 	public:
-		asArray(initializer_list<json> v){
+		asArray(initializer_list<Json> v){
 			size = v.size();
 			if (size != 0) {
-				table = new json[size]();
+				table = new Json[size]();
 				int i = 0;
 				for (auto var : v) {
 					table[i++].moveFrom(var);
@@ -141,16 +141,16 @@ namespace lee8871_support {
 			return done;
 		}
 	};
-	json::json(initializer_list<json> v) :
-		transform((new asArray(v))),
+	Json::Json(initializer_list<Json> v) :
+		_transform((new asArray(v))),
 		value_prt(nullptr){}
 
-	class asObject:public JsonTransformer {
+	class asObject:public iJsonTransformer {
 	private:
 		struct named_json {
 			unsigned int hash;
 			const char* name;
-			json j;
+			Json j;
 		};
 		named_json * table;
 		int size;
@@ -199,7 +199,7 @@ namespace lee8871_support {
 			return NO_HASH;
 		}
 	public :
-		asObject(initializer_list<pair<const char*, json>> v) {
+		asObject(initializer_list<pair<const char*, Json>> v) {
 			size = v.size();
 			if (size != 0) {
 				table = new named_json[size]();
@@ -290,20 +290,31 @@ namespace lee8871_support {
 		}
 	};
 
-	json::json(initializer_list<pair<const char*, json>> v) :
-		transform(new asObject(v)) ,
+	Json::Json(initializer_list<pair<const char*, Json>> v) :
+		_transform(new asObject(v)) ,
 		value_prt(nullptr) {}
 
-	json::json(JsonTransformer* transform, void * value_prt) :
-		transform(transform->quote()),
+	Json::Json(iJsonTransformer* _transform, void * value_prt) :
+		_transform(_transform->quote()),
 		value_prt(value_prt) {}
 
-	int json::get(JsonGenerateString* str, const void *diff) {
-		return transform->get(str, (void*)((size_t)diff+ (size_t)value_prt));
+	int Json::get(JsonGenerateString* str, const void *diff) {
+		return _transform->get(str, (void*)((size_t)diff+ (size_t)value_prt));
 	}
 
-	int json::set(JsonParseString * str, void * diff){
-		return transform->set( str, (void*)((size_t)diff + (size_t)value_prt));
+	int Json::set(JsonParseString * str, void * diff){
+		return _transform->set( str, (void*)((size_t)diff + (size_t)value_prt));
 	}
+
+
+
+
+
+
+
+
+
+
+
 
 };

@@ -13,7 +13,7 @@ namespace srb {
 		const csError* Data();
 		csError* Buffer();
 		virtual int toJson(iJsonWriter & json_printer)override;
-		static json to_json;
+		static Json to_json;
 	
 	};
 };

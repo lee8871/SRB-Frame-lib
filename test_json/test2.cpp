@@ -21,7 +21,7 @@ int a = 20;
 int b = -42;
 int c[] = { 1,2,34,567,-89,0 };
 int d[] = { 99,66 };
-json listtest3{
+Json listtest3{
 	{"a", &a},
 	{"b",&b},
 	{"c",{c,c + 1,c + 2,c + 3,c + 4,c + 5}},
@@ -31,7 +31,7 @@ json listtest3{
 		{"d2",d + 1}
 	}},
 };
-json listtest5{
+Json listtest5{
 	{"lt3",listtest3},
 	{"ltag4",{
 		{"d",d},

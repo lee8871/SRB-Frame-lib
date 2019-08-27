@@ -42,6 +42,6 @@ namespace srb {
 		int sendAccess(int port);
 		void accessDoneReply(iAccess*) override;
 		int toJsonAll(iJsonWriter & json_printer);
-		static json to_json;
+		static Json to_json;
 	};	
 }

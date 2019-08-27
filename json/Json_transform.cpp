@@ -4,7 +4,7 @@
 using namespace std;
 using namespace srb;
 namespace lee8871_support {
-	class asUint16 : public JsonTransformer{
+	class asUint16 : public iJsonTransformer{
 	public:
 		int get(JsonGenerateString* str, const void* value)override {
 			unsigned int temp = *(uint16*)value;
@@ -22,7 +22,7 @@ namespace lee8871_support {
 			return done;
 		};
 	};
-	class asUint8 : public JsonTransformer{
+	class asUint8 : public iJsonTransformer{
 	public:
 		int get(JsonGenerateString* str, const void* value)override {
 			unsigned int temp = *(uint8*)value;
@@ -42,7 +42,7 @@ namespace lee8871_support {
 		};
 	};
 
-	class asInt8 : public JsonTransformer {
+	class asInt8 : public iJsonTransformer {
 	public:
 		int get(JsonGenerateString* str, const void* value)override {
 			int temp = *(int8*)value;
@@ -65,7 +65,7 @@ namespace lee8871_support {
 		};
 	};
 
-	class asInt : public JsonTransformer {
+	class asInt : public iJsonTransformer {
 	public:
 		int get(JsonGenerateString* str, const void* value)override {
 			int temp = *(int*)value;
@@ -115,15 +115,15 @@ namespace lee8871_support {
 		}
 	}
 
-	json::json(int32* value_prt) : transform(casI32->quote()), value_prt(value_prt) {}
-	json::json(uint16 * value_prt) : transform(casU16->quote()), value_prt(value_prt) {}
-	json::json(uint8 * value_prt) : transform(casU8->quote()), value_prt(value_prt) {}
-	json::json(int8 * value_prt) : transform(casI8->quote()), value_prt(value_prt) {}
+	Json::Json(int32* value_prt) : _transform(casI32->quote()), value_prt(value_prt) {}
+	Json::Json(uint16 * value_prt) : _transform(casU16->quote()), value_prt(value_prt) {}
+	Json::Json(uint8 * value_prt) : _transform(casU8->quote()), value_prt(value_prt) {}
+	Json::Json(int8 * value_prt) : _transform(casI8->quote()), value_prt(value_prt) {}
 
 
 
 
-	class asConstStr : public JsonTransformer {
+	class asConstStr : public iJsonTransformer {
 	private:
 		const char * _const_str;
 	public:
@@ -143,15 +143,14 @@ namespace lee8871_support {
 		};
 	};
 
-	json buildJsonConstStr(const char * value_prt) {
+	Json buildJsonConstStr(const char * value_prt) {
 		asConstStr*  ts = new asConstStr(value_prt);
-		json rev{ ts, nullptr };
+		Json rev{ ts, nullptr };
 		ts->freeQuote();
 		return rev;
-
 	}
 
-	class asStr : public JsonTransformer {
+	class asStr : public iJsonTransformer {
 	private:
 		int _str_size;
 	public:
@@ -171,11 +170,50 @@ namespace lee8871_support {
 		};
 	};
 
-	json buildJsonStr(char * value_prt,int max_size) {
+	Json buildJsonStr(char * value_prt,int max_size) {
 		asStr*  ts = new asStr(max_size);
-		json rev{ ts, value_prt };
+		Json rev{ ts, value_prt };
 		ts->freeQuote();
 		return rev;
 	}
+
+
+	class JsonPtr :public iJsonTransformer {
+	private:
+		void * value_prt = nullptr;
+		iJsonTransformer* _transform = nullptr;
+		JsonPtr(const Json& json) {
+			value_prt = json.value_prt;
+			_transform = json._transform;
+			_transform->quote();
+		}
+		JsonPtr(const JsonPtr& json) = delete;
+		JsonPtr(JsonPtr&& json) = delete;
+		~JsonPtr() {
+			if (_transform != nullptr) {
+				_transform->freeQuote();
+			}
+		}
+	public:
+		int get(JsonGenerateString* str, const void* diff)override {
+			return _transform->get(str, *(void**)((size_t)diff + (size_t)value_prt));
+		};
+		int set(JsonParseString* str, void *diff)override {
+			return _transform->set(str, *(void**)((size_t)diff + (size_t)value_prt));
+		};
+		friend Json buildJsonPtr(const Json& json, void* Value_pp);
+	};
+
+	Json buildJsonPtr(const Json& json, void* Value_pp) {
+		auto jp = new JsonPtr(json);
+		Json rev{ jp, Value_pp };
+		jp->freeQuote();
+		return rev;
+	}
+
+
+
+
+
 
 };

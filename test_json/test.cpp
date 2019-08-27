@@ -29,17 +29,17 @@ int c3[] = { 3001,3002,30034,300567,-30089,3000 };
 
 int8 i8value = 19;
 
-json listtest{ c,c + 1,c + 2,c + 3,c + 4,c + 5 };
-json listtest1{ {"c",listtest} };//the initializer_list copy listtest, than build listtest1 
+Json listtest{ c,c + 1,c + 2,c + 3,c + 4,c + 5 };
+Json listtest1{ {"c",listtest} };//the initializer_list copy listtest, than build listtest1 
 
-json listtest2{
+Json listtest2{
 	{"name",buildJsonConstStr("csMotorSet") },
 	{"I8test", &i8value},
 	{"b",&b},
 	{"c",listtest}
 };
 
-json listtest3{
+Json listtest3{
 	{"a", &a},
 	{"b",&b},
 	{"c",{c,c + 1,c + 2,c + 3,c + 4,c + 5}},
@@ -50,7 +50,7 @@ json listtest3{
 	}},
 };
 
-json listtest4{ 
+Json listtest4{ 
 	{"a", &a},
 	{"b",&b},
 	{"c",{c,c + 1,c + 2,c + 3,c + 4,c + 5}},
@@ -65,7 +65,7 @@ json listtest4{
 		}},
 	}},
 };
-json listtest5{
+Json listtest5{
 	{"lt1",listtest1},
 	{"lt2",listtest2},
 	{"lt3",listtest3},
@@ -83,7 +83,7 @@ json listtest5{
 };
 
 #define _ia6 ((int*)0)
-json difftest{ 
+Json difftest{ 
 	{"v0",_ia6+0},
 	{"v1",_ia6+1},
 	{"array",{_ia6,_ia6 + 1,_ia6 + 2,_ia6 + 3}},
@@ -92,7 +92,7 @@ json difftest{
 		{"v5",_ia6 + 5}
 	}}
 };
-class writeIntAsStr : public JsonTransformer {
+class writeIntAsStr : public iJsonTransformer {
 public:
 	int get(JsonGenerateString* str, const void* value)override {
 		return str->print("\"%d\"", *(int*) value);
@@ -102,7 +102,7 @@ public:
 	};
 };
 writeIntAsStr common_intAsStr;
-json specialTest{
+Json specialTest{
 	{"v0",{&common_intAsStr,_ia6 + 0}},
 	{"v1",_ia6 + 1},
 	{"array",{_ia6,_ia6 + 1,{&common_intAsStr,_ia6 + 2}, _ia6 + 3}},
@@ -115,10 +115,10 @@ json specialTest{
 
 
 
-json specialTest2{
+Json specialTest2{
 	{"a", &a},
 	{"b",&b},
-	{"special-c",{&difftest, c}},
+	{"special-c",{difftest.Transform(), c}},
 	{"d",{
 		{"d",d},
 		{"d2",d + 1},
@@ -145,7 +145,7 @@ while('\n'!=getchar());\
 
 
 
-int testRead(json* j_object, char* ptr, int len,void* diff = 0) {
+int testRead(Json* j_object, char* ptr, int len,void* diff = 0) {
 	auto serialze_jstr = std::make_unique<JsonGenerateString>(1024);
 	serialze_jstr->isExpanded = false;
 	j_object->get(serialze_jstr.get(), diff);
@@ -179,7 +179,7 @@ int main(int argc, char *argv[]) {
 	PRINGSTEP("Now test for struct<csMotorSet>:"); {
 		struct csMotorSet motor_set_values = { 222,124,1600,100,128 };
 #define _cs_ms(value) {#value,(&(((csMotorSet*)0)->value))}
-		json testForStruct{
+		Json testForStruct{
 			_cs_ms(min_pwm_a),
 			_cs_ms(min_pwm_b),
 			_cs_ms(period),
@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
 	PRINGSTEP("test for read objec: "); {
 		char str[20] = "test for str";
 		int  i = 12;
-		json json_object =
+		Json json_object =
 		{ {"num",&i },{"name", buildJsonStr(str, 20) }, {"fix",buildJsonConstStr("fix string")} };
 		char json_string[] = R"(     {"num":1,"name":"new string"}  )";
 		testRead(&json_object, json_string, sizeof(json_string));
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]) {
 	PRINGSTEP("Test for json String and int "); {
 		char str[20] = "old string";
 		int  i = 12;
-		json json_object = { &i ,buildJsonStr(str,20),buildJsonConstStr("fix string") };
+		Json json_object = { &i ,buildJsonStr(str,20),buildJsonConstStr("fix string") };
 		char json_string[] = R"([1,"new string",  "try overrid fix" ]   )";
 		testRead(&json_object, json_string, sizeof(json_string));
 		char json_string2[] = R"([1,"new long string so so so so so so so so so so so so so long",  "try overrid fix" ]   )";
@@ -338,7 +338,10 @@ int main(int argc, char *argv[]) {
 	PRINGSTEP("Now test for special output:\n");
 	specialTest.get(&str, c1);	printf("%s\n", str.Buf);str.clear();
 	specialTest.get(&str, c2);	printf("%s\n", str.Buf);str.clear();
+	str.isExpanded = true;
+	difftest.get(&str, c3); 	printf("%s\n", str.Buf);str.clear();
 	specialTest2.get(&str); 	printf("%s\n", str.Buf);str.clear();
+	str.isExpanded = false;
 
 
 
@@ -348,7 +351,7 @@ int main(int argc, char *argv[]) {
 	PRINGSTEP("print size for types");
 #define print_size(t) printf("Size of %s is %d.\n",#t,(int)sizeof(t))
 	print_size(writeIntAsStr);
-	print_size(json);
+	print_size(Json);
 
 
 	print_size(uint8);

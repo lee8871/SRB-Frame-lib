@@ -5,7 +5,6 @@
 #include "Json.in.h"
 
 namespace lee8871_support {
-
 	void JsonGenerateString::inputString(const char * string)	{
 		append('"');
 		while (*string != 0){
@@ -95,7 +94,6 @@ namespace lee8871_support {
 			}
 		}
 	}
-
 
 	JsonGenerateString::JsonGenerateString(char *_buf, int _size)
 		:LString(_buf,_size){

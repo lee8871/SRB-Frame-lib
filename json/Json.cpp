@@ -82,20 +82,6 @@ namespace lee8871_support {
 			}
 		}
 		asArray(const asArray& form) = delete;
-		/*{
-			size = form.size;
-			if (size != 0) {
-				table = new json[size]();
-				for (int i = 0;i < size;i++) {
-					table[i].copyFrom(form.table[i]);
-				}
-				INFO("Json array with %d length is copy - %x.", size, (size_t)this);
-			}
-			else {
-				table = nullptr;
-				WARNING("Json array with 0 length is copy - %x.", (size_t)this);
-			}
-		}*/
 		asArray(asArray&& form) = delete;
 
 		~asArray() {
@@ -217,22 +203,7 @@ namespace lee8871_support {
 				WARNING("Json object with 0 length is create.");
 			}
 		}
-		asObject(const asObject& form) = delete;/* {
-			size = form.size;
-			if (size != 0) {
-				table = new named_json[size]();
-				for (int i = 0;i < size;i++) {
-					table[i].j.copyFrom(form.table[i].j);
-					table[i].name = form.table[i].name;
-					table[i].hash = form.table[i].hash;
-				}
-				INFO("Json object with %d length is copy - %x.", size, (size_t)this);
-			}
-			else {
-				table = nullptr;
-				WARNING("Json object with 0 length is copy - %x.", (size_t)this);
-			}
-		}*/
+		asObject(const asObject& form) = delete;
 		asObject(asObject&& from) = delete;
 		~asObject() {
 			if (table != nullptr) {
@@ -306,15 +277,35 @@ namespace lee8871_support {
 		return _transform->set( str, (void*)((size_t)diff + (size_t)value_prt));
 	}
 
-
-
-
-
-
-
-
-
-
-
-
 };
+
+/*{
+	size = form.size;
+	if (size != 0) {
+		table = new json[size]();
+		for (int i = 0;i < size;i++) {
+			table[i].copyFrom(form.table[i]);
+		}
+		INFO("Json array with %d length is copy - %x.", size, (size_t)this);
+	}
+	else {
+		table = nullptr;
+		WARNING("Json array with 0 length is copy - %x.", (size_t)this);
+	}
+}*/
+/* {
+			size = form.size;
+			if (size != 0) {
+				table = new named_json[size]();
+				for (int i = 0;i < size;i++) {
+					table[i].j.copyFrom(form.table[i].j);
+					table[i].name = form.table[i].name;
+					table[i].hash = form.table[i].hash;
+				}
+				INFO("Json object with %d length is copy - %x.", size, (size_t)this);
+			}
+			else {
+				table = nullptr;
+				WARNING("Json object with 0 length is copy - %x.", (size_t)this);
+			}
+		}*/

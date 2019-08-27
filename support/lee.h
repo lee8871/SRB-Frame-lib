@@ -36,17 +36,12 @@ namespace lee8871_support {
 		node_exsist = -100,
 		node_no_exsist = -101,
 	};
-}
-namespace srb{
-	using namespace lee8871_support;
 	typedef unsigned char uint8;
 	typedef unsigned short int uint16;
 	typedef unsigned int uint32;
 	typedef signed char int8;
 	typedef signed short int int16;
 	typedef signed int int32;
-
-
 	typedef union
 	{
 		uint32 u32;
@@ -67,7 +62,12 @@ namespace srb{
 		void* v;
 		uint8 u8[2];
 	}u16to8;
-	
+
+}
+namespace srb{
+	using namespace lee8871_support;
+
+
 	constexpr size_t UNDEF_LENGTH=1;
 }
 

@@ -12,5 +12,6 @@ namespace srb {
 		const csMapping* Data();
 		csMapping* Buffer();
 		virtual int toJson(iJsonWriter & json_printer)override;
+		static Json to_json;
 	};
 };

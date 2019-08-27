@@ -196,11 +196,20 @@ namespace srb {
 		{"name",buildJsonStr((char*)relTo(name),27)},
 		{"error_behavior",&relTo(error_behavior)}
 	};
+
+	Json MappingCluster::to_json{
+#define relTo(value) (((csMapping*)((MappingCluster*)0)->_data_u8)->value)
+		{"up_len",&relTo(m.up_len)},
+		{"down_len",&relTo(m.down_len)},
+		{"table",buildUint8Array(relTo(m.table),28)}
+	};
+
 #define relTo(value) (((Node*)0)->value)
 	Json Node::to_json{ 
 		{"base",buildJsonPtr(BaseCluster::to_json, &relTo(baseCLU))},
 		{"error",buildJsonPtr(ErrorCluster::to_json, &relTo(errorCLU))},
-		{"info",buildJsonPtr(InfoCluster::to_json, &relTo(infoCLU))}
+		{"info",buildJsonPtr(InfoCluster::to_json, &relTo(infoCLU))},
+		{"mapping",buildJsonPtr(MappingCluster::to_json, &relTo(mapping0CLU))}
 	};
 
 }

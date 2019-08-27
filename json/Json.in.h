@@ -8,13 +8,13 @@ namespace lee8871_support {
 };
 #ifdef WIN32
 #ifdef _DEBUG
-#define INFO(...) JsonLog->addLog(eLogLevel::info, __VA_ARGS__)
+#define INFO(format,...) JsonLog->addLog(eLogLevel::info,format, __VA_ARGS__)
 #else
-#define INFO(...)
+#define INFO(format,...)
 #endif
 
-#define ERROR(...) JsonLog->addLog(eLogLevel::erro,  __VA_ARGS__ )
-#define WARNING(...) JsonLog->addLog(eLogLevel::warn,  __VA_ARGS__ )
+#define ERROR(format,...) JsonLog->addLog(eLogLevel::erro,format,  __VA_ARGS__ )
+#define WARNING(format,...) JsonLog->addLog(eLogLevel::warn,format,  __VA_ARGS__ )
 #endif
 
 #ifdef UNIX

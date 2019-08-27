@@ -171,13 +171,107 @@ namespace lee8871_support {
 	};
 
 	Json buildJsonStr(char * value_prt,int max_size) {
-		asStr*  ts = new asStr(max_size);
-		Json rev{ ts, value_prt };
-		ts->freeQuote();
+		auto  transformer = new asStr(max_size);
+		Json rev{ transformer, value_prt };
+		transformer->freeQuote();
+		return rev;
+	}
+
+	class asUint8Str : public iJsonTransformer {
+	private:
+		int _str_size;
+		char lowToChar(uint8  u8) {
+			char c = '0' + (u8 & 0x0f);
+			if (c > '9') { c = c - '9' - 1 + 'A'; }
+			return c;
+		}
+		uint8 charToU8(char ch) {
+			uint8 u8 = ch - '0';
+			if (u8 > 9) {
+				u8 = ch - 'A' + 10;
+				if (u8 > 15) {
+					u8 = ch - 'a' + 10;
+					if (u8 > 15) {
+						WARNING("Hex string to unit8 bad char %c", ch);
+						return 0;
+					}
+				}
+			}
+		}
+		asUint8Str(int size) {
+			_str_size = size;
+		}
+		~asUint8Str() {
+		}
+
+
+	public:
+		int get(JsonGenerateString* str, const void* value)override {
+			str->append('"');
+			for (int i = 0;i < _str_size;i++) {
+				uint8 a = ((uint8*)value)[i];
+				str->append(lowToChar(a >> 4));
+				str->append(lowToChar(a));
+				str->append(' ');
+			}
+			str->append('"');
+			return str->checkOverflow();
+		}
+		int set(JsonParseString* str, void * value)override {
+			ERROR("Add set methord");
+			return 0;
+		};
+		friend Json buildUint8Str(uint8 * value_prt, int max_size);
+	};
+
+	Json buildUint8Str(uint8 * value_prt, int max_size) {
+		auto transformer = new asUint8Str(max_size);
+		Json rev{ transformer, value_prt };
+		transformer->freeQuote();
 		return rev;
 	}
 
 
+	class asUint8Array : public iJsonTransformer {
+	private:
+		int _str_size;
+		size_t size_each = 1;
+		asUint8Array(int size) {
+			_str_size = size;
+		}
+		~asUint8Array() {
+		}
+	public:
+		int get(JsonGenerateString* str, const void* value)override {
+			str->arrayBgn();
+			int i = 0;
+			while(1) {
+				casU8->get(str, (void*)((size_t)value + i * size_each));
+				i++;
+				if (i < _str_size) {
+					str->arrayGap();
+				}
+				else{
+					str->arrayEnd();
+					break;
+				}
+			}
+			return str->checkOverflow();
+		}
+		int set(JsonParseString* str, void * value)override {
+			ERROR("Add set methord");
+			return 0;
+		};
+		friend Json buildUint8Array(uint8 * value_prt, int max_size);
+	};
+
+	Json buildUint8Array(uint8 * value_prt, int max_size) {
+		auto transformer = new asUint8Array(max_size);
+		Json rev{ transformer, value_prt };
+		transformer->freeQuote();
+		return rev;
+	}
+	
 	class JsonPtr :public iJsonTransformer {
 	private:
 		void * value_prt = nullptr;
@@ -203,7 +297,6 @@ namespace lee8871_support {
 		};
 		friend Json buildJsonPtr(const Json& json, void* Value_pp);
 	};
-
 	Json buildJsonPtr(const Json& json, void* Value_pp) {
 		auto jp = new JsonPtr(json);
 		Json rev{ jp, Value_pp };

@@ -59,18 +59,67 @@ namespace lee8871_support {
 		LString* captureError(const char * type);
 		LString* followError();
 		LString* breakError();
-
+		
+		int bypassString() {
+			while (*_ptr != '"') {
+				if (*_ptr == '\\') {
+					_ptr++;
+					if ((*_ptr < 0x20) || (*_ptr >= 0x7f)) {
+						captureAndPrintError("Unknow control char 0x%x\n", *_ptr);
+						_last_alram = eAlram::str_token_unpair;
+						return fail;
+					}
+				}
+				_ptr++;
+				if ((*_ptr < 0x20) || (*_ptr >= 0x7f)) {
+					captureAndPrintError("Unknow control char 0x%x\n", *_ptr);
+					_last_alram = eAlram::str_token_unpair;
+					return fail;
+				}
+			}
+			_ptr++;
+			return done;
+		}
 		int bypass() {
-			if (checkCh('"')) {
+			recordBeginPtr();
+			if (*_ptr == '"') {
+				bypassString();
+				return done;
+			}
+			else if (*_ptr == '{') {
+				if (isBgnHasNext(false)) {
+					do {
+						if (!checkCh('"')) {
+							captureAndPrintError("Object need a string name.");
+							return fail;
+						}
+						checkFailReturn(bypassString());
+						if (!checkCh(':')) {
+							captureAndPrintError("Object need a ':'");
+							return fail;
+						}
+						checkFailReturn (bypass());
+					} while (isGapHasNext(false));
+				}
+				return done;
+			}
+			else if (*_ptr =='[') {
+				if (isBgnHasNext(true)) {
+					do {
+						checkFailReturn(bypass());
+					} while (isGapHasNext(true));
+				}
+			}
+			else if ((*_ptr >='0')&&(*_ptr <='9')) {
+				bypassNum();
+			}
+			else if (*_ptr == 't') {
 
 			}
-			else if (checkCh('{')) {
+			else if (*_ptr == 'f') {
 
 			}
-			else if (checkCh('[')) {
-
-			}
-			else if ((*Ptr >='0')&&(*Ptr <='9')) {
+			else if (*_ptr == 'n') {
 
 			}
 			else {
@@ -78,6 +127,41 @@ namespace lee8871_support {
 				return fail;
 			}
 		}
+		int bypassNum() {
+			if (*_ptr == '-') {
+				_ptr++;
+			}
+			if ((*_ptr == '0')) {
+				_ptr++;
+			}
+			else {
+				while ((*_ptr >= '0') && (*_ptr <= '9')) {
+					_ptr++;
+				}
+			}
+			if (*_ptr == '.') {
+				_ptr++;
+			}
+			while ((*_ptr >= '0') && (*_ptr <= '9')) {
+				_ptr++;
+			}
+			if (*_ptr == 'e') {
+				_ptr++;
+			}
+			if ((*_ptr == '+')||(*_ptr == '-')) {
+				_ptr++;
+			}
+			while ((*_ptr >= '0') && (*_ptr <= '9')) {
+				_ptr++;
+			}
+
+
+		}
+
+
+
+
+
 		bool isBgnHasNext(bool is_array_not_object);
 		bool isGapHasNext(bool is_array_not_object);
 	};

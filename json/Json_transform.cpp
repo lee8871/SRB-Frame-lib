@@ -259,8 +259,24 @@ namespace lee8871_support {
 			return str->checkOverflow();
 		}
 		int set(JsonParseString* str, void * value)override {
-			ERROR("Add set methord");
-			return 0;
+			str->recordBeginPtr();
+			int i = 0;
+			if (str->isBgnHasNext(true)) {
+				do {
+					if (i < _str_size) {
+						checkFailReturn(casU8->set(str, value));
+					}
+					else {
+						str->captureAndPrintError("Json array too long");
+						return fail;
+					}
+					i++;
+				} while (str->isGapHasNext(true));
+			}
+			if (i != _str_size) {
+				str->captureAndPrintError("Json array length no match  %d->%d", i, _str_size);
+			}
+			return done;
 		};
 		friend Json buildUint8Array(uint8 * value_prt, int max_size);
 	};

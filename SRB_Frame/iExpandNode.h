@@ -1,5 +1,6 @@
 #pragma once
 #include "srb_heads.h"
+#include "Json.h"
 
 namespace srb {
 	class BaseCluster;
@@ -10,11 +11,12 @@ namespace srb {
 	private:
 	protected:
 		friend class Node;
-		Node* base_node = nullptr;
+		Node* _base_node;
 		int addCluster(iCluster* cluster);
 		void * data_rs_void;
+		static lee8871_support::Json* base_to_json;
 	public:
-		iExpandNode(Node* base_node);
+		iExpandNode(Node* _base_node);
 		~iExpandNode();
 		int sendAccess(int port);
 		const char* Node_type();
@@ -25,6 +27,7 @@ namespace srb {
 		ErrorCluster *  ErrorCLU();
 		MappingCluster *  Mapping0CLU();
 		SrbMaster * Master();
+		virtual lee8871_support::Json* ToJson();
 
 	};
 }

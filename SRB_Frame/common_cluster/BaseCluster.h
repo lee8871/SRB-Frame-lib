@@ -17,4 +17,3 @@ namespace srb {
 		static Json to_json;
 	};
 };
-

@@ -2,6 +2,7 @@
 #include "srb_heads.h"
 #include "iExpandNode.h"
 #include "SRB-app-dumotor-share.h"
+
 namespace srb {
 	class MotorSetCluster;
 	class MotorAdjCluster;
@@ -19,9 +20,11 @@ namespace srb {
 
 
 	public :
-		DumotorNode(Node* base_node);
+		DumotorNode(Node* _base_node);
 		~DumotorNode();
 		static DumotorNode* expand(iExpandNode* n);
+		static lee8871_support::Json* to_json;
+		lee8871_support::Json* ToJson() override;
 	};	
 
 

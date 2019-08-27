@@ -56,10 +56,15 @@ int listNode(char* sarg) {
 		if (node != nullptr) {
 			printf("Addr:%-3d  Name:%-18s  Type:%s\n", node->Addr(), node->Node_name(), node->Node_type());
 			jg->clear();
-			Node::to_json.get(jg, node);
-			snprintf(file_name, 64, "%s.json", node->Node_name());
-			jg->writeToFile(file_name);
-			puts(jg->Buf);
+			if (nullptr != node->Expand_node) {
+				node->Expand_node->ToJson()->get(jg, node->Expand_node);
+				snprintf(file_name, 64, "%s.json", node->Node_name());
+				jg->writeToFile(file_name);
+				puts(jg->Buf);
+			}
+			else {
+				printf("unknow node\n");
+			}
 		}
 	}
 	delete jg;

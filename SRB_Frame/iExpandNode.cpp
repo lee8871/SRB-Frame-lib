@@ -12,22 +12,22 @@ using namespace lee8871_support;
 namespace srb {
 
 	int iExpandNode::addCluster(iCluster* cluster)	{
-		if (base_node->clusters[cluster->Cluster_id] != nullptr)
+		if (_base_node->clusters[cluster->Cluster_id] != nullptr)
 		{
 			Srb_log.addLog(eLogLevel::erro, "Cluster[ID=%d] is existence",cluster->Cluster_id);
 			return fail;
 		}
-		base_node->clusters[cluster->Cluster_id] = cluster;
-		iAccess* acs = base_node->Bus()->newAccess(base_node);
+		_base_node->clusters[cluster->Cluster_id] = cluster;
+		iAccess* acs = _base_node->Bus()->newAccess(_base_node);
 		cluster->loadReadPkg(acs);
-		base_node->Bus()->loadAccess(acs);
-		base_node->Bus()->doAccess();
+		_base_node->Bus()->loadAccess(acs);
+		_base_node->Bus()->doAccess();
 		return done;
 	}
 
 	iExpandNode::iExpandNode(Node * base_node){
-		this->base_node = base_node;
-		data_rs_void = base_node->data_rs;
+		_base_node = base_node;
+		data_rs_void = _base_node->data_rs;
 
 	}
 
@@ -36,32 +36,45 @@ namespace srb {
 	}
 
 	int iExpandNode::sendAccess(int port){
-		return base_node->sendAccess(port);
+		return _base_node->sendAccess(port);
 	}
 
 	const char * iExpandNode::Node_type()	{
-		return base_node->Node_type();
+		return _base_node->Node_type();
 	}
 
 	BaseCluster * iExpandNode::BaseCLU()	{
-		return base_node->baseCLU;
+		return _base_node->baseCLU;
 	}
 
 	InfoCluster * iExpandNode::InfoCLU() {
-		return base_node->infoCLU;
+		return _base_node->infoCLU;
 	}
 
 	ErrorCluster * iExpandNode::ErrorCLU() {
-		return base_node->errorCLU;
+		return _base_node->errorCLU;
 	}
 
 	MappingCluster * iExpandNode::Mapping0CLU() {
-		return base_node->mapping0CLU;
+		return _base_node->mapping0CLU;
 	}
 
 
 	SrbMaster * iExpandNode::Master()	{
-		return base_node->master;
+		return _base_node->master;
+	}
+	Json* iExpandNode::base_to_json = nullptr;
+	Json* iExpandNode::ToJson() {
+		if (base_to_json == nullptr) {
+			base_to_json = new Json{
+		#define relTo(value) (((Node*)0)->value)
+		{"base",buildJsonPtr(BaseCluster::to_json, &relTo(baseCLU))},
+		{"error",buildJsonPtr(ErrorCluster::to_json, &relTo(errorCLU))},
+		{"info",buildJsonPtr(InfoCluster::to_json, &relTo(infoCLU))},
+		{"mapping",buildJsonPtr(MappingCluster::to_json, &relTo(mapping0CLU))}
+			};
+		}
+		return base_to_json;
 	}
 
 }

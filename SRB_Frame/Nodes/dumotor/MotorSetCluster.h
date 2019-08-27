@@ -11,5 +11,6 @@ namespace srb {
 		const Du_Motor::csMotorSet* Data();
 		Du_Motor::csMotorSet* Buffer();
 		virtual int toJson(iJsonWriter & json_printer)override;
+		static Json to_json;
 	};
 };

@@ -64,7 +64,7 @@ namespace lee8871_support {
 
 	Json buildJsonConstStr(const char * value_prt);
 	Json buildJsonStr(char * value_prt, int max_size);
-	Json buildJsonPtr(const Json& json, void* Value_pp);
+	Json buildJsonPtr(Json& json, void* Value_pp);
 	Json buildUint8Str(uint8 * value_prt, int max_size);
 	Json buildUint8Array(uint8 * value_prt, int max_size);
 

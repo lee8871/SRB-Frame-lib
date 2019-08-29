@@ -290,6 +290,36 @@ namespace lee8871_support {
 	class JsonPtr :public iJsonTransformer {
 	private:
 
+		Json* jp = nullptr;
+		JsonPtr( Json* json) {
+			jp = json;
+		}
+		JsonPtr(const JsonPtr&) = delete;
+		JsonPtr(JsonPtr&&) = delete;
+		~JsonPtr() {
+		}
+	public:
+		int get(JsonGenerateString* str, const void* diff)override {
+			return jp->get(str, *(void**)diff);
+		};
+		int set(JsonParseString* str, void *diff)override {
+			return jp->set(str, *(void**)diff);
+		};
+		friend Json buildJsonPtr(Json& json, void* Value_pp);
+	};
+	Json buildJsonPtr(Json& json, void* Value_pp) {
+		auto jp = new JsonPtr(&json);
+		Json rev{ jp, Value_pp };
+		jp->freeQuote();
+		return rev;
+	}
+
+
+
+	/*
+	class JsonPtr :public iJsonTransformer {
+	private:
+
 		iJsonTransformer* _transform = nullptr;
 		JsonPtr(const Json& json) {
 			_transform = json._transform;
@@ -317,10 +347,7 @@ namespace lee8871_support {
 		jp->freeQuote();
 		return rev;
 	}
-
-
-
-
+*/
 
 
 };

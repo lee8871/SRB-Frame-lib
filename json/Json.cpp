@@ -6,30 +6,18 @@ namespace lee8871_support {
 };
 using namespace std;
 namespace lee8871_support {
-	static class asError* as_error = nullptr;
-	class asError : public iJsonTransformer {
-	private:
-		asError() {
-		}
-	public:
-		static asError* create() {
-			if (as_error == nullptr) {
-				as_error = new asError();
-			}
-			return as_error;
-		}
-		int get(JsonGenerateString* str, const void *diff) {
-			ERROR("get() call by an uninitialized json object");
-			return fail;
-		};
-		int set(JsonParseString* str, void *diff) {
-			ERROR("set() call by an uninitialized json object");
-			return fail;
-		};
-		~asError() {};
-	};
 
-	Json::Json() :_transform(asError::create()) {}
+
+	Json::Json() :_transform(nullptr) {}	
+	void Json::cloneTransport(const Json&from, void* new_value_ptr) {
+		value_prt = new_value_ptr;
+		if (_transform != nullptr) {
+			_transform->freeQuote();
+		}
+		_transform = from._transform;
+		_transform->quote();
+
+	}
 
 	void Json::moveFrom(Json &from){
 		value_prt = from.value_prt;
@@ -40,9 +28,13 @@ namespace lee8871_support {
 	}
 	void Json::copyFrom(const Json &from) {
 		value_prt = from.value_prt;
+		if (_transform != nullptr) {
+			_transform->freeQuote();
+		}
 		_transform = from._transform;
 		_transform->quote();
 	}
+
 	Json::~Json() {
 		if (_transform != nullptr) {
 			_transform->freeQuote();
@@ -58,6 +50,9 @@ namespace lee8871_support {
 	Json::Json(Json&& old) {
 		moveFrom(old);
 	}
+	Json::Json(iJsonTransformer* _transform, void * value_prt) :
+		_transform(_transform->quote()),
+		value_prt(value_prt) {}
 
 
 	class asArray :public iJsonTransformer {
@@ -265,9 +260,8 @@ namespace lee8871_support {
 		_transform(new asObject(v)) ,
 		value_prt(nullptr) {}
 
-	Json::Json(iJsonTransformer* _transform, void * value_prt) :
-		_transform(_transform->quote()),
-		value_prt(value_prt) {}
+
+
 
 	int Json::get(JsonGenerateString* str, const void *diff) {
 		return _transform->get(str, (void*)((size_t)diff+ (size_t)value_prt));
@@ -279,7 +273,32 @@ namespace lee8871_support {
 
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*{
+	int __get(JsonGenerateString* str, const void *diff) {
+		ERROR("get() call by an uninitialized json object");
+		return fail;
+	};
+	int __set(JsonParseString* str, void *diff) {
+		ERROR("set() call by an uninitialized json object");
+		return fail;
+	};
 	size = form.size;
 	if (size != 0) {
 		table = new json[size]();

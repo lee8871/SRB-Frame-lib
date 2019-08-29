@@ -30,6 +30,14 @@ namespace srb {
 		return done;
 	}
 
+	Json MappingCluster::to_json{
+#define relTo(value) (((csMapping*)((MappingCluster*)0)->_data_u8)->value)
+		{"up_len",&relTo(m.up_len)},
+		{"down_len",&relTo(m.down_len)},
+		{"table",buildUint8Array(relTo(m.table),28)}
+	};
+
+
 
 
 

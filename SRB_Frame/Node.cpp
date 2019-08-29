@@ -7,7 +7,6 @@
 #include "SrbMaster.h"
 #include "iJsonWriter.h"
 
-#include "iExpandNode.h"
 #include "./Nodes/dumotor/DumotorNode.h"
 #include <string.h>
 
@@ -18,58 +17,55 @@ namespace srb {
 	//TODO: how to throw error
 	Node::Node(uint8 address, SrbMaster* master){
 		this->master = master;
-		clusters[0] = baseCLU = new BaseCluster(this, address);
+		baseCLU() = new BaseCluster(this, address);
 		iAccess* acs = Bus()->newAccess(this);
-		baseCLU->loadReadPkg(acs);
+		baseCLU()->loadReadPkg(acs);
 		Bus()->loadAccess(acs);
 		Bus()->doAccess();
 		if (Exsist) {
 			initCluster();
 			expand();
 		}
+	}	
+	int Node::expand() {
+		if (strcmp(Node_type(), DumotorNode::NODE_TYPE) == 0) {
+			to_json.cloneTransport(*static_cast<DumotorNode*>(this)->finalToJson(),this);
+			static_cast<DumotorNode*>(this)->initFormNode();
+			return done;
+		}
+		else {
+			to_json.cloneTransport(*static_cast<UnknowNode*>(this)->finalToJson(), this);
+			static_cast<UnknowNode*>(this)->initFormNode();
+			return done;
+
+		}
 	}
 
 
 	int Node::initCluster() {
-		clusters[1] = infoCLU = new InfoCluster(this);
-		clusters[2] = errorCLU = new ErrorCluster(this);
-		clusters[3] = mapping0CLU = new MappingCluster(this, 3);
+		infoCLU() = new InfoCluster(this);
+		errorCLU() = new ErrorCluster(this);
+		mapping0CLU() = new MappingCluster(this, 3);
 
 		iAccess* acs;
 		acs = Bus()->newAccess(this);
-		infoCLU->loadReadPkg(acs);
+		infoCLU()->loadReadPkg(acs);
 		Bus()->loadAccess(acs);
 		acs = Bus()->newAccess(this);
-		errorCLU->loadReadPkg(acs);
+		errorCLU()->loadReadPkg(acs);
 		Bus()->loadAccess(acs);
 		acs = Bus()->newAccess(this);
-		mapping0CLU->loadReadPkg(acs);
+		mapping0CLU()->loadReadPkg(acs);
 		Bus()->loadAccess(acs);
 
 		Bus()->doAccess();
 		return done;
 	}
-	int Node::expand() {
-		if (strcmp((char*)(infoCLU->Data()->node_type), DumotorNode::Node_type) == 0) {
-			_expand_node = new DumotorNode(this);
-			return done;
-		}
-		//TODO add other NodeType expand
 
-		return fail;
-	}
 
 
 	Node::~Node(){
-		if (_expand_node != nullptr) {
-			if (strcmp(Node_type(), DumotorNode::Node_type) == 0) {
-				 delete (DumotorNode*)_expand_node;
-			}
-			else {
-				delete _expand_node;
-			}
-			_expand_node = nullptr;
-		}
+
 		for (int i = 0;i < 4;i++) {
 			if (mapping[i] != nullptr) {
 				delete (mapping[i]);
@@ -158,49 +154,43 @@ namespace srb {
 		return done;
 	}
 
-	
+
 
 	iBus * Node::Bus() {
 		return this->master->Bus();
 	}
 
 	uint8 Node::Addr() {
-		return this->baseCLU->Data()->addr;
+		return this->baseCLU()->Data()->addr;
 	}
 
 	const char * Node::Node_name() {
-		return (const char *)this->baseCLU->Data()->name;
+		return (const char *)this->baseCLU()->Data()->name;
 	}
 
 	const char * Node::Node_type()	{
-		return (const char *)this->infoCLU->Data()->node_type;
+		return (const char *)this->infoCLU()->Data()->node_type;
 	}
 
-	Json ErrorCluster::to_json{
-#define relTo(value) (((csError*)((ErrorCluster*)0)->_data_u8)->value)
-		{"file",&relTo(file)},
-		{"line",&relTo(line)},
-		{"description",buildJsonStr((char*)relTo(description),24)},
-	};
-	Json InfoCluster::to_json{
-#define relTo(value) (((csInfo*)((InfoCluster*)0)->_data_u8)->value)
-		{"node_version",{&relTo(node_version_BCD[0]),&relTo(node_version_BCD[1])}},
-		{"srb_version",{&relTo(srb_version_BCD[0]),&relTo(srb_version_BCD[1])}},
-		{"time_stamp",&relTo(time_stamp)},
-		{"node_type",buildJsonStr((char*)relTo(node_type),17)},
-	};
-	Json BaseCluster::to_json{
-#define relTo(value) (((csBase*)((BaseCluster*)0)->_data_u8)->value)
-		{"addr",&relTo(addr)},
-		{"name",buildJsonStr((char*)relTo(name),27)},
-		{"error_behavior",&relTo(error_behavior)}
-	};
 
-	Json MappingCluster::to_json{
-#define relTo(value) (((csMapping*)((MappingCluster*)0)->_data_u8)->value)
-		{"up_len",&relTo(m.up_len)},
-		{"down_len",&relTo(m.down_len)},
-		{"table",buildUint8Array(relTo(m.table),28)}
-	};
+
+	int UnknowNode::initFormNode() {
+		return done;
+	}
+
+	static Json* local_to_json = nullptr;
+#define relTo(value) (((UnknowNode*)0)->value)
+	Json* UnknowNode::finalToJson() {
+		if (local_to_json == nullptr) {
+			local_to_json = new Json{
+				{"baseCLU",buildJsonPtr(BaseCluster::to_json, &relTo(baseCLU()))},
+				{"infoCLU",buildJsonPtr(InfoCluster::to_json, &relTo(infoCLU()))},
+				{"errorCLU",buildJsonPtr(ErrorCluster::to_json, &relTo(errorCLU()))},
+				{"mapping0CLU",buildJsonPtr(MappingCluster::to_json, &relTo(mapping0CLU()))}
+			};
+		}
+		return local_to_json;
+	}
+
 }
 

@@ -7,14 +7,14 @@ namespace srb {
 	{
 		_cluster_id = DEFAULT_CID;
 	}
-	InfoCluster::~InfoCluster(){	}
+	InfoCluster::~InfoCluster() {	}
 
 
 
-	const csInfo * InfoCluster::Data(){
-		return (const csInfo* )Data_u8();
+	const csInfo * InfoCluster::Data() {
+		return (const csInfo*)Data_u8();
 	}
-	csInfo * InfoCluster::Buffer()	{
+	csInfo * InfoCluster::Buffer() {
 		return (csInfo*)buffer_u8;
 	}
 
@@ -31,5 +31,11 @@ namespace srb {
 		json_printer.endObj();
 		return done;
 	}
-
+	Json InfoCluster::to_json{
+#define relTo(value) (((csInfo*)((InfoCluster*)0)->_data_u8)->value)
+		{"node_version",{&relTo(node_version_BCD[0]),&relTo(node_version_BCD[1])}},
+		{"srb_version",{&relTo(srb_version_BCD[0]),&relTo(srb_version_BCD[1])}},
+		{"time_stamp",&relTo(time_stamp)},
+		{"node_type",buildJsonStr((char*)relTo(node_type),17)},
+	};
 }

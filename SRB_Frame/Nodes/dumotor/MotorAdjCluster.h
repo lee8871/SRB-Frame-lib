@@ -5,7 +5,7 @@
 namespace srb {
 	class MotorAdjCluster: public iCluster {
 	public:
-		static const uint8 DEFAULT_CID = 11;
+		constexpr static uint8 DEFAULT_CID = 11;
 		MotorAdjCluster(Node* node);
 		~MotorAdjCluster();
 		const Du_Motor::csMotorAdj* Data();

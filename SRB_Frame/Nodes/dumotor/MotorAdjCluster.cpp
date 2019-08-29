@@ -29,4 +29,12 @@ namespace srb {
 		return done;
 	}
 
+
+	Json MotorAdjCluster::to_json{
+#define relTo(value) (((Du_Motor::csMotorAdj*)((MotorAdjCluster*)0)->_data_u8)->value)
+		{"Adj",&relTo(Adj)},
+		{"TogMotorA",&relTo(TogMotorA)},
+		{"TogMotorB",&relTo(TogMotorB)}
+	};
+
 }

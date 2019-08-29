@@ -34,6 +34,13 @@ namespace srb {
 	}
 
 
+	Json ErrorCluster::to_json{
+#define relTo(value) (((csError*)((ErrorCluster*)0)->_data_u8)->value)
+		{"file",&relTo(file)},
+		{"line",&relTo(line)},
+		{"description",buildJsonStr((char*)relTo(description),24)},
+	};
+
 
 
 }

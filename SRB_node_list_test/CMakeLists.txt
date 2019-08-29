@@ -12,6 +12,7 @@ include_directories(../SRB_Frame/usb_srb)
 include_directories(../SRB_Frame/common_cluster)
 include_directories(../support)
 include_directories(../cLogger)
+include_directories(../json)
 
 aux_source_directory(. DIR_SRCS)
 

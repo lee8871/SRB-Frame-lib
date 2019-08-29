@@ -8,7 +8,7 @@ namespace srb {
 	extern lee8871_support::ModuleLog Srb_log;
 	class Node;
 	class Broadcaster;
-	class iExpandNode;
+	class UnknowNode;
 	class iAccess;
 
 	class iBus;

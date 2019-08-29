@@ -11,8 +11,8 @@ namespace srb {
 	public:
 		Broadcaster* commonBC;
 		void scanNodes();
-		iExpandNode* operator[] (uint8 addr);
-		iExpandNode* operator[] (const char* name);
+		Node* operator[] (uint8 addr);
+		Node* operator[] (const char* name);
 
 		Node* getNode(uint8 addr);
 		Node* getNode(const char* name);

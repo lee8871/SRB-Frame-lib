@@ -32,4 +32,14 @@ namespace srb {
 		return done;
 	}
 
+
+	Json MotorSetCluster::to_json{
+#define relTo(value) (((Du_Motor::csMotorSet*)((MotorSetCluster*)0)->_data_u8)->value)
+		{"min_pwm_a",&relTo(min_pwm_a)},
+		{"min_pwm_b",&relTo(min_pwm_b)},
+		{"period",&relTo(period)},
+		{"lose_control_ms",&relTo(lose_control_ms)},
+		{"lose_behavior",&relTo(lose_behavior)}
+	};
+
 }

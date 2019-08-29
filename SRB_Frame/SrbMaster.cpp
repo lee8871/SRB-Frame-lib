@@ -43,21 +43,21 @@ namespace srb {
 		}
 	}
 
-	iExpandNode*  SrbMaster::operator[] (uint8 addr) {
+	Node*  SrbMaster::operator[] (uint8 addr) {
 		Node * n = getNode(addr);
 		if(n == nullptr){
 			return nullptr;
 		}
-		return n->Expand_node;
+		return n;
 	}
 
-	iExpandNode* SrbMaster::operator[] (const char* name) {
+	Node* SrbMaster::operator[] (const char* name) {
 
 		Node * n = getNode(name);
 		if (n == nullptr) {
 			return nullptr;
 		}
-		return n->Expand_node;
+		return n;
 	}
 
 

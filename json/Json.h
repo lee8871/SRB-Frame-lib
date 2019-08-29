@@ -44,6 +44,7 @@ namespace lee8871_support {
 		}
 		Json(Json&&);
 		Json(const Json&);
+		void cloneTransport(const Json&, void*);
 
 		Json();
 

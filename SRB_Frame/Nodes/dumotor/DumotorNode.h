@@ -1,30 +1,41 @@
 #pragma once
 #include "srb_heads.h"
-#include "iExpandNode.h"
 #include "SRB-app-dumotor-share.h"
+#include "Node.h"
+#include "MotorAdjCluster.h"
+#include "MotorSetCluster.h"
+
 
 namespace srb {
 	class MotorSetCluster;
 	class MotorAdjCluster;
-	class DumotorNode :public iExpandNode{
-	private:
-		MotorSetCluster* setCLU;
-		MotorAdjCluster* adjCLU;
+	class DumotorNode:public Node {
 	public :
 
-		MotorSetCluster* SetCLU();
-		MotorAdjCluster* AdjCLU();
+		DumotorNode(uint8 a, SrbMaster* m) :Node(a, m) {
+			if (Exsist) {
+				initFormNode();
+			}
+		}
+		DumotorNode(const DumotorNode&) = delete;
+		DumotorNode(DumotorNode&&) = delete;
 
-		static const char Node_type[];
-		Du_Motor::sDataRs* Data(); 
+
+		inline MotorSetCluster*& setCLU() {
+			return  (MotorSetCluster *&)clusters[MotorSetCluster::DEFAULT_CID];
+		}
+		inline MotorAdjCluster*& adjCLU() {
+			return  (MotorAdjCluster *&)clusters[MotorAdjCluster::DEFAULT_CID];
+		}
+		inline Du_Motor::sDataRs* Data(){
+			return  (Du_Motor::sDataRs* const)(data_rs);
+		}
 
 
-	public :
-		DumotorNode(Node* _base_node);
-		~DumotorNode();
-		static DumotorNode* expand(iExpandNode* n);
-		static lee8871_support::Json* to_json;
-		lee8871_support::Json* ToJson() override;
+
+		constexpr static const char* NODE_TYPE = "Du_Motor";
+		lee8871_support::Json* finalToJson();
+		int initFormNode();
 	};	
 
 

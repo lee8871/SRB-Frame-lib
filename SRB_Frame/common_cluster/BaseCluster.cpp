@@ -45,7 +45,12 @@ namespace srb {
 			return argument_error;
 		}
 	}
-
+	Json BaseCluster::to_json{
+#define relTo(value) (((csBase*)((BaseCluster*)0)->_data_u8)->value)
+		{"addr",&relTo(addr)},
+		{"name",buildJsonStr((char*)relTo(name),27)},
+		{"error_behavior",&relTo(error_behavior)}
+	};
 
 
 }

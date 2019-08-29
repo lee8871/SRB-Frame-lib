@@ -280,7 +280,6 @@ namespace lee8871_support {
 		};
 		friend Json buildUint8Array(uint8 * value_prt, int max_size);
 	};
-
 	Json buildUint8Array(uint8 * value_prt, int max_size) {
 		auto transformer = new asUint8Array(max_size);
 		Json rev{ transformer, value_prt };
@@ -290,10 +289,9 @@ namespace lee8871_support {
 	
 	class JsonPtr :public iJsonTransformer {
 	private:
-		void * value_prt = nullptr;
+
 		iJsonTransformer* _transform = nullptr;
 		JsonPtr(const Json& json) {
-			value_prt = json.value_prt;
 			_transform = json._transform;
 			_transform->quote();
 		}
@@ -306,10 +304,10 @@ namespace lee8871_support {
 		}
 	public:
 		int get(JsonGenerateString* str, const void* diff)override {
-			return _transform->get(str, *(void**)((size_t)diff + (size_t)value_prt));
+			return _transform->get(str, *(void**)diff);
 		};
 		int set(JsonParseString* str, void *diff)override {
-			return _transform->set(str, *(void**)((size_t)diff + (size_t)value_prt));
+			return _transform->set(str, *(void**)diff);
 		};
 		friend Json buildJsonPtr(const Json& json, void* Value_pp);
 	};

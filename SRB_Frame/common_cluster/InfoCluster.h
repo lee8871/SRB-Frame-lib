@@ -6,13 +6,15 @@
 
 namespace srb {
 	class InfoCluster: public iCluster {
+	private:
+		using csThis = csInfo;
 	public:
 		static const uint8 DEFAULT_CID = 1;
 		InfoCluster(Node* node);
 		~InfoCluster();
-		const csInfo* Data();
-		csInfo* Buffer();
-		virtual int toJson(iJsonWriter & json_printer)override;
+		inline  csThis* Data() {
+			return (csThis*)Data_u8();
+		}
 		static Json to_json;
 	};
 };

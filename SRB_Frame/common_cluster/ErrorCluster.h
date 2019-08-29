@@ -6,14 +6,18 @@
 
 namespace srb {
 	class ErrorCluster: public iCluster {
+	private:
+		using csThis = csError;
 	public:
 		static const uint8 DEFAULT_CID = 2;
 		ErrorCluster(Node* node);
 		~ErrorCluster();
-		const csError* Data();
-		csError* Buffer();
-		virtual int toJson(iJsonWriter & json_printer)override;
+		inline  csThis* Data() {
+			return (csThis*)Data_u8();
+		}
+
 		static Json to_json;
-	
+
+
 	};
 };

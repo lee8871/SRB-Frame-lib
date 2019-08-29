@@ -6,14 +6,16 @@
 
 namespace srb {
 	class BaseCluster: public iCluster {
+	private:
+		using csThis = csBase;
 	public:
 		static const uint8 DEFAULT_CID = 0;
 		BaseCluster(Node* node, uint8 addr);
 		~BaseCluster();
-		const csBase* Data();
-		csBase* Buffer();
+		inline csThis* Data() {
+			return (csThis*)Data_u8();
+		}
 		int addressLedSet(iAccess* acs, uint8 cmd);
-		virtual int toJson(iJsonWriter & json_printer)override;
 		static Json to_json;
 	};
 };

@@ -38,24 +38,17 @@ namespace srb {
 		int setMapping(const uint8* map, int map_num);
 		int sendAccess(int port);
 		void accessDoneReply(iAccess*) override;
-		int toJsonAll(iJsonWriter & json_printer);
-
-		lee8871_support::Json to_json;
-			   
-	};	
+		lee8871_support::Json to_json;			   
+	};
 
 
 	class UnknowNode:public Node{
-		public:
-			UnknowNode() = delete;
-			UnknowNode(const UnknowNode&) = delete;
-			UnknowNode(UnknowNode&&) = delete;
-
-
-
-			constexpr static const char* NODE_TYPE = "Unknow";
-			lee8871_support::Json* finalToJson();
-			int initFormNode();
-	};
-	
+	public:
+		UnknowNode() = delete;
+		UnknowNode(const UnknowNode&) = delete;
+		UnknowNode(UnknowNode&&) = delete;
+		constexpr static const char* NODE_TYPE = "Unknow";
+		lee8871_support::Json* finalToJson();
+		int initFormNode();
+	};	
 }

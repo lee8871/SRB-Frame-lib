@@ -8,29 +8,13 @@ namespace srb {
 		:iCluster(node)
 	{
 		_cluster_id = DEFAULT_CID;
-		((csBase*)_data_u8)->addr = addr;
+		((csThis*)_data_u8)->addr = addr;
+		data_len = sizeof(csThis);
 	}
 	BaseCluster::~BaseCluster(){	}
 
-	const csBase * BaseCluster::Data(){
-		return (const csBase* )Data_u8();
-	}
-	csBase * BaseCluster::Buffer()	{
-		return (csBase*)buffer_u8;
-	}
 
 
-
-	int BaseCluster::toJson(iJsonWriter & json_printer) {
-		json_printer.beginObj("Base_clu");
-		json_printer.writeNum("Id", Cluster_id);
-		json_printer.writeEndLine();
-		json_printer.writeNum("addr", Data()->addr);
-		json_printer.writeStr("name", (const char *)(Data()->name));
-		json_printer.writeNum("error_behavior", Data()->error_behavior);
-		json_printer.endObj();
-		return done;
-	}
 	int BaseCluster::addressLedSet(iAccess* acs, uint8 cmd)	{
 		switch (cmd) {
 		case BCC_SHOW_HIGH_ADDR:
@@ -45,12 +29,12 @@ namespace srb {
 			return argument_error;
 		}
 	}
-	static Json cs_json{
-#define relTo(value) (((csBase*)0)->value)
+	Json BaseCluster::to_json{
+#define relTo(value) (((csThis*)((BaseCluster*)0)->_data_u8)->value)
 		{"addr",&relTo(addr)},
 		{"name",buildJsonStr((char*)relTo(name),27)},
 		{"error_behavior",&relTo(error_behavior)}
 	};
-	Json BaseCluster::to_json{ cs_json.Transform(),((BaseCluster*)0)->_data_u8 };
+
 
 }

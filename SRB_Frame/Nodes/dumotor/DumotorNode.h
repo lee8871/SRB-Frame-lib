@@ -12,11 +12,7 @@ namespace srb {
 	class DumotorNode:public Node {
 	public :
 
-		DumotorNode(uint8 a, SrbMaster* m) :Node(a, m) {
-			if (Exsist) {
-				initFormNode();
-			}
-		}
+		DumotorNode() = delete;
 		DumotorNode(const DumotorNode&) = delete;
 		DumotorNode(DumotorNode&&) = delete;
 

@@ -5,7 +5,6 @@
 #include "MappingCluster.h"
 #include "iBus.h"
 #include "SrbMaster.h"
-#include "iJsonWriter.h"
 
 #include "./Nodes/dumotor/DumotorNode.h"
 #include <string.h>
@@ -127,7 +126,7 @@ namespace srb {
 					break;
 				case SC_PORT_CFG:
 					//TODO Note this if cluster is not exsist
-					clusters[acs->Send_pkg->data[0]]->readDone(acs);
+					clusters[acs->Send_pkg->data[0]]->accessDone(acs);
 					break;
 				default:
 					break;
@@ -141,17 +140,6 @@ namespace srb {
 			Srb_log.addLog(eLogLevel::erro, "accessDoneReply shold call when status is ReceiveDone or BusTimeOut ");
 		}
 		delete acs;
-	}
-	int Node::toJsonAll(iJsonWriter & json_printer)	{
-		json_printer.beginObj("untyped_node");
-		for (int i = 0;i < MAX_CLUSTER_NUMBER;i++) {
-			if (clusters[i] != nullptr) {
-				clusters[i]->toJson(json_printer);
-				json_printer.writeEndLine();
-			}
-		}
-		json_printer.endObj();
-		return done;
 	}
 
 
@@ -171,9 +159,7 @@ namespace srb {
 	const char * Node::Node_type()	{
 		return (const char *)this->infoCLU()->Data()->node_type;
 	}
-
-
-
+	
 	int UnknowNode::initFormNode() {
 		return done;
 	}

@@ -6,12 +6,14 @@
 
 namespace srb {
 	class MappingCluster: public iCluster {
+	private:
+		using csThis = csMapping;
 	public:
 		MappingCluster(Node* node, uint8 cid);
 		~MappingCluster();
-		const csMapping* Data();
-		csMapping* Buffer();
-		virtual int toJson(iJsonWriter & json_printer)override;
+		inline  csThis* Data() {
+			return (csThis*)Data_u8();
+		}
 		static Json to_json;
 	};
 };

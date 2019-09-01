@@ -25,6 +25,8 @@ namespace lee8871_support {
 
 	LString::LString(const char * path) {
 		FILE *fp = fopen(path,"r");
+		fpos_t fp_0;
+		fgetpos(fp,&fp_0);
 		fseek(fp, 0, SEEK_END);
 		int len = ftell(fp);
 		_buf = _owned_buf = new(std::nothrow) char[len];
@@ -36,6 +38,17 @@ namespace lee8871_support {
 			_ptr = _buf;
 			//TODO read file
 		}
+		fsetpos(fp, &fp_0);
+		char * p = _buf;
+		while (1) {
+			*p = fgetc(fp);
+			p++;
+			if (p == _end-1) {
+				*p = 0;
+				return;
+			}
+		}
+
 	}
 	int LString::writeToFile(const char * path) {
 		FILE *fp = fopen(path, "w");
@@ -63,14 +76,6 @@ namespace lee8871_support {
 	int LString::append(char a) {
 		addAndCheck(a);
 		endString();
-	}
-	void LString::reset() {
-		_ptr = _buf;
-	}
-
-	void LString::clear()	{
-		_ptr = _buf;
-		*_ptr = 0;
 	}
 
 	int LString::append(const char* a) {
@@ -107,16 +112,8 @@ namespace lee8871_support {
 		}
 	}
 
-	int LString::foward()	{
-		_ptr++;		
-		if (_ptr >= _end) {
-			_ptr = _end - 1;
-			return fail;
-		}
-		return done;
-	}
 
-	int LString::jump(int inc)	{
+	int LString::forward(int inc)	{
 		_ptr += inc;
 		if(_ptr >= _end){
 			_ptr = _end - 1;
@@ -130,38 +127,26 @@ namespace lee8871_support {
 	}
 
 	bool LString::checkCh(char c) {
-		outputRemoveSpace();
+		removeSpace();
 		if (*_ptr == c) {
 			_ptr++;
 			return true;
 		}
 		return false;
 	}
-	char LString::nextChar(){
-		char rev = *_ptr;
+
+	int LString::forward() {
 		_ptr++;
 		if (_ptr >= _end) {
-			_ptr= _end-1;
-			return 0;
+			_ptr = _end - 1;
+			return fail;
 		}
-		else{
-			return rev;
-		}
-	}	
-	void LString::outputRemoveSpace() {
-		while (_ptr != End) {
-			if ((*_ptr == ' ') || (*_ptr == '\r') ||
-				(*_ptr == '\t') || (*_ptr == '\n')) {
-				_ptr++;
-			}
-			else {
-				return;
-			}
-		}
+		return done;
 	}
 
+
 	bool LString::checkStr(const char * check) {
-		outputRemoveSpace();
+		removeSpace();
 		char* p = _ptr;
 		while (*p == *check) {
 			p++;check++;

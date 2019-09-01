@@ -38,7 +38,9 @@ namespace srb {
 		int setMapping(const uint8* map, int map_num);
 		int sendAccess(int port);
 		void accessDoneReply(iAccess*) override;
-		lee8871_support::Json to_json;			   
+		lee8871_support::Json to_json;
+		void changeName(const char* name);
+		void changeAddr(unsigned char addr);
 	};
 
 

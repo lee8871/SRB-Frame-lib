@@ -142,6 +142,28 @@ namespace srb {
 		delete acs;
 	}
 
+	void Node::changeName(const char * name) {
+		char * to = (char*)(baseCLU()->Data()->name);
+		for (int i = 0;i < 27;i++) {
+			to[i] = name[i];
+			if (to[i] == 0) {
+				break;
+			}
+		}
+		iAccess* acs = Bus()->newAccess(this);
+		baseCLU()->loadWritePkg(acs);
+		Bus()->loadAccess(acs);
+		Bus()->doAccess();
+	}
+
+	void Node::changeAddr(unsigned char new_addr)	{
+		baseCLU()->Data()->addr = new_addr;
+		iAccess* acs = Bus()->newAccess(this);
+		baseCLU()->loadWritePkg(acs);
+		Bus()->loadAccess(acs);
+		Bus()->doAccess();
+	}
+
 
 
 	iBus * Node::Bus() {

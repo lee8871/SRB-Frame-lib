@@ -35,6 +35,12 @@ namespace lee8871_support {
 		LString* const& Error_str = error_str;
 		JsonParseString(char *buf, int size);
 		JsonParseString(int size);
+		JsonParseString(const char * path);
+
+
+
+
+
 		~JsonParseString();
 		inline void reset() {
 			LString::reset();
@@ -61,32 +67,32 @@ namespace lee8871_support {
 		LString* breakError();
 		
 		int bypassString() {
-			while (*_ptr != '"') {
-				if (*_ptr == '\\') {
-					_ptr++;
-					if ((*_ptr < 0x20) || (*_ptr >= 0x7f)) {
-						captureAndPrintError("Unknow control char 0x%x\n", *_ptr);
+			while (*Ptr != '"') {
+				if (*Ptr == '\\') {
+					forward();
+					if ((*Ptr < 0x20) || (*Ptr >= 0x7f)) {
+						captureAndPrintError("Unknow control char 0x%x\n", *Ptr);
 						_last_alram = eAlram::str_token_unpair;
 						return fail;
 					}
 				}
-				_ptr++;
-				if ((*_ptr < 0x20) || (*_ptr >= 0x7f)) {
-					captureAndPrintError("Unknow control char 0x%x\n", *_ptr);
+				forward();
+				if ((*Ptr < 0x20) || (*Ptr >= 0x7f)) {
+					captureAndPrintError("Unknow control char 0x%x\n", *Ptr);
 					_last_alram = eAlram::str_token_unpair;
 					return fail;
 				}
 			}
-			_ptr++;
+			forward();
 			return done;
 		}
 		int bypass() {
 			recordBeginPtr();
-			if (*_ptr == '"') {
+			if (*Ptr == '"') {
 				bypassString();
 				return done;
 			}
-			else if (*_ptr == '{') {
+			else if (*Ptr == '{') {
 				if (isBgnHasNext(false)) {
 					do {
 						if (!checkCh('"')) {
@@ -103,23 +109,23 @@ namespace lee8871_support {
 				}
 				return done;
 			}
-			else if (*_ptr =='[') {
+			else if (*Ptr =='[') {
 				if (isBgnHasNext(true)) {
 					do {
 						checkFailReturn(bypass());
 					} while (isGapHasNext(true));
 				}
 			}
-			else if ((*_ptr >='0')&&(*_ptr <='9')) {
+			else if ((*Ptr >='0')&&(*Ptr <='9')) {
 				bypassNum();
 			}
-			else if (*_ptr == 't') {
+			else if (*Ptr == 't') {
 
 			}
-			else if (*_ptr == 'f') {
+			else if (*Ptr == 'f') {
 
 			}
-			else if (*_ptr == 'n') {
+			else if (*Ptr == 'n') {
 
 			}
 			else {
@@ -128,34 +134,32 @@ namespace lee8871_support {
 			}
 		}
 		int bypassNum() {
-			if (*_ptr == '-') {
-				_ptr++;
+			if (*Ptr == '-') {
+				forward();
 			}
-			if ((*_ptr == '0')) {
-				_ptr++;
+			if ((*Ptr == '0')) {
+				forward();
 			}
 			else {
-				while ((*_ptr >= '0') && (*_ptr <= '9')) {
-					_ptr++;
+				while ((*Ptr >= '0') && (*Ptr <= '9')) {
+					forward();
 				}
 			}
-			if (*_ptr == '.') {
-				_ptr++;
+			if (*Ptr == '.') {
+				forward();
 			}
-			while ((*_ptr >= '0') && (*_ptr <= '9')) {
-				_ptr++;
+			while ((*Ptr >= '0') && (*Ptr <= '9')) {
+				forward();
 			}
-			if (*_ptr == 'e') {
-				_ptr++;
+			if (*Ptr == 'e') {
+				forward();
 			}
-			if ((*_ptr == '+')||(*_ptr == '-')) {
-				_ptr++;
+			if ((*Ptr == '+')||(*Ptr == '-')) {
+				forward();
 			}
-			while ((*_ptr >= '0') && (*_ptr <= '9')) {
-				_ptr++;
+			while ((*Ptr >= '0') && (*Ptr <= '9')) {
+				forward();
 			}
-
-
 		}
 
 

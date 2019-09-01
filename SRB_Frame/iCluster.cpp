@@ -13,17 +13,19 @@ namespace srb {
 		acs->Send_pkg->bfc.port = SC_PORT_CFG;
 	}
 	void iCluster::loadWritePkg(iAccess* acs) {
+		acs->Send_pkg->bfc.length = 1+ data_len;
 		acs->Send_pkg->data[0] = _cluster_id;
-		for (int i = 0; i < acs->Recv_pkg->bfc.length;i++) {
-			acs->Recv_pkg->data[i + 1] = _data_u8[i];
+		for (int i = 1; i < acs->Send_pkg->bfc.length;i++) {
+			acs->Send_pkg->data[i] = _data_u8[i-1];
 		}
-		acs->Send_pkg->bfc.length = 1;
 		acs->Send_pkg->bfc.port = SC_PORT_CFG;
 	}
 	void iCluster::accessDone(iAccess * acs){
 		if (acs->Status == eAccessStatus::RecvedDone) {
-			for (int i = 0; i < acs->Recv_pkg->bfc.length;i++){
-				_data_u8[i] = acs->Recv_pkg->data[i];
+			if (acs->Send_pkg->bfc.length == 1) {
+				for (int i = 0; i < acs->Recv_pkg->bfc.length;i++) {
+					_data_u8[i] = acs->Recv_pkg->data[i];
+				}
 			}
 		}
 	}

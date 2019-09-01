@@ -48,9 +48,9 @@ namespace srb {
 	Json* DumotorNode::finalToJson() {
 		if (local_to_json == nullptr) {
 			local_to_json = new Json{
-				{"baseCLU",buildJsonPtr(BaseCluster::to_json, &relTo(baseCLU()))},
-				{"infoCLU",buildJsonPtr(InfoCluster::to_json, &relTo(infoCLU()))},
-				{"errorCLU",buildJsonPtr(ErrorCluster::to_json, &relTo(errorCLU()))},
+				//{"baseCLU",buildJsonPtr(BaseCluster::to_json, &relTo(baseCLU()))},
+				//{"infoCLU",buildJsonPtr(InfoCluster::to_json, &relTo(infoCLU()))},
+				//{"errorCLU",buildJsonPtr(ErrorCluster::to_json, &relTo(errorCLU()))},
 				{"mapping0CLU",buildJsonPtr(MappingCluster::to_json, &relTo(mapping0CLU()))},
 				{"MotorAdj",buildJsonPtr(MotorAdjCluster::to_json, &relTo(adjCLU()))},
 				{"MotorSet",buildJsonPtr(MotorSetCluster::to_json, &relTo(setCLU()))}

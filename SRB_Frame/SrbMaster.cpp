@@ -43,6 +43,19 @@ namespace srb {
 		}
 	}
 
+	int SrbMaster::changeAddressNode(uint8 old_addr, uint8 new_addr){
+		if (nodes[new_addr] != nullptr) {
+			return fail;
+		}
+		if (nodes[old_addr] == nullptr) {
+			return fail;
+		}
+		nodes[new_addr] = nodes[old_addr];
+		nodes[old_addr] = nullptr;
+		nodes[new_addr]->changeAddr(new_addr);
+		return 0;
+	}
+
 	Node*  SrbMaster::operator[] (uint8 addr) {
 		Node * n = getNode(addr);
 		if(n == nullptr){

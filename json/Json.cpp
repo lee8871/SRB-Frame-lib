@@ -167,7 +167,8 @@ namespace lee8871_support {
 			int i = 0;
 			char next_ch;
 			while (i < 255) {
-				next_ch = str->nextChar();
+				next_ch = *(str->Ptr);
+				str->forward();
 				if (next_ch == '"') {return (id^id_temp); }
 				id_temp ^= ((unsigned int)next_ch) << (1 + (i % 4) * 7);
 				i++;
@@ -224,7 +225,7 @@ namespace lee8871_support {
 		}
 		int setOneAttribute(JsonParseString* str, void *diff) {
 			str->recordBeginPtr();
-			str->outputRemoveSpace();
+			str->removeSpace();
 			unsigned int hash = getHashByDoubleQuotes(str);
 			if (str->checkCh(':') == false) {
 				str->captureAndPrintError("get '%c' need a ':'", *str->Ptr);

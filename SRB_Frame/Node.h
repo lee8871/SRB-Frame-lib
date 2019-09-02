@@ -41,6 +41,7 @@ namespace srb {
 		lee8871_support::Json to_json;
 		void changeName(const char* name);
 		void changeAddr(unsigned char addr);
+		int (*writeAllNode)(Node *n);
 	};
 
 
@@ -52,5 +53,6 @@ namespace srb {
 		constexpr static const char* NODE_TYPE = "Unknow";
 		lee8871_support::Json* finalToJson();
 		int initFormNode();
+		static int writeAllNode(Node*);
 	};	
 }

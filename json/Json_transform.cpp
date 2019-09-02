@@ -65,6 +65,29 @@ namespace lee8871_support {
 		};
 	};
 
+	class asInt16 : public iJsonTransformer {
+	public:
+		int get(JsonGenerateString* str, const void* value)override {
+			int temp = *(int16*)value;
+			str->inputNumber(temp);
+			return str->checkOverflow();
+		};
+		int set(JsonParseString* str, void *value)override {
+			unsigned int temp;
+			checkFailReturn(str->parseNumber(&temp));
+			if (temp < INT16_MIN) {
+				temp = INT16_MIN;
+				str->captureAndPrintError("value < int16.min\n");
+			}
+			if (temp > INT16_MAX) {
+				temp = INT16_MAX;
+				str->captureAndPrintError("value > int16.max\n");
+			}
+			*(int16*)value = temp;
+			return done;
+		};
+	};
+
 	class asInt : public iJsonTransformer {
 	public:
 		int get(JsonGenerateString* str, const void* value)override {
@@ -86,6 +109,7 @@ namespace lee8871_support {
 	static class asInt* casI32 = nullptr;
 	static class asUint16* casU16 = nullptr;
 	static class asUint8* casU8 = nullptr;
+	static class asInt16* casI16 = nullptr;
 	static class asInt8* casI8 = nullptr;
 	JSON_INITIELAZATION_CLASS::JSON_INITIELAZATION_CLASS()	{
 
@@ -96,6 +120,7 @@ namespace lee8871_support {
 			casU16 = new asUint16;
 			casU8 = new asUint8;
 			casI8 = new asInt8;
+			casI16 = new asInt16;
 
 			casI32 = new asInt;
 		}
@@ -109,6 +134,7 @@ namespace lee8871_support {
 			delete casU16;
 			delete casU8;
 			delete casI8;
+			delete casI16;
 			delete casI32;
 			delete JsonLog;
 
@@ -119,6 +145,7 @@ namespace lee8871_support {
 	Json::Json(uint16 * value_prt) : _transform(casU16->quote()), value_prt(value_prt) {}
 	Json::Json(uint8 * value_prt) : _transform(casU8->quote()), value_prt(value_prt) {}
 	Json::Json(int8 * value_prt) : _transform(casI8->quote()), value_prt(value_prt) {}
+	Json::Json(int16 * value_prt) : _transform(casI16->quote()), value_prt(value_prt) {}
 
 
 

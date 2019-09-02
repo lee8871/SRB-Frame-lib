@@ -52,7 +52,8 @@ namespace lee8871_support {
 		Json(srb::int32* value_prt);
 		Json(srb::uint16* value_prt);
 		Json(srb::uint8* value_prt);
-		Json(srb::int8 * value_prt);
+		Json(srb::int16* value_prt);
+		Json(srb::int8* value_prt);
 
 		Json(std::initializer_list<Json> v);//to json array
 		Json(std::initializer_list<std::pair<const char*, Json>> v);//to json object

@@ -26,12 +26,15 @@ namespace srb {
 		inline Du_Motor::sDataRs* Data(){
 			return  (Du_Motor::sDataRs* const)(data_rs);
 		}
-
-
-
+			   
 		constexpr static const char* NODE_TYPE = "Du_Motor";
 		lee8871_support::Json* finalToJson();
 		int initFormNode();
+		static int writeAllNode(Node *n);
+
+
+	private:
+		int __writeAllNode();
 	};	
 
 

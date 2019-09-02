@@ -42,7 +42,27 @@ namespace srb {
 		return done;
 	}
 
-	
+	int DumotorNode::writeAllNode(Node *n)	{
+		return static_cast<DumotorNode*>(n)->__writeAllNode();
+	}
+
+	int DumotorNode::__writeAllNode()
+	{
+		iAccess* acs = Bus()->newAccess(this);
+		mapping0CLU()->loadWritePkg(acs);
+		Bus()->loadAccess(acs);
+		acs = Bus()->newAccess(this);
+		adjCLU()->loadWritePkg(acs);
+		Bus()->loadAccess(acs);
+		acs = Bus()->newAccess(this);
+		setCLU()->loadWritePkg(acs);
+		Bus()->loadAccess(acs);
+		Bus()->doAccess();
+		return 0;
+	}
+
+
+
 	static Json* local_to_json = nullptr;
 #define relTo(value) (((DumotorNode*)0)->value)
 	Json* DumotorNode::finalToJson() {

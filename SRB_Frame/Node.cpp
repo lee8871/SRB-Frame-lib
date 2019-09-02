@@ -7,6 +7,7 @@
 #include "SrbMaster.h"
 
 #include "./Nodes/dumotor/DumotorNode.h"
+#include "./Nodes/LibatX2/NodeLibatX2.h"
 #include <string.h>
 
 
@@ -28,13 +29,21 @@ namespace srb {
 	}	
 	int Node::expand() {
 		if (strcmp(Node_type(), DumotorNode::NODE_TYPE) == 0) {
-			to_json.cloneTransport(*static_cast<DumotorNode*>(this)->finalToJson(),this);
+			to_json.cloneTransport(*static_cast<DumotorNode*>(this)->finalToJson(), this);
 			static_cast<DumotorNode*>(this)->initFormNode();
+			writeAllNode = DumotorNode::writeAllNode;
+			return done;
+		}
+		else if (strcmp(Node_type(), NodeLibatx2::NODE_TYPE) == 0) {
+			to_json.cloneTransport(*static_cast<NodeLibatx2*>(this)->finalToJson(), this);
+			static_cast<NodeLibatx2*>(this)->initFormNode();
+			writeAllNode = NodeLibatx2::writeAllNode;
 			return done;
 		}
 		else {
 			to_json.cloneTransport(*static_cast<UnknowNode*>(this)->finalToJson(), this);
 			static_cast<UnknowNode*>(this)->initFormNode();
+			writeAllNode = UnknowNode::writeAllNode;
 			return done;
 
 		}
@@ -184,6 +193,11 @@ namespace srb {
 	
 	int UnknowNode::initFormNode() {
 		return done;
+	}
+
+	int UnknowNode::writeAllNode(Node *)
+	{
+		return 0;
 	}
 
 	static Json* local_to_json = nullptr;

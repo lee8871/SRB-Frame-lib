@@ -194,7 +194,7 @@ int setCluster(LString* sarg) {
 			setTerminalColor(eTerminalColor::normal);
 		}
 		delete jp;
-
+		node->writeAllNode(node);
 
 		return done;
 	}

@@ -36,6 +36,7 @@ aux_source_directory(.						DIR_SRCS)
 aux_source_directory(./usb_srb				DIR_USB)
 aux_source_directory(./common_cluster		DIR_COMMON_CLUSTER)
 aux_source_directory(./Nodes/dumotor		DIR_DUMOTOR)
+aux_source_directory(./Nodes/LiBatX2		DIR_DUMOTOR)
 aux_source_directory(../support				DIR_SPPORT)
 add_library (SRB_Frame_lib
 	${DIR_SRCS}

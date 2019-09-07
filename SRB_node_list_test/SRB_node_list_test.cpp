@@ -64,8 +64,10 @@ int listNode(){
 	auto coutSJW(std::make_unique<StreamJsonWriter>(&cout));
 	coutSJW->is_expand_mode = true;
 	for (int i = 0;i < mainSRBM->MAX_NODE_NUM;i++) {
-		if (mainSRBM->getNode(i) != nullptr) {
-			mainSRBM->getNode(i)->toJsonAll(*coutSJW);
+		Node* node = mainSRBM->getNode(i);
+		if (node != nullptr) {
+
+			printf("Addr:%-3d  Name:%-18s  Type:%s\n", node->Addr(), node->Node_name(), node->Node_type());
 		}
 	}
 	return 0;

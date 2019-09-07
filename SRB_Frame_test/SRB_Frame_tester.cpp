@@ -20,8 +20,8 @@ int TEST_PKG_NUM = -1;
 const int REPORT_RAT = 1000;
 
 char usb_port_name[64] = "";//like "USB-TEST-BED";
-char test_node_name[64] = "key ctrl";
-char test_node2_name[64] = "key ctrl 2";
+char test_node_name[64] = "Left";
+char test_node2_name[64] = "Right";
 
 char node_name[64] = "";
 
@@ -110,8 +110,8 @@ int testNode(){
 
 		mainSRBM->scanNodes();
 
-		key_ctrl_DUMOTOR = DumotorNode::expand((*mainSRBM)[test_node_name]);
-		key_ctrl_2_DUMOTOR = DumotorNode::expand((*mainSRBM)[test_node2_name]);
+		key_ctrl_DUMOTOR = (DumotorNode*)((*mainSRBM)[test_node_name]);
+		key_ctrl_2_DUMOTOR = (DumotorNode*)((*mainSRBM)[test_node2_name]);
 
 		if (key_ctrl_DUMOTOR == nullptr) {
 			printf("Node expand error.");
@@ -213,7 +213,7 @@ int testOneNodeDUMOTOR(){
 
 		mainSRBM->scanNodes();
 
-		node_DUMOTOR = DumotorNode::expand((*mainSRBM)[node_name]);
+		node_DUMOTOR = (DumotorNode*)((*mainSRBM)[node_name]);
 		if (node_DUMOTOR == nullptr) {
 			printf("Node expand error.");
 			return -1;

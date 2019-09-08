@@ -15,6 +15,6 @@ namespace srb {
 		inline  csThis* Data() {
 			return (csThis*)Data_u8();
 		}
-		static Json to_json;
+		static lee8871_support::Json to_json;
 	};
 };

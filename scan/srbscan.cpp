@@ -15,6 +15,7 @@
 #include "InfoCluster.h"
 
 #include "LString.h"
+#include "Json.h"
 
 
 
@@ -130,7 +131,7 @@ int showInfo(LString* sarg) {
 	char* file_name = new char[64];
 	JsonGenerateString* jg = new JsonGenerateString(4096);
 	jg->clear();
-	node->to_json.get(jg);
+	node->to_json->get(jg);
 	snprintf(file_name, 64, "%s.json", node->Node_name());
 	jg->writeToFile(file_name);
 	puts(jg->Buf);
@@ -151,7 +152,7 @@ int getCluster(LString* sarg) {
 	char* file_name = new char[64];
 	JsonGenerateString* jg = new JsonGenerateString(4096);
 	jg->clear();
-	node->to_json.get(jg);
+	node->to_json->get(jg);
 	snprintf(file_name, 64, "%s.json", node->Node_name());
 	jg->writeToFile(file_name);
 	puts(jg->Buf);
@@ -182,7 +183,7 @@ int setCluster(LString* sarg) {
 		return fail;
 	}
 	else {
-		int rev_set = node->to_json.set(jp);
+		int rev_set = node->to_json->set(jp);
 		if (nullptr != jp->Error_str) {
 			if (rev_set == done) {
 				setTerminalColor(eTerminalColor::warning);

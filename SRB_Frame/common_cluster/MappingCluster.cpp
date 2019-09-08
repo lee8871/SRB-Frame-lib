@@ -1,5 +1,6 @@
 #include "MappingCluster.h"
 #include "iAccess.h"
+#include "Json.h"
 namespace srb {
 
 	MappingCluster::MappingCluster(Node* node, uint8 cid)

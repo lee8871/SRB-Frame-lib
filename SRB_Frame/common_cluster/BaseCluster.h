@@ -3,8 +3,7 @@
 #include "iCluster.h"
 #include "iAccess.h"
 #include "SRB-base-cluster-share.h"
-
-namespace srb {
+namespace srb {	 
 	class BaseCluster: public iCluster {
 	private:
 		using csThis = csBase;
@@ -16,6 +15,6 @@ namespace srb {
 			return (csThis*)Data_u8();
 		}
 		int addressLedSet(iAccess* acs, uint8 cmd);
-		static Json to_json;
+		static lee8871_support::Json to_json;
 	};
 };

@@ -9,6 +9,7 @@
 #include "MotorAdjCluster.h"
 #include "MotorSetCluster.h"
 #include <string.h>
+#include "Json.h"
 
 using namespace lee8871_support;
 namespace srb {

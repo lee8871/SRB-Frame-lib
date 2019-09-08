@@ -1,6 +1,7 @@
 #include "BaseCluster.h"
 #include "iAccess.h"
 #include "iJsonWriter.h"
+#include "Json.h"
 
 namespace srb {
 

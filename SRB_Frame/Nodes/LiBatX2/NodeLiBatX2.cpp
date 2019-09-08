@@ -1,4 +1,5 @@
 #include "Node.h"
+#include "Json.h"
 #include "BaseCluster.h"
 #include "InfoCluster.h"
 #include "ErrorCluster.h"

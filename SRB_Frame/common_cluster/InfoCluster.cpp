@@ -1,5 +1,6 @@
 #include "InfoCluster.h"
 #include "iAccess.h"
+#include "Json.h"
 namespace srb {
 	InfoCluster::InfoCluster(Node* node)
 		:iCluster(node)

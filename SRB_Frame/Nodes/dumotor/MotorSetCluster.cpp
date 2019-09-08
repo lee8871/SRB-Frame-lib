@@ -1,6 +1,7 @@
 #include "MotorSetCluster.h"
 #include "iAccess.h"
 #include "iJsonWriter.h"
+#include "Json.h"
 
 namespace srb {
 	using namespace Du_Motor;

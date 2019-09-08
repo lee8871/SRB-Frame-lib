@@ -3,6 +3,7 @@
 #include "cLogger.h"
 namespace lee8871_support {
 	class iJsonWriter;
+	class Json;
 }
 namespace srb {
 	extern lee8871_support::ModuleLog Srb_log;

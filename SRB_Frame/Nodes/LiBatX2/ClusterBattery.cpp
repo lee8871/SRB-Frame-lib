@@ -1,4 +1,5 @@
 #include "ClusterBattery.h"
+#include "Json.h"
 
 namespace srb {
 

@@ -9,6 +9,7 @@
 #include "./Nodes/dumotor/DumotorNode.h"
 #include "./Nodes/LiBatX2/NodeLiBatX2.h"
 #include <string.h>
+#include "Json.h"
 
 
 using namespace lee8871_support;
@@ -22,6 +23,7 @@ namespace srb {
 		baseCLU()->loadReadPkg(acs);
 		Bus()->loadAccess(acs);
 		Bus()->doAccess();
+		to_json = new Json();
 		if (Exsist) {
 			initCluster();
 			expand();
@@ -29,19 +31,19 @@ namespace srb {
 	}	
 	int Node::expand() {
 		if (strcmp(Node_type(), DumotorNode::NODE_TYPE) == 0) {
-			to_json.cloneTransport(*static_cast<DumotorNode*>(this)->finalToJson(), this);
+			to_json->cloneTransport(*static_cast<DumotorNode*>(this)->finalToJson(), this);
 			static_cast<DumotorNode*>(this)->initFormNode();
 			writeAllNode = DumotorNode::writeAllNode;
 			return done;
 		}
 		else if (strcmp(Node_type(), NodeLibatx2::NODE_TYPE) == 0) {
-			to_json.cloneTransport(*static_cast<NodeLibatx2*>(this)->finalToJson(), this);
+			to_json->cloneTransport(*static_cast<NodeLibatx2*>(this)->finalToJson(), this);
 			static_cast<NodeLibatx2*>(this)->initFormNode();
 			writeAllNode = NodeLibatx2::writeAllNode;
 			return done;
 		}
 		else {
-			to_json.cloneTransport(*static_cast<UnknowNode*>(this)->finalToJson(), this);
+			to_json->cloneTransport(*static_cast<UnknowNode*>(this)->finalToJson(), this);
 			static_cast<UnknowNode*>(this)->initFormNode();
 			writeAllNode = UnknowNode::writeAllNode;
 			return done;
@@ -73,7 +75,7 @@ namespace srb {
 
 
 	Node::~Node(){
-
+		delete to_json;
 		for (int i = 0;i < 4;i++) {
 			if (mapping[i] != nullptr) {
 				delete (mapping[i]);

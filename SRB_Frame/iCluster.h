@@ -1,7 +1,6 @@
 #pragma once
 #include "srb_heads.h"
 #include "iAccess.h"
-#include "Json.h"
 
 namespace srb {
 	class iCluster{
@@ -20,7 +19,4 @@ namespace srb {
 		void accessDone(iAccess* a);
 		void loadWritePkg(iAccess* a);
 	};
-
-
-
 }

@@ -1,7 +1,6 @@
 #pragma once
 #include "srb_heads.h"
 #include "iAccess.h"
-#include "Json.h"
 
 namespace srb {
 	class BaseCluster;
@@ -38,7 +37,7 @@ namespace srb {
 		int setMapping(const uint8* map, int map_num);
 		int sendAccess(int port);
 		void accessDoneReply(iAccess*) override;
-		lee8871_support::Json to_json;
+		lee8871_support::Json* to_json;
 		void changeName(const char* name);
 		void changeAddr(unsigned char addr);
 		int (*writeAllNode)(Node *n);

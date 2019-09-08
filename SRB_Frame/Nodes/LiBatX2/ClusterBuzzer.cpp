@@ -1,4 +1,5 @@
 #include "ClusterBuzzer.h"
+#include "Json.h"
 
 namespace srb {
 	ClusterBuzzer::ClusterBuzzer(Node* node)

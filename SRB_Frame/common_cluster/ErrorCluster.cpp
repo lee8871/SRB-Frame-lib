@@ -1,5 +1,6 @@
 #include "ErrorCluster.h"
 #include "iAccess.h"
+#include "Json.h"
 namespace srb {
 
 	ErrorCluster::ErrorCluster(Node* node)

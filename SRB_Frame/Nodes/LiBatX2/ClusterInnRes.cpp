@@ -1,4 +1,5 @@
 #include "ClusterInnRes.h"
+#include "Json.h"
 
 namespace srb {
 	ClusterInnRes::ClusterInnRes(Node* node)

@@ -115,8 +115,23 @@ namespace lee8871_support {
 	};
 
 	void setTerminalColor(eTerminalColor color) {
-		printf(color_argument_table[(int)color]);
+		switch(color){
+			case eTerminalColor::normal:
+			printf("\033[0m");
+			break;
+			case eTerminalColor::highlight:
+			printf("\033[32m");
+			break;
+			case eTerminalColor::warning:
+			printf("\033[33m");
+			break;
+			case eTerminalColor::error:
+			printf("\033[31m");
+			break;
+
 		}
+		//	printf(  color_argument_table[(int)color]  );
+	}
 
 
 
@@ -127,9 +142,9 @@ namespace lee8871_support {
 			return new_fail;
 		}
 		readlink("/proc/self/exe", exe_path, FILENAME_MAX);
-		for (char * ptr = exe_name; ptr < (exe_name + FILENAME_MAX);ptr++) {
+		for (char * ptr = exe_path; ptr < (exe_path + FILENAME_MAX);ptr++) {
 			if (*ptr == '/') {
-				exe_name = ptr + 1;
+				exe_path = ptr + 1;
 			}
 			else if (*ptr == 0) {
 				break;

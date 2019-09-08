@@ -5,7 +5,7 @@
 #include "MappingCluster.h"
 #include "iCluster.h"
 #include "iBus.h"
-#include "NodeLibatx2.h"
+#include "NodeLiBatX2.h"
 #include "ClusterBattery.h"
 #include "ClusterBuzzer.h"
 #include "ClusterInnRes.h"

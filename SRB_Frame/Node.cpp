@@ -7,7 +7,7 @@
 #include "SrbMaster.h"
 
 #include "./Nodes/dumotor/DumotorNode.h"
-#include "./Nodes/LibatX2/NodeLibatX2.h"
+#include "./Nodes/LiBatX2/NodeLiBatX2.h"
 #include <string.h>
 
 

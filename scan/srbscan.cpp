@@ -12,7 +12,7 @@
 #include "stringHash.h"
 #include "BaseCluster.h"
 #include "ErrorCluster.h"
-#include "infoCluster.h"
+#include "InfoCluster.h"
 
 #include "LString.h"
 

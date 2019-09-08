@@ -19,11 +19,11 @@ namespace lee8871_support {
 
 #ifdef UNIX
 #ifdef _DEBUG
-#define INFO(__VA_ARGS__...) JsonLog->addLog(eLogLevel::info, __VA_ARGS__)
+#define INFO(arg...) JsonLog->addLog(eLogLevel::info, arg)
 #else
-#define INFO(__VA_ARGS__...)
+#define INFO(arg...)
 #endif
 
-#define ERROR(__VA_ARGS__...) JsonLog->addLog(eLogLevel::erro,  __VA_ARGS__ )
-#define WARNING(__VA_ARGS__...) JsonLog->addLog(eLogLevel::warn,  __VA_ARGS__ )
+#define ERROR(arg...) JsonLog->addLog(eLogLevel::erro,  arg )
+#define WARNING(arg...) JsonLog->addLog(eLogLevel::warn,  arg )
 #endif

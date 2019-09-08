@@ -1,7 +1,7 @@
 #pragma once
 #include "srb_heads.h"
 #include "iCluster.h"
-#include "SRB-app-Charger-share.h"
+#include "SRB-app-charger-share.h"
 namespace srb {
 	class ClusterBattery : public iCluster {
 	private:

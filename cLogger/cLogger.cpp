@@ -1,6 +1,12 @@
 ﻿#include <cstdio> 
 #include <stdarg.h>
-#include <unistd.h>
+
+/*
+#include <unistd.h> 
+unistd.h in windows shold be following: 
+#include <io.h>
+#include <process.h>
+*/
 
 #include "cLogger.h"
 #include "lee.h"
@@ -15,6 +21,7 @@ namespace lee8871_support {
 	static cLogger* logger = nullptr;
 	static constexpr char* enum_log_level_name[] = {
 	"fatal","error","warn ","info ","debug"
+	
 	};
 
 	class cLogger::Impl {

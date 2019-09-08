@@ -1,0 +1,23 @@
+{
+  "baseCLU":{
+    "addr":1,
+    "name":"Handle",
+    "error_behavior":1
+  },
+  "infoCLU":{
+    "node_version":[1,3],
+    "srb_version":[1,9],
+    "time_stamp":4611,
+    "node_type":"Ps2_Handle"
+  },
+  "errorCLU":{
+    "file":104,
+    "line":113,
+    "description":"Upgrade"
+  },
+  "mapping0CLU":{
+    "up_len":6,
+    "down_len":3,
+    "table":[3,4,5,6,7,8,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+  }
+}

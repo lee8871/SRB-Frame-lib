@@ -254,12 +254,16 @@ namespace srb {
 
 
 			int lsUsbByName(strlist name_len_64,int len) {
+				libusb_context* lsCTX = nullptr;
 				libusb_device **devs;
 				char str[256];
 				int usb_device_num;
-				closeUsb();
 
-				usb_device_num = libusb_get_device_list(mainCTX, &devs);
+				int usb_status_flag = libusb_init(&lsCTX);
+				if (usb_status_flag < 0){
+					UsbBusLog.addLog(eLogLevel::erro, "libusb can not init! rev:%d",usb_status_flag);
+				}	
+				usb_device_num = libusb_get_device_list(lsCTX, &devs);
 				if (usb_device_num < 0) {
 					return usb_device_num;
 				}

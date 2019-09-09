@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include "srb_heads.h"
 namespace srb {
 	class AccessRecorder {
 	private:

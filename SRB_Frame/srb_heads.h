@@ -1,9 +1,9 @@
 #pragma once
 #include "lee.h"
-#include "cLogger.h"
 namespace lee8871_support {
 	class iJsonWriter;
 	class Json;
+	class ModuleLog;
 }
 namespace srb {
 	extern lee8871_support::ModuleLog Srb_log;

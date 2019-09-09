@@ -255,15 +255,17 @@ int readCmd() {
 		return addrLed(&argument_str);
 	case getHashCmd("info"):
 		return showInfo(&argument_str);
-	case getHashCmd("getclu"):
+	case getHashCmd("getc"):
+	case getHashCmd("gc"):
 		return getCluster(&argument_str);
-	case getHashCmd("setclu"):
-		//setclu left left.json 
+	case getHashCmd("setc"):
+	case getHashCmd("sc"):
 		return setCluster(&argument_str);
 	case getHashCmd("setname"):
+	case getHashCmd("sn"):
 		return changeName(&argument_str);
-	case getHashCmd("changeaddr"):
-	case getHashCmd("ca"):
+	case getHashCmd("setaddr"):
+	case getHashCmd("sa"):
 		return changeAddr(&argument_str);
 	default:
 		printf("input str is [%s],Id is %u\n", cmd, getHashCmd(cmd));

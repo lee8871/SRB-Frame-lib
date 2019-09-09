@@ -1,5 +1,5 @@
 #include <string.h>
-#include "srb_heads.h"
+#include "srb.in.h"
 
 #include "Node.h"
 #include "iBus.h"
@@ -12,7 +12,7 @@
 #include "ErrorCluster.h"
 #include "MappingCluster.h"
 
-#include "./Nodes/dumotor/DumotorNode.h"
+#include "./Nodes/dumotor/NodeDumotor.h"
 #include "./Nodes/LiBatX2/NodeLiBatX2.h"
 
 

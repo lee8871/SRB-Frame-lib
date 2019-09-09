@@ -1,4 +1,5 @@
-#include "MotorAdjCluster.h"
+#include "srb.in.h"
+#include "ClusterMotorAdj.h"
 #include "Json.h"
 
 namespace srb {

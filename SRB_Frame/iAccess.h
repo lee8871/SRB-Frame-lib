@@ -25,6 +25,7 @@ namespace srb {
 	class Node;
 	class iAccesser;
 	class ostream;
+	class iAccess;
 	using accessDeleteCB_t = int (*)(iAccess*);
 	class iAccess {
 	protected:

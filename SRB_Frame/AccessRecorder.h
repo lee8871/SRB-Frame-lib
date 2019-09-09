@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 namespace srb {
+	class iAccess;
 	class AccessRecorder {
 	private:
 		class Impl;

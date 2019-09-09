@@ -1,5 +1,4 @@
 #pragma once
-#include "srb_usb_bus_heads.h"
 #include "iBus.h"
 #include <memory>
 namespace srb {
@@ -25,5 +24,3 @@ namespace srb {
 		};
 	}
 }
-//ÔÆµÍÑà¹ıÇá ºÆºÆ×ß¼²·ç
-//»Æ»èÇãÖèÓê ¾øÒ¹ÏÖË«ĞÇ

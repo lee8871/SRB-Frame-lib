@@ -18,5 +18,5 @@ aux_source_directory(. DIR_SRCS)
 
 
 add_executable (test_hash ${DIR_SRCS})
-target_link_libraries (test_hash SRB_Frame_lib)
+target_link_libraries (test_hash srbframe)
 

@@ -2,9 +2,10 @@
 #include <mutex> 
 #include <fstream>
 #include <time.h>  
+#include <string.h>
 
+#include "srb_usb_bus.in.h"
 #include "UsbToSrb.h"
-#include "string.h"
 #include "StreamJsonWriter.h"
 
 #include "UsbToSrb.h"
@@ -12,6 +13,7 @@
 #include "AccessRecorder.h"
 
 #include "OsSupport.h"
+
 
 
 

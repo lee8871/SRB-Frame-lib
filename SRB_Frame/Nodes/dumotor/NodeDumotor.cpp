@@ -1,14 +1,16 @@
+#include "srb.in.h"
 #include "Node.h"
-#include "DumotorNode.h"
+
+#include "NodeDumotor.h"
+
 #include "BaseCluster.h"
 #include "InfoCluster.h"
 #include "ErrorCluster.h"
 #include "MappingCluster.h"
 #include "iCluster.h"
 #include "iBus.h"
-#include "MotorAdjCluster.h"
-#include "MotorSetCluster.h"
-#include <string.h>
+#include "ClusterMotorAdj.h"
+#include "ClusterMotorSet.h"
 #include "Json.h"
 
 using namespace lee8871_support;

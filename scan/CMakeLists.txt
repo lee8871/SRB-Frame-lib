@@ -27,6 +27,6 @@ include_directories(../json)
 aux_source_directory(. DIR_SRCS)
 
 add_executable (srbscan ${DIR_SRCS})
-target_link_libraries (srbscan SRB_Frame_lib)
-target_link_libraries (srbscan libclogger)
+target_link_libraries (srbscan srbframe)
+target_link_libraries (srbscan clogger)
 

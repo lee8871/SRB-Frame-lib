@@ -1,7 +1,8 @@
 #pragma once
 #include "iAccess.h"
-
+#include "SRB-base-cluster-share.h"
 namespace srb {
+	class SrbMaster;
 	class Broadcaster:public iAccesser {
 	private:
 	

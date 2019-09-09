@@ -1,13 +1,25 @@
 #pragma once
+#include "SRB-share-const.h"
 #include "iAccess.h"
+
+namespace lee8871_support {
+	class Json;
+};
 
 namespace srb {
 	class BaseCluster;
 	class InfoCluster;
 	class ErrorCluster;
 	class MappingCluster;
-	class UnknowNode;
+
+	class SrbMaster;
 	class Node;
+	class iBus;
+	class iCluster;
+	class iAccess;
+
+	class UnknowNode;
+
 	class Node:public iAccesser {
 	private:
 		bool _exsist = false;

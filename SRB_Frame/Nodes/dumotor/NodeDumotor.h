@@ -2,13 +2,10 @@
 
 #include "SRB-app-dumotor-share.h"
 #include "Node.h"
-#include "MotorAdjCluster.h"
-#include "MotorSetCluster.h"
-
+#include "ClusterMotorAdj.h"
+#include "ClusterMotorSet.h"
 
 namespace srb {
-	class MotorSetCluster;
-	class MotorAdjCluster;
 	class DumotorNode:public Node {
 	public :
 

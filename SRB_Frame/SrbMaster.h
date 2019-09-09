@@ -1,7 +1,8 @@
 #pragma once
-
 namespace srb {
 	class iBus;
+	class Broadcaster;
+	class Node;
 	class SrbMaster {
 	public:
 		static const int MAX_NODE_NUM = 200;

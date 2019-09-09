@@ -38,7 +38,7 @@ aux_source_directory(./common_cluster		DIR_COMMON_CLUSTER)
 aux_source_directory(./Nodes/dumotor		DIR_DUMOTOR)
 aux_source_directory(./Nodes/LiBatX2		DIR_DUMOTOR)
 aux_source_directory(../support				DIR_SPPORT)
-add_library (SRB_Frame_lib
+add_library (srbframe
 	${DIR_SRCS}
 	${DIR_USB}
 	${DIR_COMMON_CLUSTER}
@@ -46,6 +46,6 @@ add_library (SRB_Frame_lib
 	${DIR_DUMOTOR} 
 	)
 	
-target_link_libraries (SRB_Frame_lib libclogger)
-target_link_libraries (SRB_Frame_lib libjson)
+target_link_libraries (srbframe clogger)
+target_link_libraries (srbframe cjson)
 

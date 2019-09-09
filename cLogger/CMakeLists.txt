@@ -7,7 +7,7 @@ include_directories(
 	)
 
 aux_source_directory(. DIR_SRCS)
-add_library (libclogger
+add_library (clogger
 	${DIR_SRCS}
 	)
 

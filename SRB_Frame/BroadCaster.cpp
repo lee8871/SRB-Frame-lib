@@ -1,7 +1,7 @@
-#include "srb_heads.h"
+#include "srb.in.h"
+#include "SrbMaster.h"
 #include "Broadcaster.h"
 #include "iBus.h"
-#include "SrbMaster.h"
 #include "BaseCluster.h"
 
 using namespace lee8871_support;

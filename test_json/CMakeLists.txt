@@ -19,8 +19,8 @@ add_executable (json_test
 	)
 
 	
-target_link_libraries (json_test libclogger)
-target_link_libraries (json_test libjson)
+target_link_libraries (json_test clogger)
+target_link_libraries (json_test cjson)
 
 add_executable (json_test2 
 	./test2.cpp
@@ -29,8 +29,8 @@ add_executable (json_test2
 	)
 
 	
-target_link_libraries (json_test2 libclogger)
-target_link_libraries (json_test2 libjson)
+target_link_libraries (json_test2 clogger)
+target_link_libraries (json_test2 cjson)
 
 
 

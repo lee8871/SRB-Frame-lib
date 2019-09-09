@@ -1,0 +1,19 @@
+{
+  "mapping0CLU":{
+    "up_len":0,
+    "down_len":4,
+    "table":[0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+  },
+  "MotorAdj":{
+    "Adj":0,
+    "TogMotorA":0,
+    "TogMotorB":0
+  },
+  "MotorSet":{
+    "min_pwm_a":50,
+    "min_pwm_b":50,
+    "period":1000,
+    "lose_control_ms":200,
+    "lose_behavior":0
+  }
+}

@@ -1,3 +1,4 @@
+#include "srb.in.h"
 #include "Node.h"
 #include "Json.h"
 #include "BaseCluster.h"
@@ -10,7 +11,6 @@
 #include "ClusterBattery.h"
 #include "ClusterBuzzer.h"
 #include "ClusterInnRes.h"
-#include <string.h>
 
 namespace srb {
 	using namespace Charger_2LiB;

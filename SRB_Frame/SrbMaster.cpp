@@ -1,5 +1,5 @@
 #include <string.h>
-#include "srb_heads.h"
+#include "srb.in.h"
 #include "SrbMaster.h"
 #include "Node.h"
 #include "Broadcaster.h"
@@ -7,6 +7,7 @@
 
 using namespace lee8871_support;
 namespace srb {
+	class Node;
 	lee8871_support::ModuleLog Srb_log = {"srb",eLogLevel::info, __DATE__, __TIME__ };
 	SrbMaster::SrbMaster(iBus* b) {
 		_bus = b;

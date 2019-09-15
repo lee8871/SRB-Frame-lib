@@ -312,7 +312,7 @@ int testCtrl() {
 		if (node_motor == nullptr) {
 			printf("Node expand error.");
 			return -1;
-		}		
+		}
 		const char handle_name[] = "Handle";
 		auto node_handle = (NodePs2Handle*)((*mainSRBM)[handle_name]);
 		if (node_handle == nullptr) {
@@ -320,7 +320,7 @@ int testCtrl() {
 			return -1;
 		}
 
-		printf("handle control begin\n", TEST_PKG_NUM);
+		printf("handle control begin\n");
 		int speeda = 0;
 		int speedb = 0;
 		while (1) {
@@ -330,7 +330,7 @@ int testCtrl() {
 			node_motor->Data()->mb.speed = (int16)speedb;
 			node_motor->sendAccess(0);
 			node_handle->sendAccess(0);
-			mainbusUB->doAccess();			
+			mainbusUB->doAccess();
 			msSleep(10);
 
 			int x = node_handle->Data()->handle.joy.l.x;

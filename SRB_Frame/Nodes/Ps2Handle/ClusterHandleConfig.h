@@ -1,7 +1,7 @@
 #pragma once
 
 #include "iCluster.h"
-#include "SRB-app-PS2handle-share.h"
+#include "SRB-app-ps2handle-share.h"
 namespace srb {
 	class ClusterHandleConfig: public iCluster {
 	private:

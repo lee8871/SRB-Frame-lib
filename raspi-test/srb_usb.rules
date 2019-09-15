@@ -1,2 +1,2 @@
-## Should copy this to "/etc/udev/rules.d"
+## Should copy this to "/etc/udev/rules.d/"
 SUBSYSTEM=="usb", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="05dc", MODE="0666"

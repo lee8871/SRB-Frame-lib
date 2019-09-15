@@ -4,18 +4,18 @@
 
 namespace srb {
 	using namespace Du_Motor;
-	MotorAdjCluster::MotorAdjCluster(Node* node)
+	ClusterMotorAdj::ClusterMotorAdj(Node* node)
 		:iCluster(node)
 	{
 		_cluster_id = DEFAULT_CID;
 		data_len = sizeof(csThis);
 	}
-	MotorAdjCluster::~MotorAdjCluster(){	}
+	ClusterMotorAdj::~ClusterMotorAdj(){	}
 
 
 
-	Json MotorAdjCluster::to_json{
-#define relTo(value) (((csThis*)((MotorAdjCluster*)0)->_data_u8)->value)
+	Json ClusterMotorAdj::to_json{
+#define relTo(value) (((csThis*)((ClusterMotorAdj*)0)->_data_u8)->value)
 		{"Adj",&relTo(Adj)},
 		{"TogMotorA",&relTo(TogMotorA)},
 		{"TogMotorB",&relTo(TogMotorB)}

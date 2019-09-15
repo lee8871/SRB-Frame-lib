@@ -47,6 +47,7 @@ namespace srb {
 		~Node();
 		int setMapping(const uint8* map, int map_num);
 		int sendAccess(int port);
+		int dataAccessDone(iAccess*);
 		void accessDoneReply(iAccess*) override;
 		lee8871_support::Json* to_json;
 		void changeName(const char* name);

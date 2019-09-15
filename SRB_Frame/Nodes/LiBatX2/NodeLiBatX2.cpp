@@ -1,12 +1,14 @@
 #include "srb.in.h"
 #include "Node.h"
 #include "Json.h"
+#include "iCluster.h"
+#include "iBus.h"
+
 #include "BaseCluster.h"
 #include "InfoCluster.h"
 #include "ErrorCluster.h"
 #include "MappingCluster.h"
-#include "iCluster.h"
-#include "iBus.h"
+
 #include "NodeLiBatX2.h"
 #include "ClusterBattery.h"
 #include "ClusterBuzzer.h"
@@ -52,7 +54,6 @@ using namespace lee8871_support;
 		Bus()->doAccess();
 		setMapping(mapping0CLU()->Data()->u8, 0);
 		setMapping(Mapping1, 1);
-		setMapping(Mapping2, 2);
 		setMapping(Mapping2, 2);
 		setMapping(Mapping3, 1);
 		return done;

@@ -12,8 +12,9 @@
 #include "ErrorCluster.h"
 #include "MappingCluster.h"
 
-#include "./Nodes/dumotor/NodeDumotor.h"
+#include "./Nodes/MotorX2/NodeMotorX2.h"
 #include "./Nodes/LiBatX2/NodeLiBatX2.h"
+#include "./Nodes/Ps2Handle/NodePs2Handle.h"
 
 
 using namespace lee8871_support;
@@ -34,16 +35,22 @@ namespace srb {
 		}
 	}	
 	int Node::expand() {
-		if (strcmp(Node_type(), DumotorNode::NODE_TYPE) == 0) {
-			to_json->cloneTransport(*static_cast<DumotorNode*>(this)->finalToJson(), this);
-			static_cast<DumotorNode*>(this)->initFormNode();
-			writeAllNode = DumotorNode::writeAllNode;
+		if (strcmp(Node_type(), NodeMotorX2::NODE_TYPE) == 0) {
+			to_json->cloneTransport(*static_cast<NodeMotorX2*>(this)->finalToJson(), this);
+			static_cast<NodeMotorX2*>(this)->initFormNode();
+			writeAllNode = NodeMotorX2::writeAllNode;
 			return done;
 		}
 		else if (strcmp(Node_type(), NodeLibatx2::NODE_TYPE) == 0) {
 			to_json->cloneTransport(*static_cast<NodeLibatx2*>(this)->finalToJson(), this);
 			static_cast<NodeLibatx2*>(this)->initFormNode();
 			writeAllNode = NodeLibatx2::writeAllNode;
+			return done;
+		}
+		else if (strcmp(Node_type(), NodePs2Handle::NODE_TYPE) == 0) {
+			to_json->cloneTransport(*static_cast<NodePs2Handle*>(this)->finalToJson(), this);
+			static_cast<NodePs2Handle*>(this)->initFormNode();
+			writeAllNode = NodePs2Handle::writeAllNode;
 			return done;
 		}
 		else {
@@ -115,14 +122,29 @@ namespace srb {
 			return argument_error;
 		}
 		iAccess* acs = Bus()->newAccess(this);
-		int i;
-		for (i = 0;i < mapping[port]->down_len;i++) {
-			acs->Send_pkg->data[i] = data_rs[mapping[port]->table[i]];
+		int i,map;
+		int max_len = mapping[port]->down_len;
+		for (i = 0;i < max_len;i++) {
+			map = mapping[port]->table[i + mapping[port]->up_len];
+			acs->Send_pkg->data[i] = data_rs[map];
 		}
 		acs->Send_pkg->bfc.length = i;
 		acs->Send_pkg->bfc.port = port;
 		Bus()->loadAccess(acs);
 		return done;
+	}
+	int Node::dataAccessDone(iAccess* acs) {
+		int port = acs->Send_pkg->bfc.port;
+		int i, map;
+		int max_len = mapping[port]->up_len;
+		if (max_len > acs->Recv_pkg->bfc.length) {
+			max_len = acs->Recv_pkg->bfc.length;
+		}
+		for (i = 0;i < max_len;i++) {
+			map = mapping[port]->table[i];
+			data_rs[map] = acs->Recv_pkg->data[i];
+		}
+		return 0;
 	}
 
 
@@ -138,6 +160,7 @@ namespace srb {
 				case SC_PORT_D1:
 				case SC_PORT_D2:
 				case SC_PORT_D3:
+					dataAccessDone(acs);
 					break;
 				case SC_PORT_CFG:
 					//TODO Note this if cluster is not exsist

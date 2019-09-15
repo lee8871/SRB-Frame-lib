@@ -6,16 +6,16 @@
 
 namespace srb {
 	using namespace Du_Motor;
-	MotorSetCluster::MotorSetCluster(Node* node)
+	ClusterMotorSet::ClusterMotorSet(Node* node)
 		:iCluster(node)
 	{
 		_cluster_id = DEFAULT_CID;
 		data_len = sizeof(csThis);
 	}
-	MotorSetCluster::~MotorSetCluster(){	}
+	ClusterMotorSet::~ClusterMotorSet(){	}
 
-	Json MotorSetCluster::to_json{
-#define relTo(value) (((csThis*)((MotorSetCluster*)0)->_data_u8)->value)
+	Json ClusterMotorSet::to_json{
+#define relTo(value) (((csThis*)((ClusterMotorSet*)0)->_data_u8)->value)
 		{"min_pwm_a",&relTo(min_pwm_a)},
 		{"min_pwm_b",&relTo(min_pwm_b)},
 		{"period",&relTo(period)},

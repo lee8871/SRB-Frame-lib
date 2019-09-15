@@ -3,13 +3,13 @@
 #include "iCluster.h"
 #include "SRB-app-dumotor-share.h"
 namespace srb {
-	class MotorSetCluster: public iCluster {
+	class ClusterMotorSet: public iCluster {
 	private:
 		using csThis = Du_Motor::csMotorSet;
 	public:
 		constexpr static uint8 DEFAULT_CID = 10;
-		MotorSetCluster(Node* node);
-		~MotorSetCluster();
+		ClusterMotorSet(Node* node);
+		~ClusterMotorSet();
 		inline csThis* Data() {
 			return (csThis*)Data_u8();
 		}

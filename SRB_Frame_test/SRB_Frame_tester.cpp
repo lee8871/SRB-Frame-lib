@@ -11,7 +11,8 @@
 #include "Node.h"
 #include "SrbMaster.h"
 #include "Broadcaster.h"
-#include "./Nodes/dumotor/NodeDumotor.h"
+#include "./Nodes/MotorX2/NodeMotorX2.h"
+#include "./Nodes/Ps2Handle/NodePs2Handle.h"
 #include "PerformanceAnalyzer.h"
 #include "transform.h"
 
@@ -28,10 +29,12 @@ char test_node_name[64] = "Left";
 char test_node2_name[64] = "Right";
 
 char node_name[64] = "";
+char mode[64] = "";
 
 
 int testOneNodeDUMOTOR();
 int testNode();
+int testCtrl();
 int lsBus();
 
 PerformanceTimer access_PT;
@@ -55,6 +58,9 @@ int main(int argc, char *argv[]) {
 				case 'S':
 				strcpy(node_name,argv[i]+2);
 				break;
+				case 'M':
+					strcpy(mode, argv[i] + 2);
+					break;
 				default:
 				printf("Unknow parament '%s'\n",argv[i]);
 				return -1;
@@ -64,11 +70,18 @@ int main(int argc, char *argv[]) {
 	if(TEST_PKG_NUM <=0){
 		TEST_PKG_NUM =5000;
 	}
-	if(node_name[0] == '\0'){
-		return testNode();
+	if (strcmp(mode, "kc")==0) {
+		return testCtrl();
 	}
-	else{
-		return testOneNodeDUMOTOR();
+	else if (strcmp(mode, "bed") == 0) {
+	}
+	else {
+		if (node_name[0] == 0) {
+			return testNode();
+		}
+		else {
+			return testOneNodeDUMOTOR();
+		}
 	}
 }
 
@@ -94,8 +107,8 @@ int testNode(){
 		setPriority();
 		auto mainbusUB(std::make_unique<UsbToSrb>());
 		auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
-		DumotorNode * key_ctrl_DUMOTOR;
-		DumotorNode * key_ctrl_2_DUMOTOR;
+		NodeMotorX2 * key_ctrl_DUMOTOR;
+		NodeMotorX2 * key_ctrl_2_DUMOTOR;
 
 		int rev;
 		rev = mainbusUB->openUsbByName(usb_port_name);
@@ -114,8 +127,8 @@ int testNode(){
 
 		mainSRBM->scanNodes();
 
-		key_ctrl_DUMOTOR = (DumotorNode*)((*mainSRBM)[test_node_name]);
-		key_ctrl_2_DUMOTOR = (DumotorNode*)((*mainSRBM)[test_node2_name]);
+		key_ctrl_DUMOTOR = (NodeMotorX2*)((*mainSRBM)[test_node_name]);
+		key_ctrl_2_DUMOTOR = (NodeMotorX2*)((*mainSRBM)[test_node2_name]);
 
 		if (key_ctrl_DUMOTOR == nullptr) {
 			printf("Node expand error.");
@@ -197,7 +210,7 @@ int testOneNodeDUMOTOR(){
 		setPriority();
 		auto mainbusUB(std::make_unique<UsbToSrb>());
 		auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
-		DumotorNode * node_DUMOTOR;
+		NodeMotorX2 * node_DUMOTOR;
 
 		int rev;
 		rev = mainbusUB->openUsbByName(usb_port_name);
@@ -217,7 +230,7 @@ int testOneNodeDUMOTOR(){
 
 		mainSRBM->scanNodes();
 
-		node_DUMOTOR = (DumotorNode*)((*mainSRBM)[node_name]);
+		node_DUMOTOR = (NodeMotorX2*)((*mainSRBM)[node_name]);
 		if (node_DUMOTOR == nullptr) {
 			printf("Node expand error.");
 			return -1;
@@ -265,6 +278,72 @@ int testOneNodeDUMOTOR(){
 	}
 	catch(const char * str) {
 		printf("topic catch error: %s",str);
+		return -2;
+	}
+}
+
+
+
+
+
+int testCtrl() {
+	try {
+		if (usb_port_name[0] == '\0') {
+			printf("test bus name should set by -B<bus_name>\n");
+			return -1;
+		}
+		setPriority();
+		auto mainbusUB(std::make_unique<UsbToSrb>());
+		auto mainSRBM(std::make_unique<SrbMaster>(mainbusUB.get()));
+		int rev;
+		rev = mainbusUB->openUsbByName(usb_port_name);
+		if (rev != done) {
+			printf("Try open port: [%s] fail!\n", usb_port_name);
+			return -1;
+		}
+		printf("Open port: [%s].\n", usb_port_name);
+
+		printf("Close address LED.\n");
+		mainSRBM->commonBC->setLedAddress(BCC_SHOW_CLOSE);
+		mainbusUB->doAccess();
+		mainSRBM->scanNodes();
+
+		auto node_motor = (NodeMotorX2*)((*mainSRBM)[node_name]);
+		if (node_motor == nullptr) {
+			printf("Node expand error.");
+			return -1;
+		}		
+		const char handle_name[] = "Handle";
+		auto node_handle = (NodePs2Handle*)((*mainSRBM)[handle_name]);
+		if (node_handle == nullptr) {
+			printf("Handle expand error.");
+			return -1;
+		}
+
+		printf("handle control begin\n", TEST_PKG_NUM);
+		int speeda = 0;
+		int speedb = 0;
+		while (1) {
+			node_motor->Data()->ma.brake = no;
+			node_motor->Data()->ma.speed = (int16)speeda;
+			node_motor->Data()->mb.brake = no;
+			node_motor->Data()->mb.speed = (int16)speedb;
+			node_motor->sendAccess(0);
+			node_handle->sendAccess(0);
+			mainbusUB->doAccess();			
+			msSleep(10);
+
+			int x = node_handle->Data()->handle.joy.l.x;
+			int y = node_handle->Data()->handle.joy.l.y;
+			x -= 127;
+			y -= 127;
+			speeda = y + x;
+			speedb = y - x;
+		}
+		return 0;
+	}
+	catch (const char * str) {
+		printf("topic catch error: %s", str);
 		return -2;
 	}
 }

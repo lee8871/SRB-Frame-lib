@@ -6,19 +6,19 @@
 #include "ClusterMotorSet.h"
 
 namespace srb {
-	class DumotorNode:public Node {
+	class NodeMotorX2:public Node {
 	public :
 
-		DumotorNode() = delete;
-		DumotorNode(const DumotorNode&) = delete;
-		DumotorNode(DumotorNode&&) = delete;
+		NodeMotorX2() = delete;
+		NodeMotorX2(const NodeMotorX2&) = delete;
+		NodeMotorX2(NodeMotorX2&&) = delete;
 
 
-		inline MotorSetCluster*& setCLU() {
-			return  (MotorSetCluster *&)clusters[MotorSetCluster::DEFAULT_CID];
+		inline ClusterMotorSet*& setCLU() {
+			return  (ClusterMotorSet *&)clusters[ClusterMotorSet::DEFAULT_CID];
 		}
-		inline MotorAdjCluster*& adjCLU() {
-			return  (MotorAdjCluster *&)clusters[MotorAdjCluster::DEFAULT_CID];
+		inline ClusterMotorAdj*& adjCLU() {
+			return  (ClusterMotorAdj *&)clusters[ClusterMotorAdj::DEFAULT_CID];
 		}
 		inline Du_Motor::sDataRs* Data(){
 			return  (Du_Motor::sDataRs* const)(data_rs);

@@ -7,11 +7,18 @@ project (proj_SRB_frame)
 
 
 IF(WIN32)
+	include_directories(${LIBUSB_1_0_22_PATH}/include/libusb-1.0)
 	if(MSCV_X86)	
-		include_directories(${DEPEND_PATH}/libusb-master/libusb/)
-		find_library(LIBUSB_LIB libusb-1.0 ${DEPEND_PATH}/libusb-1.0.22/MS32/dll)
-		link_libraries(${LIBUSB_LIB})
+		find_library(LIBUSB_LIB libusb-1.0 ${LIBUSB_1_0_22_PATH}/MS64/dll)
 	endif(MSCV_X86)
+	if(MSCV_X64)	
+		find_library(LIBUSB_LIB libusb-1.0 ${LIBUSB_1_0_22_PATH}/MS64/dll)
+	endif(MSCV_X64)
+	link_libraries(${LIBUSB_LIB})
+
+
+
+
 ELSEIF(UNIX)
 include_directories(/usr/include/libusb-1.0)
 find_library(LIBUSB_LIB usb-1.0)

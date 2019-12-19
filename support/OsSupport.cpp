@@ -4,7 +4,7 @@
 
 
 namespace lee8871_support {
-#ifdef WINDOW_86
+#ifdef WINDOW_64
 #include <time.h>  
 #include <winsock.h>
 #include <minwindef.h>
@@ -79,6 +79,85 @@ namespace lee8871_support {
 
 
 #endif
+
+
+#ifdef WINDOW_86
+#include <time.h>  
+#include <winsock.h>
+#include <minwindef.h>
+#include <windows.h>
+
+#if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
+#define DELTA_EPOCH_IN_US  11644473600000000Ui64
+#else
+#define DELTA_EPOCH_IN_US  11644473600000000ULL
+#endif
+	tUs getTimesUs() {
+		FILETIME t;
+		GetSystemTimeAsFileTime(&t);
+		tUs rev;
+		rev = *((tUs*)(&t));
+		rev /= 10;
+		rev -= DELTA_EPOCH_IN_US;
+		return rev;
+	}
+	void msSleep(int ms) {
+		Sleep(ms);
+	}
+	void setPriority() {
+		return;
+	}
+	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	static int color_argument_table[4] = {
+		0x07,
+		FOREGROUND_INTENSITY | FOREGROUND_GREEN,
+		FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED,
+		FOREGROUND_INTENSITY | FOREGROUND_RED
+	};
+
+	void setTerminalColor(eTerminalColor color) {
+		SetConsoleTextAttribute(handle, color_argument_table[(int)color]);
+	}
+
+	int getProcessName(char* ptr, int length) {
+		char* exe_path = new char[FILENAME_MAX];
+		if (exe_path == nullptr) {
+			return new_fail;
+		}
+		GetModuleFileNameA(NULL, exe_path, MAX_PATH);
+
+		char* exe_path_end = (exe_path + FILENAME_MAX);
+		char* name = nullptr;
+		for (char* scan = exe_path; scan < exe_path_end; scan++) {
+			if (*scan == '\\') {
+				name = scan + 1;
+			}
+			else if (*scan == '.') {
+				*scan = '_';
+			}
+			else if (*scan == 0) {
+				break;
+			}
+		}
+		if (name == nullptr) {
+			return fail;
+		}
+		char* ptr_base = ptr;
+		int i = 0;
+		for (; i < (length - 1); i++) {
+			ptr[i] = name[i];
+			if ((name[i] == 0)) {
+				break;
+			}
+		}
+		ptr[i] = 0;
+		return i;
+	}
+
+
+#endif
+
+
 
 #if UNIX
 #include <sys/time.h> 

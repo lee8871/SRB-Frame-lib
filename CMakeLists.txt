@@ -11,11 +11,22 @@ option(MSCV_X86 "Is build for win32?" OFF)
 option(MSCV_X64 "Is build for win64?" OFF)
 
 IF(WIN32)
-	if(MSCV_X86)
 		SET(DEPEND_PATH D:/GitHubClone)
+		SET(LIBUSB_1_0_22_PATH "D:/libusb-1.0.22")
+		SET(DEPEND_PATH D:/GitHubClone)
+		SET(LIBUSB_1_0_22_PATH "D:/libusb-1.0.22")
+	if(MSCV_X86)
 		MESSAGE("build for Window_x86")
 		ADD_DEFINITIONS(-DWINDOW_86)
 	endif(MSCV_X86)
+	
+	if(MSCV_X64)
+		MESSAGE("build for Window_x64")
+		ADD_DEFINITIONS(-DWINDOW_64)
+	endif(MSCV_X64)
+
+
+	 
 ELSEIF(UNIX)
 	add_definitions(-std=c++17)
 	MESSAGE("build for linux")

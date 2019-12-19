@@ -24,7 +24,7 @@ using namespace lee8871_support;
 int TEST_PKG_NUM = -1;
 const int REPORT_RAT = 1000;
 
-char usb_port_name[64] = "";//like "USB-TEST-BED";
+char usb_port_name[64] = "SRB-TEST-BED";//like "USB-TEST-BED";
 char test_node_name[64] = "Left";
 char test_node2_name[64] = "Right";
 

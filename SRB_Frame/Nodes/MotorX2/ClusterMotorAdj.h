@@ -5,7 +5,7 @@
 namespace srb {
 	class ClusterMotorAdj: public iCluster {
 	private:
-		using csThis = Du_Motor::csMotorAdj;
+		using csThis = MotorX2::csMotorAdj;
 	public:
 		constexpr static uint8 DEFAULT_CID = 11;
 		ClusterMotorAdj(Node* node);

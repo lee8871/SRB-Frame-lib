@@ -5,7 +5,7 @@
 #include "Json.h"
 
 namespace srb {
-	using namespace Du_Motor;
+	using namespace MotorX2;
 	ClusterMotorSet::ClusterMotorSet(Node* node)
 		:iCluster(node)
 	{

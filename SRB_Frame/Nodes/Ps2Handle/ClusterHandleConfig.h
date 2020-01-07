@@ -5,7 +5,7 @@
 namespace srb {
 	class ClusterHandleConfig: public iCluster {
 	private:
-		using csThis = Ps2_Handle::csHandleConfig;
+		using csThis = Joystick::csHandleConfig;
 	public:
 		constexpr static uint8 DEFAULT_CID = 11;
 		ClusterHandleConfig(Node* node);

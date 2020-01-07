@@ -16,11 +16,11 @@ namespace srb {
 		inline ClusterHandleConfig*& configCLU() {
 			return  (ClusterHandleConfig *&)clusters[ClusterHandleConfig::DEFAULT_CID];
 		}
-		inline Ps2_Handle::sDataRs* Data(){
-			return  (Ps2_Handle::sDataRs* const)(data_rs);
+		inline Joystick::sDataRs* Data(){
+			return  (Joystick::sDataRs* const)(data_rs);
 		}
 
-		constexpr static const char* NODE_TYPE = "Ps2_Handle";
+		constexpr static const char* NODE_TYPE = "Joystick";
 		lee8871_support::Json* finalToJson();
 		int initFormNode();
 		static int writeAllNode(Node *n);

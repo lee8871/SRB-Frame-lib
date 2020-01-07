@@ -5,7 +5,7 @@
 #include "Json.h"
 
 namespace srb {
-	using namespace Ps2_Handle;
+	using namespace Joystick;
 	ClusterHandleConfig::ClusterHandleConfig(Node* node)
 		:iCluster(node)
 	{

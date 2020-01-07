@@ -27,9 +27,9 @@ namespace srb {
 
 		Bus()->doAccess();
 		setMapping(mapping0CLU()->Data()->u8, 0);
-		setMapping(Du_Motor::Mapping1, 1);
-		setMapping(Du_Motor::Mapping2, 2);
-		setMapping(Du_Motor::Mapping3, 1);
+		setMapping(Joystick::Mapping1, 1);
+		setMapping(Joystick::Mapping2, 2);
+		setMapping(Joystick::Mapping3, 1);
 		return done;
 	}
 

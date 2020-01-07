@@ -5,7 +5,7 @@
 namespace srb {
 	class ClusterBattery : public iCluster {
 	private:
-		using csThis = Charger_2LiB::csBattery;
+		using csThis = LiBatT2::csBattery;
 	public:
 		constexpr static uint8 DEFAULT_CID = 11;
 		ClusterBattery(Node* node);

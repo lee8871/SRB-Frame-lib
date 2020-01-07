@@ -15,7 +15,7 @@
 #include "ClusterInnRes.h"
 
 namespace srb {
-	using namespace Charger_2LiB;
+	using namespace LiBatT2;
 using namespace lee8871_support;
 	int NodeLibatx2::initFormNode()
 	{

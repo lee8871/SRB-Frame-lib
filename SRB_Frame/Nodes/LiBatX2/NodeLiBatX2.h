@@ -24,10 +24,10 @@ namespace srb {
 		inline ClusterInnRes*& c_inn_res() {
 			return  (ClusterInnRes *&)clusters[ClusterInnRes::DEFAULT_CID];
 		}
-		inline Charger_2LiB::sDataRs* Data(){
-			return  (Charger_2LiB::sDataRs* const)(data_rs);
+		inline LiBatT2::sDataRs* Data(){
+			return  (LiBatT2::sDataRs* const)(data_rs);
 		}			   
-		constexpr static const char* NODE_TYPE = "Charger_2LiB";
+		constexpr static const char* NODE_TYPE = "LiBatT2";
 		lee8871_support::Json* finalToJson();
 		int initFormNode();
 		static int writeAllNode(Node *n);

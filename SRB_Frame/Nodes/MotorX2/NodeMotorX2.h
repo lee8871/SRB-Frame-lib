@@ -20,11 +20,11 @@ namespace srb {
 		inline ClusterMotorAdj*& adjCLU() {
 			return  (ClusterMotorAdj *&)clusters[ClusterMotorAdj::DEFAULT_CID];
 		}
-		inline Du_Motor::sDataRs* Data(){
-			return  (Du_Motor::sDataRs* const)(data_rs);
+		inline MotorX2::sDataRs* Data(){
+			return  (MotorX2::sDataRs* const)(data_rs);
 		}
 			   
-		constexpr static const char* NODE_TYPE = "Du_Motor";
+		constexpr static const char* NODE_TYPE = "MotorX2";
 		lee8871_support::Json* finalToJson();
 		int initFormNode();
 		static int writeAllNode(Node *n);

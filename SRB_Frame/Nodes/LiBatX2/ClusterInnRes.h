@@ -5,7 +5,7 @@
 namespace srb {
 	class ClusterInnRes : public iCluster {
 	private:
-		using csThis = Charger_2LiB::csInnRes;
+		using csThis = LiBatT2::csInnRes;
 	public:
 		constexpr static uint8 DEFAULT_CID = 13;
 		ClusterInnRes(Node* node);

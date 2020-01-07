@@ -5,7 +5,7 @@
 namespace srb {
 	class ClusterBuzzer : public iCluster {
 	private:
-		using csThis = Charger_2LiB::csBuzzer;
+		using csThis = LiBatT2::csBuzzer;
 	public:
 		constexpr static uint8 DEFAULT_CID = 12;
 		ClusterBuzzer(Node* node);

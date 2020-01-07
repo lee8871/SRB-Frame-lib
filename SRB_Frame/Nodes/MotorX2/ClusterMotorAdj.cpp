@@ -3,7 +3,7 @@
 #include "Json.h"
 
 namespace srb {
-	using namespace Du_Motor;
+	using namespace MotorX2;
 	ClusterMotorAdj::ClusterMotorAdj(Node* node)
 		:iCluster(node)
 	{

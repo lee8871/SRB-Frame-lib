@@ -13,6 +13,7 @@
 #include "Broadcaster.h"
 #include "./Nodes/MotorX2/NodeMotorX2.h"
 #include "./Nodes/Ps2Handle/NodePs2Handle.h"
+#include "./Nodes/LibatX2/NodeLiBatX2.h"
 #include "PerformanceAnalyzer.h"
 #include "transform.h"
 
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
 				return lsBus();
 				break;
 				case 'S':
-				strcpy(node_name,argv[i]+2);
+					strcpy(node_name,argv[i]+2);
 				break;
 				case 'M':
 					strcpy(mode, argv[i] + 2);
@@ -310,18 +311,25 @@ int testCtrl() {
 
 		auto node_motor = (NodeMotorX2*)((*mainSRBM)[node_name]);
 		if (node_motor == nullptr) {
-			printf("Node expand error.");
+			printf("Motor Node (%s) expand error.", node_name);
 			return -1;
 		}
 		const char handle_name[] = "Handle";
 		auto node_handle = (NodePs2Handle*)((*mainSRBM)[handle_name]);
 		if (node_handle == nullptr) {
-			printf("Handle expand error.");
+			printf("Handle  Node (%s) expand error.", handle_name);
+			return -1;
+		}
+		const char Battery_name[] = "Battery";
+		auto node_battery = (NodeLibatx2*)((*mainSRBM)[Battery_name]);
+		if (node_battery == nullptr) {
+			printf("Handle  Node (%s) expand error.", Battery_name);
 			return -1;
 		}
 
 		printf("handle control begin\n");
 		int speeda = 0;
+		uint8 last_cros_status = 0;
 		int speedb = 0;
 		while (1) {
 			node_motor->Data()->ma.brake = no;
@@ -330,6 +338,12 @@ int testCtrl() {
 			node_motor->Data()->mb.speed = (int16)speedb;
 			node_motor->sendAccess(0);
 			node_handle->sendAccess(0);
+			node_battery->sendAccess(0);
+			if ((node_handle->Data()->handle.key.cros == 1)&&(last_cros_status == 0)) {
+				printf("Battery voteage = %f\n", node_battery->Data()->battery_voltage / 1000.0);
+			}
+			last_cros_status = node_handle->Data()->handle.key.cros;
+
 			mainbusUB->doAccess();
 			msSleep(10);
 

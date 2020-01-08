@@ -8,8 +8,7 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 CMakeSettings.json
-.vs/*
-.vscode/*
+.vs/SRB-Frame/*
 build/*
 record.json
 record.json

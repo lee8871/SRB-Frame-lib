@@ -1,0 +1,69 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+  "configurations": [
+    {
+      "name": "testbed",
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SRB_Frame_tester.exe (SRB_Frame_test\\SRB_Frame_tester.exe)",
+      "args": [
+        "-BSRB-USB",
+        "-A10000000"
+      ]
+    },   
+	{
+      "name": "test bed with handle",
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SRB_Frame_tester.exe (SRB_Frame_test\\SRB_Frame_tester.exe)",
+      "args": [
+        "-BSRB-USB",
+        "-Mkc",
+        "-SLeft"
+      ],
+      "noDebug": false,
+      "currentDir": "F:\\SRB_frame_build\\debug_root"
+    },
+    {
+      "type": "scan bed",
+      "project": "CMakeLists.txt",
+      "projectTarget": "srbscan.exe (scan\\srbscan.exe)",
+      "args": [
+        "-BSRB-USB"
+      ],
+      "noDebug": false,
+      "currentDir": "F:\\SRB_frame_build\\debug_root",
+      "name": "test bed scan "
+    },    
+
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "srbscan.exe (scan\\srbscan.exe)",
+      "name": "srbscan.exe (scan\\srbscan.exe)",
+      "currentDir": "F:\\SRB_frame_build\\debug_root"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "projectTarget": "SRB_Frame_tester.exe (SRB_Frame_test\\SRB_Frame_tester.exe)",
+      "name": "SRB_Frame_tester.exe (SRB_Frame_test\\SRB_Frame_tester.exe)"
+    },
+    {
+      "type": "default",
+      "project": "SRB_Frame_test\\SRB_Frame_tester.cpp",
+      "name": "Keyboard Conrol",
+      "args": [
+        "-BUSB-TEST-BED",
+        "-Mkc",
+        "-SRosTestNode"
+      ]
+    },
+    {
+      "type": "native",
+      "name": "SRB_Frame_tester.cpp",
+      "project": "SRB_Frame_test\\SRB_Frame_tester.cpp"
+    }
+  ]
+}

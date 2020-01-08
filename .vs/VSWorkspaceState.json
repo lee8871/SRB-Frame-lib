@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\readonly",
+    "\\SRB_Frame",
+    "\\SRB_Frame\\Nodes\\LibatX2",
+    "\\SRB_Frame\\Nodes\\MotorX2",
+    "\\SRB_Frame\\Nodes\\Ps2Handle",
+    "\\SRB_Frame_test"
+  ],
+  "SelectedNode": "\\readonly\\SRB-base-cluster-share.h",
+  "PreviewInSolutionExplorer": false
+}

@@ -29,7 +29,7 @@ struct csBase{
 struct csInfo{
 	uint8 node_version[2];
 	uint8 srb_version[2];
-	uint16 time_stamp;
+	int32 time_stamp;
 	uint8 node_type[17];
 };	
 
